@@ -33,7 +33,7 @@
   const MAX_DURATION = 600;    // longest
   const STEP = 0.3;            // proper time per walk step
   const MAX_STEPS = 1500;      // per loop; longer loops take coarser steps
-  const SMOOTH_PASSES = 2;     // (1,2,1)/4 filter round each loop: soft curves, same large-scale shape
+  const SMOOTH_PASSES = 0;     // passes of a (1,2,1)/4 filter round each loop, softening the walk; 0 keeps it raw
 
   // look
   const DEPTH = 14;            // how far back in tau threads reach
@@ -339,7 +339,7 @@
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.lineJoin = "round";
-    ctx.lineCap = "round";
+    ctx.lineCap = "butt";        // neighbouring bands meet end to end; round caps would overlap there
     bands.forEach((path, i) => {
       const age = ((i % AGE_BANDS) + 0.5) / AGE_BANDS;
       ctx.lineWidth = LINE * (1 - (1 - TAIL) * age);
