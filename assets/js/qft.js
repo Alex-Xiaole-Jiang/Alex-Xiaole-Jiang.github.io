@@ -37,15 +37,15 @@
   // look
   const DEPTH = 14;            // how far back in tau threads reach
   const STILL_DEPTH = 45;      // the same, when held still (below)
-  const SPEED = 0.25;          // tau per second
+  const SPEED = 0.45;          // tau per second
   const AGE_BANDS = 14;        // threads fade in this many steps
   const FADE = 1.6;            // opacity falls as (1 - age/depth)^FADE
   const ALPHA = 0.32;          // opacity of the newest thread
-  const LINE = 1;              // width of the newest thread, CSS px
+  const LINE = 1.6;            // width of the newest thread, CSS px
   const TAIL = 0.5;            // the oldest is this much as wide
-  const DOT_RADIUS = 0.9;      // CSS px
+  const DOT_RADIUS = 1.2;      // CSS px
   const DOT_ALPHA = 0.72;
-  const FPS = 15;              // the motion is slow, so this is plenty
+  const FPS = 20;              // smooth enough at this speed
 
   // Each loop keeps the tau-range of every block of BLOCK steps, so drawing can
   // skip the parts that are nowhere near the plane.
