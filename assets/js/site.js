@@ -63,7 +63,7 @@
   function closeAndReturn() {
     const id = current;
     if (!id) return;
-    const wasInside = writeup(id).contains(document.activeElement);
+    const wasInside = writeup(id).contains(document.activeElement) || document.activeElement.matches(".shut");
     close();
     if (wasInside) handle(id).focus({ preventScroll: true });
     if (oneColumn.matches && entry(id).getBoundingClientRect().top < 0) entry(id).scrollIntoView();
@@ -92,7 +92,7 @@
       return;
     }
 
-    if (t.closest(".writeup .close")) {
+    if (t.closest(".writeup .close, .shut")) {
       e.preventDefault();
       closeAndReturn();
       return;

@@ -41,7 +41,7 @@
   --read: 46rem;
   --colgap: 3.5rem;
   --pad: 3rem;           /* outer margin, at least */
-  --top: 5rem;           /* space above the columns */
+  --top: 4rem;           /* space above the columns */
   --panel-pad: 2.5rem;   /* inside the write-up panel */
   --phone-pad: 1rem;
   --bleed: 0.7rem;       /* how far gray boxes and dot leaders reach past the text */
@@ -167,6 +167,7 @@ img { max-width: 100%; height: auto; }
 .writeup:target, .js .writeup.open { display: block; }
 .js .writeup:target:not(.open) { display: none; }
 .writeup:focus { outline: none; }
+.shut { display: none; }   /* the panel's close button */
 .writeup h2 { font-size: 1.2rem; margin: 0 0 0.25rem; }
 .writeup .meta { color: var(--gray); font-size: 0.94em; margin: 0 0 1.25rem; }
 .writeup .x { float: right; margin: 0 0 0.5rem 1rem; font-size: 0.94em; }
@@ -181,9 +182,15 @@ img { max-width: 100%; height: auto; }
 
 /* The panel is as wide as the full write-up column, but its left edge stops
    colgap/2 short of the photo column: half the window plus half the page,
-   less the photo column and that gap. */
+   less the photo column and that gap. It is a little see-through, so the list
+   shows behind it, and a round close button sits on its left edge. */
 @media not all and (min-width: 104em) {
   .page { grid-template-columns: var(--side) var(--list); }
+  .reader, .shut {
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.1s, transform 0.1s, visibility 0.1s;
+  }
   .reader {
     position: fixed; top: 0; right: 0; bottom: 0; z-index: 3;
     width: calc(var(--read) + 2 * var(--panel-pad));
@@ -195,19 +202,42 @@ img { max-width: 100%; height: auto; }
     padding: var(--top) var(--panel-pad) 3rem;
     background: var(--bg);
     border-left: var(--rule);
-    box-shadow: -0.75rem 0 2rem rgba(0, 0, 0, 0.07);
-    visibility: hidden;
-    transform: translateX(100%);
-    transition: transform 0.22s ease, visibility 0.22s;
+    box-shadow: -0.25rem 0 0.75rem rgba(0, 0, 0, 0.04);
+    transform: translateX(1.5rem);
   }
-  /* visible at once on opening, so focus can move into it */
-  .reader.is-open { visibility: visible; transform: none; transition: transform 0.22s ease; }
+  .shut {
+    display: block;
+    position: fixed; z-index: 4;
+    top: calc(var(--top) - 0.35rem);
+    right: calc(var(--read) + 2 * var(--panel-pad) - 1.1rem);
+    right: calc(min(var(--read) + 2 * var(--panel-pad),
+                    50vw + (var(--side) + var(--colgap) + var(--list)) / 2 - var(--side) - var(--colgap) / 2) - 1.1rem);
+    width: 2.2rem; height: 2.2rem;
+    padding: 0;
+    border: 1px solid #aaa; border-radius: 50%;
+    background: var(--bg);
+    color: var(--gray);
+    font: 1.35rem/1 Georgia, serif;
+    cursor: pointer;
+    transform: translateX(1.5rem);
+  }
+  .shut:hover { color: var(--text); border-color: var(--text); }
+  /* opening: a quick slide in from the right; visible at once, so focus can move into it */
+  .reader.is-open, .reader.is-open ~ .shut {
+    visibility: visible; opacity: 1; transform: none;
+    transition: opacity 0.14s ease-out, transform 0.14s ease-out;
+  }
+}
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+  @media not all and (min-width: 104em) {
+    .reader { background: rgba(255, 255, 255, 0.82); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+  }
 }
 /* without JS (separate rule: a browser without :has() would drop the whole list) */
 @media not all and (min-width: 104em) {
-  html:not(.js) .reader:has(.writeup:target) { visibility: visible; transform: none; }
+  html:not(.js) .reader:has(.writeup:target) { visibility: visible; opacity: 1; transform: none; }
 }
-@media (prefers-reduced-motion: reduce) { .reader { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .reader, .shut { transition: none !important; } }
 
 /* ---------- one column (< 54.5em): write-ups open inside their entry ---------- */
 
@@ -243,10 +273,12 @@ img { max-width: 100%; height: auto; }
      so zero height, otherwise). With JS the write-up moves into its entry. */
   .reader {
     position: static; width: auto; height: auto; margin: 0; padding: 0; overflow: visible;
-    background: none; border: 0; box-shadow: none; visibility: visible; transform: none; transition: none;
+    background: none; border: 0; box-shadow: none; visibility: visible; opacity: 1; transform: none; transition: none;
+    -webkit-backdrop-filter: none; backdrop-filter: none;
   }
   .reader .writeup:target { border-top: var(--rule); padding: 1.5rem 0 3rem; }
   .js .reader { display: none; }
+  .shut { display: none; }
 
   .paper > .writeup {
     margin: 0.75rem 0 1.5rem;
