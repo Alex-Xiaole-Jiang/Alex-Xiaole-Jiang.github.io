@@ -1,13 +1,15 @@
-// Opens and closes paper write-ups. Two or three columns: in the right column.
-// One column: inline, right under the paper's entry. The URL hash (#kwm) names the open one.
+// Opens and closes paper write-ups. Wide: in the right column. Narrower: in a
+// panel that slides over the list. One column: inline, right under the paper's entry. The URL hash (#kwm) names the open one.
 // Without JS the write-ups still open through CSS :target. The "js" class that
 // switches that off is set here, not inline, so a browser too old to run this
 // file keeps the CSS-only behavior instead of ending up with neither.
 (() => {
   document.documentElement.classList.add("js");
 
-  // one-column layout; keep in sync with site.css
-  const oneColumn = window.matchMedia("not all and (min-width: 77.5em)");
+  // layouts; keep in sync with site.css
+  const oneColumn = window.matchMedia("not all and (min-width: 54.5em)");
+  const docked = window.matchMedia("(min-width: 104em)");
+  const panel = () => !oneColumn.matches && !docked.matches;
   const reader = document.getElementById("reader");
   let current = null;
 
@@ -38,9 +40,11 @@
     if (current) mark(current, false);
     place(el);
     mark(id, true);
+    reader.classList.add("is-open");
     current = id;
     setHash(id);
     if (!oneColumn.matches) reader.scrollTop = 0;
+    if (panel()) el.focus({ preventScroll: true });
     window.goatcounter?.count?.({ path: "write-up/" + id, title: id, event: true });
   }
 
@@ -48,9 +52,21 @@
     const id = current;
     if (!id) return null;
     mark(id, false);
+    reader.classList.remove("is-open");
     current = null;
     setHash("");
     return id;
+  }
+
+  // Close, and put focus back on the entry if it was in the write-up (which is
+  // now hidden). One column: scroll back up to the entry if it's off screen.
+  function closeAndReturn() {
+    const id = current;
+    if (!id) return;
+    const wasInside = writeup(id).contains(document.activeElement);
+    close();
+    if (wasInside) handle(id).focus({ preventScroll: true });
+    if (oneColumn.matches && entry(id).getBoundingClientRect().top < 0) entry(id).scrollIntoView();
   }
 
   const toggle = (id) => (id === current ? close() : open(id));
@@ -78,10 +94,13 @@
 
     if (t.closest(".writeup .close")) {
       e.preventDefault();
-      const id = close();
-      if (!id) return;
-      handle(id).focus({ preventScroll: true });
-      if (oneColumn.matches && entry(id).getBoundingClientRect().top < 0) entry(id).scrollIntoView();
+      closeAndReturn();
+      return;
+    }
+
+    // panel: a click outside it, other than on a link or button, closes it
+    if (current && panel() && !t.closest(".reader, a, button")) {
+      closeAndReturn();
       return;
     }
 
@@ -94,7 +113,7 @@
   });
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") close();
+    if (e.key === "Escape") closeAndReturn();
   });
 
   const onLayoutChange = () => {

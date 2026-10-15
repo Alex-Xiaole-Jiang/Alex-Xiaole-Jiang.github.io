@@ -1,6 +1,7 @@
 /* Alex Jiang — one stylesheet, no framework.
-   Wide: photo | list | write-up.  Narrower: list | write-up, photo on top.
-   Then one column with write-ups opening inline; phones add a sticky name strip. */
+   Wide: photo | list | write-up.  Narrower: photo | list, with the write-up in
+   a panel that slides over the list. Then one column with write-ups opening
+   inline; phones add a sticky name strip. */
 
 @font-face { font-family: "Charter"; src: url("../fonts/charter-regular.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
 @font-face { font-family: "Charter"; src: url("../fonts/charter-italic.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: swap; }
@@ -25,26 +26,23 @@
   --rule: 1px dotted #888;
 
   /* Column widths. The list is --list wide, or the screen less --phone-pad on
-     each side when that is narrower; wider windows never stretch it. As the
-     window widens:
-       1. the write-up column appears once it fits at --read-min,
-       2. it grows to --read, then holds while the margins widen,
-       3. the photo column appears once it fits beside that, with no other
-          column changing width.
-     So the breakpoints are:
+     each side when that is narrower; wider windows never stretch it. The photo
+     column outranks the write-up: it stays whenever it fits beside the list,
+     and the write-up gets a column of its own only when all three fit.
+     Otherwise it opens in a panel over the list. So the breakpoints are:
        phone below:      list + 2*phone-pad                           = 36rem
-       write-up column:  2*pad-two + list + colgap + read-min         = 77.5rem
-       photo column:     2*pad + side + colgap + list + colgap + read = 104rem
+       photo column:     2*pad + side + colgap + list                 = 54.5rem
+       write-up column:  2*pad + side + colgap + list + colgap + read = 104rem
      Media queries can't use variables, so these numbers are written out there
      and in site.js; keep them in sync. (Media-query em is the browser's default
      font size, the same as rem here since html sets no font size.) */
   --side: 11rem;
   --list: 34rem;
-  --read-min: 28rem;     /* only sets the write-up breakpoint */
   --read: 46rem;
   --colgap: 3.5rem;
   --pad: 3rem;           /* outer margin, at least */
-  --pad-two: 6rem;       /* the same, in two columns */
+  --top: 5rem;           /* space above the columns */
+  --panel-pad: 2.5rem;   /* inside the write-up panel */
   --phone-pad: 1rem;
   --bleed: 0.7rem;       /* how far gray boxes and dot leaders reach past the text */
 }
@@ -87,7 +85,7 @@ img { max-width: 100%; height: auto; }
   position: sticky;
   top: 0;
   align-self: start;
-  padding: 3rem 0 2rem;
+  padding: var(--top) 0 2rem;
 }
 .me .photo { display: block; width: 100%; aspect-ratio: 100 / 110; object-fit: cover; background: var(--photo-bg); }
 .me h1 { font-size: 1.35rem; margin: 1rem 0 0.25rem; }
@@ -96,7 +94,7 @@ img { max-width: 100%; height: auto; }
 .contact-inline { display: none; }   /* phone-only copy of the contact links */
 
 /* middle column: about + paper lists */
-.list { padding: 3rem 0 6rem; min-width: 0; }
+.list { padding: var(--top) 0 6rem; min-width: 0; }
 .about { margin: 0 0 2rem; }
 
 /* Section titles read like a table of contents: ▾ Title . . . . . . up to the box edge */
@@ -154,11 +152,11 @@ img { max-width: 100%; height: auto; }
    the boxes' left edge (colgap - bleed). */
 .reader {
   position: sticky;
-  top: 3rem;
+  top: var(--top);
   align-self: start;
-  margin: 3rem 0;
-  height: calc(100vh - 6rem);    /* fallback for browsers without dvh */
-  height: calc(100dvh - 6rem);
+  margin: var(--top) 0 3rem;
+  height: calc(100vh - var(--top) - 3rem);    /* fallback for browsers without dvh */
+  height: calc(100dvh - var(--top) - 3rem);
   overflow-y: auto;
   overscroll-behavior: contain;
   min-width: 0;
@@ -179,32 +177,41 @@ img { max-width: 100%; height: auto; }
 .todo { display: none; }
 .dev .todo { display: block; color: var(--faint); font-style: italic; }
 
-/* ---------- two columns (< 104em): list | write-up, photo on top ---------- */
+/* ---------- photo | list (< 104em): the write-up slides in over the list ---------- */
 
+/* The panel is as wide as the full write-up column, but its left edge stops
+   colgap/2 short of the photo column: half the window plus half the page,
+   less the photo column and that gap. */
 @media not all and (min-width: 104em) {
-  .page { grid-template-columns: var(--list) minmax(0, var(--read)); padding: 0 var(--pad-two); }
-  .me {
-    position: static;
-    grid-column: 1; grid-row: 1;
-    display: grid;
-    grid-template-columns: 5.5rem 1fr;
-    column-gap: 1rem;
-    align-items: start;
-    padding: 2rem 0 0;
+  .page { grid-template-columns: var(--side) var(--list); }
+  .reader {
+    position: fixed; top: 0; right: 0; bottom: 0; z-index: 3;
+    width: calc(var(--read) + 2 * var(--panel-pad));
+    width: min(var(--read) + 2 * var(--panel-pad),
+               50vw + (var(--side) + var(--colgap) + var(--list)) / 2 - var(--side) - var(--colgap) / 2);
+    height: auto;
+    align-self: stretch;   /* fill top to bottom (alignment applies to fixed boxes too) */
+    margin: 0;
+    padding: var(--top) var(--panel-pad) 3rem;
+    background: var(--bg);
+    border-left: var(--rule);
+    box-shadow: -0.75rem 0 2rem rgba(0, 0, 0, 0.07);
+    visibility: hidden;
+    transform: translateX(100%);
+    transition: transform 0.22s ease, visibility 0.22s;
   }
-  /* the photo spans name, tagline and links exactly: top to top, bottom to bottom */
-  .me .photo { grid-row: 1 / span 3; height: 100%; }
-  .me h1 { margin: 0 0 0.15rem; }
-  .me .tag { margin: 0 0 0.35rem; }
-  .me .contact { margin: 0; }
-  .me .contact a { display: inline; margin-right: 0.6em; }
-  .list { grid-column: 1; grid-row: 2; padding-top: 1.75rem; }
-  .reader { grid-column: 2; grid-row: 1 / span 2; top: 2rem; margin: 2rem 0; height: calc(100vh - 4rem); height: calc(100dvh - 4rem); }
+  /* visible at once on opening, so focus can move into it */
+  .reader.is-open { visibility: visible; transform: none; transition: transform 0.22s ease; }
 }
+/* without JS (separate rule: a browser without :has() would drop the whole list) */
+@media not all and (min-width: 104em) {
+  html:not(.js) .reader:has(.writeup:target) { visibility: visible; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) { .reader { transition: none; } }
 
-/* ---------- one column (< 77.5em): write-ups open inside their entry ---------- */
+/* ---------- one column (< 54.5em): write-ups open inside their entry ---------- */
 
-@media not all and (min-width: 77.5em) {
+@media not all and (min-width: 54.5em) {
   /* the list, centered, never closer than --phone-pad to the screen edge */
   .page {
     display: block;
@@ -212,13 +219,32 @@ img { max-width: 100%; height: auto; }
     padding: 0 max(var(--phone-pad), (100% - var(--list)) / 2);
   }
 
+  /* photo beside name, tagline and links, spanning them exactly: top to top, bottom to bottom */
+  .me {
+    position: static;
+    display: grid;
+    grid-template-columns: 5.5rem 1fr;
+    column-gap: 1rem;
+    align-items: start;
+    padding: 3rem 0 0;
+  }
+  .me .photo { grid-row: 1 / span 3; height: 100%; }
+  .me h1 { margin: 0 0 0.15rem; }
+  .me .tag { margin: 0 0 0.35rem; }
+  .me .contact { margin: 0; }
+  .me .contact a { display: inline; margin-right: 0.6em; }
+  .list { padding-top: 1.75rem; }
+
   .pm { display: inline-block; width: 1.1em; }
   .pm::before { content: "+"; }
   .paper.is-open .pm::before { content: "\2212"; }
 
   /* Without JS the targeted write-up shows below the lists (the aside is empty,
      so zero height, otherwise). With JS the write-up moves into its entry. */
-  .reader { position: static; height: auto; margin: 0; overflow: visible; }
+  .reader {
+    position: static; width: auto; height: auto; margin: 0; padding: 0; overflow: visible;
+    background: none; border: 0; box-shadow: none; visibility: visible; transform: none; transition: none;
+  }
   .reader .writeup:target { border-top: var(--rule); padding: 1.5rem 0 3rem; }
   .js .reader { display: none; }
 
