@@ -133,3 +133,69 @@
     entry(start).scrollIntoView();
   }
 })();
+
+// [night]/[day] and [hide text]. The theme follows the system until it is
+// switched; the choice is kept in localStorage, and the inline script in
+// default.html applies it before the page is drawn.
+(() => {
+  const root = document.documentElement;
+  const systemDark = window.matchMedia("(prefers-color-scheme: dark)");
+  const isDark = () => (root.dataset.theme ? root.dataset.theme === "dark" : systemDark.matches);
+  const buttons = (name) => document.querySelectorAll(`[data-switch="${name}"]`);
+
+  function label() {
+    buttons("theme").forEach((b) => {
+      b.textContent = isDark() ? "day" : "night";
+    });
+  }
+
+  function toggleTheme() {
+    const dark = !isDark();
+    // a choice that matches the system is no choice: follow the system again
+    const theme = dark === systemDark.matches ? null : dark ? "dark" : "light";
+    if (theme) root.dataset.theme = theme;
+    else delete root.dataset.theme;
+    try {
+      if (theme) localStorage.setItem("theme", theme);
+      else localStorage.removeItem("theme");
+    } catch (e) {}
+    label();
+  }
+
+  let bareFrom = null;   // the button that hid the text, to return focus to
+  function setBare(on, from) {
+    root.classList.toggle("bare", on);
+    if (on) {
+      bareFrom = from;
+      document.querySelector(".unbare").focus();
+    } else if (bareFrom) {
+      bareFrom.focus();
+      bareFrom = null;
+    }
+  }
+
+  // While the text is hidden, any click or Escape brings it back, and does
+  // nothing else: these listeners capture, so the write-up's own (which close
+  // it on a click outside or Escape) never see the event.
+  document.addEventListener("click", (e) => {
+    const b = e.target.closest("[data-switch]");
+    if (root.classList.contains("bare")) {
+      e.stopPropagation();
+      setBare(false);
+    } else if (b && b.dataset.switch === "theme") {
+      toggleTheme();
+    } else if (b && b.dataset.switch === "bare") {
+      setBare(true, b);
+    }
+  }, true);
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && root.classList.contains("bare")) {
+      e.stopPropagation();
+      setBare(false);
+    }
+  }, true);
+
+  if (systemDark.addEventListener) systemDark.addEventListener("change", label);
+  else systemDark.addListener(label);   // Safari < 14
+  label();
+})();
