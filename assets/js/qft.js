@@ -6,7 +6,7 @@
 // is drawn as a thread that fades with age. A loop crossing the plane upward is
 // a particle, downward an antiparticle, each with its own colour, so pairs are
 // created where a loop has a minimum in tau and annihilate where it has a
-// maximum.
+// maximum, and both flash.
 //
 // The soup is a Poisson process: per unit volume, dt/t * (2 pi t)^(-3/2) loops
 // of duration (proper time) in [t, t + dt]. It is generated in slabs of tau
@@ -38,15 +38,23 @@
   // look
   const DEPTH = 14;            // how far back in tau threads reach
   const STILL_DEPTH = 45;      // the same, when held still (below)
-  const SPEED = 0.45;          // tau per second
+  const SPEED = 0.35;          // tau per second
   const AGE_BANDS = 14;        // threads fade in this many steps
   const FADE = 1.6;            // opacity falls as (1 - age/depth)^FADE
   const ALPHA = 0.32;          // opacity of the newest thread
-  const LINE = 1.6;            // width of the newest thread, CSS px
-  const TAIL = 0.5;            // the oldest is this much as wide
-  const DOT_RADIUS = 1.2;      // CSS px
+  const LINE = 2.8;            // width of the newest thread, CSS px
+  // Threads narrow to 1 px over this much of their fade and stay so: browsers
+  // draw lines up to 1 px wide by a fast path, wider ones at several times the
+  // cost, and most of the length is in the faint old part.
+  const THICK = 0.2;
+  const DOT_RADIUS = 2.1;      // CSS px
   const DOT_ALPHA = 0.72;
-  const FPS = 20;              // smooth enough at this speed
+  const FLASH = 0.2;           // tau a creation or annihilation flashes for
+  const FLASH_RADIUS = 9;      // CSS px, at the start; it shrinks as it fades
+  const FLASH_ALPHA = 0.8;     // on the dark theme
+  const INK_RADIUS = 7;        // the same on the light theme, where the spot is fuller
+  const INK_ALPHA = 1;
+  const FPS = 15;              // smooth enough at this speed
 
   // Each loop keeps the tau-range of every block of BLOCK steps, so drawing can
   // skip the parts that are nowhere near the plane.
@@ -63,13 +71,32 @@
   // isn't drawn at all. Keep in sync with site.css.
   const roomy = window.matchMedia("(min-width: 36em)");
   const dark = window.matchMedia("(prefers-color-scheme: dark)");
+  const isDark = () => (root.dataset.theme ? root.dataset.theme === "dark" : dark.matches);
 
-  // particles and threads moving up in tau, antiparticles and threads moving down
+  // particles and threads moving up in tau, antiparticles and threads moving
+  // down; flashes are a soft spot in the text colour, as a pair is both
   let plus = "", minus = "";
+  const spot = document.createElement("canvas");
   function readColors() {
     const style = getComputedStyle(root);
     plus = style.getPropertyValue("--field-plus").trim();
     minus = style.getPropertyValue("--field-minus").trim();
+
+    const size = spot.width = spot.height = 64;
+    const g = spot.getContext("2d");
+    const glow = g.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+    // Ink on paper reads fainter than the same spot of light on black, so on
+    // the light theme the spot falls off more slowly.
+    const stops = isDark() ? [1, 0.7, 0.15] : [1, 0.85, 0.35];
+    glow.addColorStop(0, `rgba(0, 0, 0, ${stops[0]})`);
+    glow.addColorStop(0.18, `rgba(0, 0, 0, ${stops[1]})`);
+    glow.addColorStop(0.5, `rgba(0, 0, 0, ${stops[2]})`);
+    glow.addColorStop(1, "rgba(0, 0, 0, 0)");
+    g.fillStyle = glow;
+    g.fillRect(0, 0, size, size);
+    g.globalCompositeOperation = "source-in";   // keep the shape, take the colour
+    g.fillStyle = style.getPropertyValue("--text").trim();
+    g.fillRect(0, 0, size, size);
   }
 
   let width = 0, height = 0;   // viewport, in length units; 0 while not drawn
@@ -233,28 +260,45 @@
 
   // A loop is drawn as one smooth closed curve, a quadratic piece per point:
   // from the midpoint before the point to the midpoint after it, with the
-  // point as control. Each piece goes whole into one path per (colour, age
-  // band), and the plane cuts a piece at the exact point where the curve
-  // reaches it, so the curve is the same in every frame and only its shading
-  // moves along it.
+  // point as control. Each piece goes into one path per (colour, age band),
+  // and the plane cuts a piece at the exact points where the curve reaches
+  // it, so the curve is the same in every frame and only its shading moves
+  // along it.
 
   // the point at t of the piece from a to b with control c
   const bezier = (a, c, b, t) => (1 - t) * (1 - t) * a + 2 * t * (1 - t) * c + t * t * b;
 
-  // Where the piece reaches the plane, for ends on opposite sides of it:
-  // then exactly one root of bezier(za, zc, zb, t) = tau is in [0, 1].
-  function crossing(za, zc, zb) {
+  // the control point of the part of that piece from s to e
+  const control = (a, c, b, s, e) =>
+    (1 - s) * (1 - e) * a + ((1 - s) * e + s * (1 - e)) * c + s * e * b;
+
+  // Where a piece of heights za, zc, zb reaches the plane, in order, into
+  // `roots`; returns how many times. A piece turns in tau at most once, so it
+  // reaches the plane once if its ends are on opposite sides of it, twice if
+  // it turns back beyond the plane, and otherwise not at all.
+  const roots = [0, 0];
+  function crossings(za, zc, zb, turn) {
     const A = za - 2 * zc + zb, B = 2 * (zc - za), C = za - tau;
-    if (Math.abs(A) < 1e-6) return -C / B;
-    const r = Math.sqrt(Math.max(0, B * B - 4 * A * C));
-    const t = (-B + r) / (2 * A);
-    return t >= 0 && t <= 1 ? t : (-B - r) / (2 * A);
+    const r = () => Math.sqrt(Math.max(0, B * B - 4 * A * C));
+    if ((za < tau) !== (zb < tau)) {
+      if (Math.abs(A) < 1e-6) roots[0] = -C / B;
+      else {
+        const t = (-B + r()) / (2 * A);
+        roots[0] = t >= 0 && t <= 1 ? t : (-B - r()) / (2 * A);
+      }
+      return 1;
+    }
+    if (turn < 0 || (bezier(za, zc, zb, turn) < tau) === (za < tau)) return 0;
+    const t1 = (-B - r()) / (2 * A), t2 = (-B + r()) / (2 * A);
+    roots[0] = Math.min(t1, t2);
+    roots[1] = Math.max(t1, t2);
+    return 2;
   }
 
-  // Adds one loop's threads and crossings. A piece's age is how far below the
-  // plane it is; pieces younger than 0 are in the future, older than depth
-  // have faded out.
-  function traceLoop(loop, bands, particles, antiparticles) {
+  // Adds one loop's threads, crossings and flashes. A piece's age is how far
+  // below the plane it is; parts younger than 0 are in the future, older than
+  // depth have faded out. `flashes` is null when nothing should flash.
+  function traceLoop(loop, bands, particles, antiparticles, flashes) {
     const p = loop.pts, n = loop.n;
     let shiftX = 0, shiftY = 0;  // puts the current thread's start on the screen
     let last = -1, lastBand = -1;  // the piece the current thread ends with, -1 if none
@@ -264,63 +308,71 @@
       const end = Math.min(n, (b + 1) * BLOCK);
       for (let k = b * BLOCK; k < end; k++) {
         const h = 3 * ((k + n - 1) % n), j = 3 * k, l = 3 * k + 3;  // points k - 1, k, k + 1
-        let ax = (p[h] + p[j]) / 2, ay = (p[h + 1] + p[j + 1]) / 2;
-        let cx = p[j], cy = p[j + 1];
-        let bx = (p[j] + p[l]) / 2, by = (p[j + 1] + p[l + 1]) / 2;
+        const ax = (p[h] + p[j]) / 2, ay = (p[h + 1] + p[j + 1]) / 2;
+        const cx = p[j], cy = p[j + 1];
+        const bx = (p[j] + p[l]) / 2, by = (p[j + 1] + p[l + 1]) / 2;
         const az = (p[h + 2] + p[j + 2]) / 2, cz = p[j + 2], bz = (p[j + 2] + p[l + 2]) / 2;
-        let ageA = tau - az, ageB = tau - bz;
-        let open = true;         // the thread goes on past this piece
+        const ageA = tau - az, ageB = tau - bz;
+        const follows = last === k - 1;
+        last = -1;
 
-        // Crossing the plane: a dot there, and the piece is cut at it, as
-        // threads are the past only. Either part of a quadratic cut at t is
-        // again quadratic, its control a fraction t along the original's.
-        if ((ageA < 0) !== (ageB < 0)) {
-          const t = crossing(az, cz, bz);
-          const x = bezier(ax, cx, bx, t), y = bezier(ay, cy, by, t);
-          const sx = wrap(x, width) * UNIT_PX, sy = wrap(y, height) * UNIT_PX;
-          const path = bz > az ? particles : antiparticles;
+        // Where the piece turns in tau, a pair is created (a minimum) or
+        // annihilates (a maximum), and flashes for FLASH after the plane passes.
+        const turn = (cz - az) * (cz - bz) > 0 ? (az - cz) / (az - 2 * cz + bz) : -1;
+        if (flashes && turn >= 0) {
+          const since = tau - bezier(az, cz, bz, turn);
+          if (since >= 0 && since < FLASH) {
+            flashes.push(wrap(bezier(ax, cx, bx, turn), width) * UNIT_PX,
+                         wrap(bezier(ay, cy, by, turn), height) * UNIT_PX, since / FLASH);
+          }
+        }
+
+        const m = crossings(az, cz, bz, turn);
+        if (m === 0 && (ageA < 0 || (ageA > depth && ageB > depth))) continue;
+
+        // Each crossing gets a dot, and only the parts of the piece below the
+        // plane are drawn, as threads are the past only. Each part of a
+        // quadratic is again a quadratic.
+        for (let i = 0; i < m; i++) {
+          const t = roots[i];
+          const sx = wrap(bezier(ax, cx, bx, t), width) * UNIT_PX;
+          const sy = wrap(bezier(ay, cy, by, t), height) * UNIT_PX;
+          const up = (1 - t) * (cz - az) + t * (bz - cz) > 0;
+          const path = up ? particles : antiparticles;
           path.moveTo(sx + DOT_RADIUS, sy);
           path.arc(sx, sy, DOT_RADIUS, 0, 2 * Math.PI);
-          if (ageA < 0) {        // keep the part after t
-            cx += t * (bx - cx);
-            cy += t * (by - cy);
-            ax = x;
-            ay = y;
-            ageA = 0;
-          } else {               // keep the part before t
-            cx = ax + t * (cx - ax);
-            cy = ay + t * (cy - ay);
-            bx = x;
-            by = y;
-            ageB = 0;
-            open = false;
-          }
-        } else if (ageA < 0 || (ageA > depth && ageB > depth)) {
-          last = -1;
-          continue;
         }
 
         // colour by direction of travel in tau, over a few points so it doesn't flicker
         const down = p[3 * ((k + 2) % n) + 2] < p[3 * ((k + n - 2) % n) + 2];
-        const age = Math.min(AGE_BANDS - 1, Math.floor(((ageA + ageB) / 2 / depth) * AGE_BANDS));
-        const band = (down ? AGE_BANDS : 0) + age;
-        const path = bands[band];
 
-        // A new thread starts on the screen; one that wanders more than a
-        // unit off it is moved back on, by whole periods.
-        const offScreen = ax + shiftX < -1 || ax + shiftX > width + 1 ||
-                          ay + shiftY < -1 || ay + shiftY > height + 1;
-        if (last !== k - 1 || offScreen) {
-          shiftX = wrap(ax, width) - ax;
-          shiftY = wrap(ay, height) - ay;
+        for (let i = ageA < 0 ? 1 : 0; i <= m; i += 2) {
+          const s = i === 0 ? 0 : roots[i - 1], e = i === m ? 1 : roots[i];
+          const ageS = s === 0 ? ageA : 0, ageE = e === 1 ? ageB : 0;
+          if (ageS > depth && ageE > depth) continue;
+          const sx = bezier(ax, cx, bx, s), sy = bezier(ay, cy, by, s);
+          const age = Math.min(AGE_BANDS - 1, Math.floor(((ageS + ageE) / 2 / depth) * AGE_BANDS));
+          const band = (down ? AGE_BANDS : 0) + age;
+          const path = bands[band];
+
+          // A new thread starts on the screen; one that wanders more than a
+          // unit off it is moved back on, by whole periods.
+          const joined = s === 0 && follows;
+          const offScreen = sx + shiftX < -1 || sx + shiftX > width + 1 ||
+                            sy + shiftY < -1 || sy + shiftY > height + 1;
+          if (!joined || offScreen) {
+            shiftX = wrap(sx, width) - sx;
+            shiftY = wrap(sy, height) - sy;
+          }
+          if (!joined || offScreen || band !== lastBand) {
+            path.moveTo((sx + shiftX) * UNIT_PX, (sy + shiftY) * UNIT_PX);
+          }
+          path.quadraticCurveTo(
+            (control(ax, cx, bx, s, e) + shiftX) * UNIT_PX, (control(ay, cy, by, s, e) + shiftY) * UNIT_PX,
+            (bezier(ax, cx, bx, e) + shiftX) * UNIT_PX, (bezier(ay, cy, by, e) + shiftY) * UNIT_PX);
+          if (e === 1) last = k;
+          lastBand = band;
         }
-        if (last !== k - 1 || offScreen || band !== lastBand) {
-          path.moveTo((ax + shiftX) * UNIT_PX, (ay + shiftY) * UNIT_PX);
-        }
-        path.quadraticCurveTo((cx + shiftX) * UNIT_PX, (cy + shiftY) * UNIT_PX,
-                              (bx + shiftX) * UNIT_PX, (by + shiftY) * UNIT_PX);
-        last = open ? k : -1;
-        lastBand = band;
       }
     }
   }
@@ -328,12 +380,12 @@
   function draw() {
     const particles = new Path2D(), antiparticles = new Path2D();
     const bands = Array.from({ length: 2 * AGE_BANDS }, () => new Path2D());
-
     const closedOnly = still();
+    const flashes = closedOnly ? null : [];   // x, y, how far through, for each
     depth = closedOnly ? STILL_DEPTH : DEPTH;
     for (const loop of loops) {
       if (loop.lo <= tau && loop.hi >= tau - depth && !(closedOnly && loop.hi > tau)) {
-        traceLoop(loop, bands, particles, antiparticles);
+        traceLoop(loop, bands, particles, antiparticles, flashes);
       }
     }
 
@@ -342,7 +394,7 @@
     ctx.lineCap = "butt";        // neighbouring bands meet end to end; round caps would overlap there
     bands.forEach((path, i) => {
       const age = ((i % AGE_BANDS) + 0.5) / AGE_BANDS;
-      ctx.lineWidth = LINE * (1 - (1 - TAIL) * age);
+      ctx.lineWidth = 1 + (LINE - 1) * Math.max(0, 1 - age / THICK);
       ctx.globalAlpha = ALPHA * Math.pow(1 - age, FADE);
       ctx.strokeStyle = i < AGE_BANDS ? plus : minus;
       ctx.stroke(path);
@@ -352,6 +404,16 @@
     ctx.fill(particles);
     ctx.fillStyle = minus;
     ctx.fill(antiparticles);
+    // Flashes are at full strength at once, then fade and shrink. On a dark
+    // background they add light; on a light one they are ink.
+    const glowing = isDark();
+    if (glowing) ctx.globalCompositeOperation = "lighter";
+    for (let i = 0; flashes && i < flashes.length; i += 3) {
+      const f = flashes[i + 2], r = (glowing ? FLASH_RADIUS : INK_RADIUS) * (1 - 0.4 * f);
+      ctx.globalAlpha = (glowing ? FLASH_ALPHA : INK_ALPHA) * (1 - f) * (1 - f);
+      ctx.drawImage(spot, flashes[i] - r, flashes[i + 1] - r, 2 * r, 2 * r);
+    }
+    ctx.globalCompositeOperation = "source-over";
     ctx.globalAlpha = 1;
   }
 
