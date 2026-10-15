@@ -1,12 +1,13 @@
-// Opens and closes paper write-ups. Wide/tablet: in the right column.
-// Phone: inline, right under the paper's entry. The URL hash (#kwm) names the open one.
+// Opens and closes paper write-ups. Two or three columns: in the right column.
+// One column: inline, right under the paper's entry. The URL hash (#kwm) names the open one.
 // Without JS the write-ups still open through CSS :target. The "js" class that
 // switches that off is set here, not inline, so a browser too old to run this
 // file keeps the CSS-only behavior instead of ending up with neither.
 (() => {
   document.documentElement.classList.add("js");
 
-  const phone = window.matchMedia("(max-width: 640px)");
+  // one-column layout; keep in sync with site.css
+  const oneColumn = window.matchMedia("not all and (min-width: 77.5em)");
   const reader = document.getElementById("reader");
   let current = null;
 
@@ -18,7 +19,7 @@
   const handle = (id) => entry(id).querySelector(".intro");
 
   function place(el) {
-    (phone.matches ? entry(el.id) : reader).appendChild(el);
+    (oneColumn.matches ? entry(el.id) : reader).appendChild(el);
   }
 
   function setHash(id) {
@@ -39,7 +40,7 @@
     mark(id, true);
     current = id;
     setHash(id);
-    if (!phone.matches) reader.scrollTop = 0;
+    if (!oneColumn.matches) reader.scrollTop = 0;
     window.goatcounter?.count?.({ path: "write-up/" + id, title: id, event: true });
   }
 
@@ -56,7 +57,7 @@
 
   // A click anywhere on an entry with a write-up toggles it, except on the
   // entry's own links and buttons, its bibtex box, the inline write-up
-  // (phones), or while selecting text.
+  // (one column), or while selecting text.
   function clickedEntry(target) {
     const li = target.closest(".paper[data-w]");
     if (!li || target.closest("a, button, pre, .writeup")) return null;
@@ -80,7 +81,7 @@
       const id = close();
       if (!id) return;
       handle(id).focus({ preventScroll: true });
-      if (phone.matches && entry(id).getBoundingClientRect().top < 0) entry(id).scrollIntoView();
+      if (oneColumn.matches && entry(id).getBoundingClientRect().top < 0) entry(id).scrollIntoView();
       return;
     }
 
@@ -99,8 +100,8 @@
   const onLayoutChange = () => {
     if (current) place(writeup(current));
   };
-  if (phone.addEventListener) phone.addEventListener("change", onLayoutChange);
-  else phone.addListener(onLayoutChange);   // Safari < 14
+  if (oneColumn.addEventListener) oneColumn.addEventListener("change", onLayoutChange);
+  else oneColumn.addListener(onLayoutChange);   // Safari < 14
 
   window.addEventListener("hashchange", () => {
     const id = location.hash.slice(1);
