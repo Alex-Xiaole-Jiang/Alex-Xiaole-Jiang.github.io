@@ -24,24 +24,24 @@
   --photo-bg: #eee;
   --rule: 1px dotted #888;
 
-  /* Column widths. The list is always --list wide (or the screen, on phones);
-     wider windows never stretch it. As the window widens:
+  /* Column widths. The list is --list wide, or the screen less --phone-pad on
+     each side when that is narrower; wider windows never stretch it. As the
+     window widens:
        1. the write-up column appears once it fits at --read-min,
-       2. it grows to --read-photo, then holds while the margins widen,
+       2. it grows to --read, then holds while the margins widen,
        3. the photo column appears once it fits beside that, with no other
-          column changing width,
-       4. the write-up grows on to --read-max.
+          column changing width.
      So the breakpoints are:
-       phone below:      list + 2*phone-pad                                 = 36rem
-       write-up column:  2*pad-two + list + colgap + read-min               = 77.5rem
-       photo column:     2*pad + side + colgap + list + colgap + read-photo = 104rem
-     (rem = em = 16px in media queries; keep these in sync with the queries and
-     with the one in site.js.) */
+       phone below:      list + 2*phone-pad                           = 36rem
+       write-up column:  2*pad-two + list + colgap + read-min         = 77.5rem
+       photo column:     2*pad + side + colgap + list + colgap + read = 104rem
+     Media queries can't use variables, so these numbers are written out there
+     and in site.js; keep them in sync. (Media-query em is the browser's default
+     font size, the same as rem here since html sets no font size.) */
   --side: 11rem;
   --list: 34rem;
-  --read-min: 28rem;
-  --read-photo: 46rem;   /* write-up width when the photo column appears: full size */
-  --read-max: 46rem;
+  --read-min: 28rem;     /* only sets the write-up breakpoint */
+  --read: 46rem;
   --colgap: 3.5rem;
   --pad: 3rem;           /* outer margin, at least */
   --pad-two: 6rem;       /* the same, in two columns */
@@ -76,7 +76,7 @@ img { max-width: 100%; height: auto; }
 /* The columns sit centered as a group; only the write-up column grows. */
 .page {
   display: grid;
-  grid-template-columns: var(--side) var(--list) minmax(0, var(--read-max));
+  grid-template-columns: var(--side) var(--list) minmax(0, var(--read));
   justify-content: center;
   column-gap: var(--colgap);
   padding: 0 var(--pad);
@@ -182,7 +182,7 @@ img { max-width: 100%; height: auto; }
 /* ---------- two columns (< 104em): list | write-up, photo on top ---------- */
 
 @media not all and (min-width: 104em) {
-  .page { grid-template-columns: var(--list) minmax(0, var(--read-photo)); padding: 0 var(--pad-two); }
+  .page { grid-template-columns: var(--list) minmax(0, var(--read)); padding: 0 var(--pad-two); }
   .me {
     position: static;
     grid-column: 1; grid-row: 1;
@@ -205,7 +205,12 @@ img { max-width: 100%; height: auto; }
 /* ---------- one column (< 77.5em): write-ups open inside their entry ---------- */
 
 @media not all and (min-width: 77.5em) {
-  .page { display: block; max-width: calc(var(--list) + 2 * var(--pad)); margin: 0 auto; padding: 0 var(--pad); }
+  /* the list, centered, never closer than --phone-pad to the screen edge */
+  .page {
+    display: block;
+    padding: 0 var(--phone-pad);   /* fallback for browsers without max() */
+    padding: 0 max(var(--phone-pad), (100% - var(--list)) / 2);
+  }
 
   .pm { display: inline-block; width: 1.1em; }
   .pm::before { content: "+"; }
@@ -230,7 +235,6 @@ img { max-width: 100%; height: auto; }
 
 @media not all and (min-width: 36em) {
   body { font-size: 16.5px; }
-  .page { max-width: none; padding: 0 var(--phone-pad); }
 
   .me {
     position: sticky; top: 0; z-index: 2;
