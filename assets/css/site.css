@@ -1,0 +1,235 @@
+/* Alex Jiang — one stylesheet, no framework.
+   Wide: photo | list | write-up.  Tablet (≤1080px): list | write-up, photo on top.
+   Phone (≤640px): sticky strip on top, write-ups open inline. */
+
+@font-face { font-family: "Charter"; src: url("../fonts/charter-regular.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Charter"; src: url("../fonts/charter-italic.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: swap; }
+@font-face { font-family: "Charter"; src: url("../fonts/charter-bold.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: "Charter"; src: url("../fonts/charter-bold-italic.woff2") format("woff2"); font-weight: 700; font-style: italic; font-display: swap; }
+
+:root {
+  /* colors */
+  --bg: #fff;
+  --text: #111;
+  --gray: #5a5a5a;
+  --faint: #8a8a8a;
+  --dots: #777;
+  --link: #0000ee;
+  --visited: #551a8b;
+  --red: #cc0000;
+  --box: #f3f3f3;        /* entry with a write-up */
+  --box-hover: #ebebeb;
+  --box-open: #e4e4e4;
+  --code-bg: #f6f6f6;
+  --photo-bg: #eee;
+  --rule: 1px dotted #888;
+
+  /* spacing */
+  --colgap: 3.5rem;
+  --bleed: 0.7rem;       /* how far gray boxes and dot leaders reach past the text */
+  --phone-pad: 16px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Charter", "Bitstream Charter", Georgia, serif;
+  font-size: 17px;
+  line-height: 1.55;
+  font-kerning: normal;
+  overflow-wrap: break-word;
+}
+
+a, .bibbtn { color: var(--link); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.16em; }
+a:visited { color: var(--visited); }
+a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+
+h1, h2 { font-weight: 700; line-height: 1.25; }
+img { max-width: 100%; height: auto; }
+
+/* ---------- page grid (wide) ---------- */
+
+.page {
+  display: grid;
+  /* The three columns sit centered as a group. The right one is sized so
+     write-up lines stay around 80 characters. */
+  grid-template-columns: 11rem minmax(0, 34rem) minmax(0, 46rem);
+  justify-content: center;
+  column-gap: var(--colgap);
+  padding: 0 clamp(1.5rem, 3vw, 4rem);
+}
+
+/* left column: stays put */
+.me {
+  position: sticky;
+  top: 0;
+  align-self: start;
+  padding: 3rem 0 2rem;
+}
+.me .photo { display: block; width: 100%; aspect-ratio: 100 / 110; object-fit: cover; background: var(--photo-bg); }
+.me h1 { font-size: 1.35rem; margin: 1rem 0 0.25rem; }
+.me .tag { margin: 0 0 1rem; }
+.contact a { display: block; width: max-content; }
+.contact-inline { display: none; }   /* phone-only copy of the contact links */
+
+/* middle column: about + paper lists */
+.list { padding: 3rem 0 6rem; min-width: 0; }
+.about { margin: 0 0 2rem; }
+
+/* Section titles read like a table of contents: ▾ Title . . . . . . up to the box edge */
+.sec { margin: 0 0 1.75rem; }
+.sec > summary {
+  display: flex; align-items: baseline; gap: 0.45rem;
+  list-style: none; cursor: pointer;
+  margin: 0 calc(-1 * var(--bleed)) 0.75rem 0;
+}
+.sec > summary::-webkit-details-marker { display: none; }
+.sec > summary::before { content: "\25B8"; font-size: 0.9em; }
+.sec[open] > summary::before { content: "\25BE"; }
+.sec > summary::after {
+  content: ""; flex: 1; height: 0.25em;
+  background: radial-gradient(circle, var(--dots) 0.09em, transparent 0.11em) left bottom / 0.5em 0.25em;
+  background-repeat: space no-repeat;   /* whole dots only, last one flush with the box edge */
+}
+.sec > summary h2 { font-size: 1.15rem; margin: 0; }
+
+.papers { list-style: none; margin: 0; padding: 0; }
+.paper { margin: 0 0 1.15rem; scroll-margin-top: 1rem; }
+
+/* Titles go to the paper. An entry with a write-up sits in a light gray box,
+   and a click anywhere else in the box opens it. The negative margins keep the
+   text lined up with the entries around it. */
+.paper[data-w] {
+  cursor: pointer;
+  background: var(--box);
+  padding: 0.55rem var(--bleed);
+  margin-inline: calc(-1 * var(--bleed));
+}
+@media (hover: hover) { .paper[data-w]:hover { background: var(--box-hover); } }
+.paper[data-w].is-open { background: var(--box-open); }
+.pm { display: none; }   /* +/− marker, phones only */
+
+/* keyboard/screen-reader handle for the write-up; visible only when focused */
+.intro { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.intro:focus-visible { position: static; width: auto; height: auto; clip-path: none; margin-left: 0.4em; font-size: 0.9em; }
+
+.ur { color: var(--red); white-space: nowrap; }
+.by, .ln { font-size: 0.94em; }
+.by { color: var(--gray); }
+.by b { color: var(--text); }
+
+.bibbtn { font: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+.bib {
+  margin: 0.4rem 0 0; padding: 0.6rem 0.75rem; background: var(--code-bg);
+  font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12.5px; line-height: 1.45;
+  white-space: pre-wrap; overflow-wrap: anywhere; user-select: all;
+}
+
+/* right column: the open write-up, scrolls on its own. No divider: the gap from
+   the boxes' right edge to the write-up equals the gap from the left column to
+   the boxes' left edge (colgap - bleed). */
+.reader {
+  position: sticky;
+  top: 3rem;
+  align-self: start;
+  margin: 3rem 0;
+  height: calc(100dvh - 6rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  min-width: 0;
+}
+
+/* JS adds .open; without JS, :target does the same job */
+.writeup { display: none; line-height: 1.6; }
+.writeup:target, .js .writeup.open { display: block; }
+.js .writeup:target:not(.open) { display: none; }
+.writeup:focus { outline: none; }
+.writeup h2 { font-size: 1.2rem; margin: 0 0 0.25rem; }
+.writeup .meta { color: var(--gray); font-size: 0.94em; margin: 0 0 1.25rem; }
+.writeup .x { float: right; margin: 0 0 0.5rem 1rem; font-size: 0.94em; }
+.writeup p { margin: 0 0 1em; }
+.writeup img, .writeup video { display: block; max-width: 100%; margin: 1rem 0; }
+
+/* gray prompts in drafts: shown only on `jekyll serve` */
+.todo { display: none; }
+.dev .todo { display: block; color: var(--faint); font-style: italic; }
+
+/* ---------- tablet ---------- */
+
+@media (max-width: 1080px) {
+  .page {
+    --colgap: 2.5rem;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    padding: 0 1.5rem;
+  }
+  .me {
+    position: static;
+    grid-column: 1; grid-row: 1;
+    display: grid;
+    grid-template-columns: 5.5rem 1fr;
+    column-gap: 1rem;
+    align-items: start;
+    padding: 2rem 0 0;
+  }
+  .me .photo { grid-row: 1 / span 3; }
+  .me h1 { margin: 0 0 0.15rem; }
+  .me .tag { margin: 0 0 0.35rem; }
+  .me .contact a { display: inline; margin-right: 0.6em; }
+  .list { grid-column: 1; grid-row: 2; padding-top: 1.75rem; }
+  .reader { grid-column: 2; grid-row: 1 / span 2; top: 2rem; margin: 2rem 0; height: calc(100dvh - 4rem); }
+}
+
+/* ---------- phone ---------- */
+
+@media (max-width: 640px) {
+  body { font-size: 16.5px; }
+  .page { display: block; padding: 0 var(--phone-pad); }
+
+  .me {
+    position: sticky; top: 0; z-index: 2;
+    display: flex; align-items: center; gap: 0.6rem;
+    margin: 0 calc(-1 * var(--phone-pad)); padding: 0.45rem var(--phone-pad);
+    background: var(--bg);
+    border-bottom: var(--rule);
+  }
+  .me .photo { width: 2.1rem; height: 2.1rem; }
+  .me h1 { font-size: 1rem; margin: 0; white-space: nowrap; }
+  .me .tag { margin: 0 0 0 auto; color: var(--gray); font-size: 0.9em; text-align: right; }
+  .me .tag span:not(:first-child), .me .tag br, .me .contact { display: none; }
+
+  .list { padding: 1.25rem 0 4rem; }
+  .about { margin-bottom: 0.5rem; }
+  .contact-inline { display: block; margin: 0 0 1.75rem; }
+  .contact-inline a { display: inline; margin-right: 0.75em; }
+
+  .paper { scroll-margin-top: 3.5rem; }
+  .pm { display: inline-block; width: 1.1em; }
+  .pm::before { content: "+"; }
+  .paper.is-open .pm::before { content: "\2212"; }
+  .ln a, .bibbtn { padding: 0.2rem 0; }
+
+  /* The aside only shows here without JS; with JS the write-up moves into its entry. */
+  .reader { display: none; }
+  .reader:has(.writeup:target) { display: block; position: static; height: auto; margin: 0; border-top: var(--rule); padding: 1.5rem 0 3rem; }
+  .js .reader { display: none; }
+
+  .paper > .writeup {
+    margin: 0.75rem 0 1.5rem;
+    padding-left: 0.9rem;
+    border-left: var(--rule);
+  }
+  .paper > .writeup h2 { display: none; }
+  .paper > .writeup .x { margin-bottom: 0; }
+}
+
+@media print {
+  .page { display: block; }
+  .me { position: static; }
+  .reader, .bibbtn, .contact-inline { display: none; }
+  a { color: inherit; }
+}

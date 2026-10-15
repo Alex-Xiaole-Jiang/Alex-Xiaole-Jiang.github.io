@@ -1,0 +1,39 @@
+# Site settings. GitHub Pages builds this with Jekyll; no plugins needed.
+title: Alex Jiang
+description: Alex Jiang works on world models and planning for robots. PhD in theoretical physics, CUNY Graduate Center.
+url: https://alex-xiaole-jiang.github.io
+baseurl: ""
+
+# Left column
+name: Alex Jiang
+tagline:
+  - A physicist who doesn't like philosophy makes a poor roboticist.
+photo: /assets/img/photo.svg
+email: xiaole.jiang.alex@gmail.com
+cv: /assets/xiaole-alex-jiang-cv.pdf
+scholar: ""  # paste the Google Scholar profile URL here and the link appears
+
+# Analytics (GoatCounter: free, no cookies, no banner needed).
+# Sign up at goatcounter.com, then put the code you picked here, e.g. "alexjiang".
+goatcounter: ""
+
+# Author names that get bolded in paper lists
+me:
+  - X. A. Jiang
+  - X. Jiang
+
+# Long write-ups, one Markdown file per paper, keyed by file name = paper id
+collections:
+  writeups:
+    output: false
+
+markdown: kramdown
+kramdown:
+  input: GFM
+  hard_wrap: false
+
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - vendor

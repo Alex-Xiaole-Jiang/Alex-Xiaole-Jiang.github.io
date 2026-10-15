@@ -1,0 +1,26 @@
+{%- comment -%}
+  One entry in a paper list. Takes p = a paper from _data/papers.yml.
+  If _writeups/<p.id>.md exists, the entry gets data-w and opens that write-up.
+{%- endcomment -%}
+{%- assign p = include.p -%}
+{%- assign writeup = site.writeups | where: "slug", p.id | first -%}
+{%- assign authors = p.authors -%}
+{%- for name in site.me -%}
+  {%- assign bold = "<b>" | append: name | append: "</b>" -%}
+  {%- assign authors = authors | replace: name, bold -%}
+{%- endfor -%}
+{%- assign authors = authors | replace: "</b>*", "*</b>" -%}
+<li class="paper" id="p-{{ p.id }}"{% if writeup %} data-w="{{ p.id }}"{% endif %}>
+  {% if writeup %}<span class="pm" aria-hidden="true"></span>{% endif -%}
+  {% for link in p.links limit: 1 %}<a class="t" href="{{ link[1] }}">{{ p.title }}</a>{% endfor -%}
+  {%- if p.under_review %} <em class="ur">under review</em>{% endif -%}
+  {%- if writeup %} <a class="intro" href="#{{ p.id }}" aria-controls="{{ p.id }}" aria-expanded="false">Read the write-up</a>{% endif %}
+  <div class="by">{{ authors }}. {{ p.venue }}</div>
+  <div class="ln">
+    {%- for link in p.links %}[<a href="{{ link[1] }}">{{ link[0] }}</a>] {% endfor -%}
+    {%- if p.bibtex %}[<button type="button" class="bibbtn" aria-controls="bib-{{ p.id }}" aria-expanded="false">bibtex</button>]{% endif -%}
+  </div>
+  {%- if p.bibtex %}
+  <pre class="bib" id="bib-{{ p.id }}" hidden>{{ p.bibtex | strip | escape }}</pre>
+  {%- endif %}
+</li>

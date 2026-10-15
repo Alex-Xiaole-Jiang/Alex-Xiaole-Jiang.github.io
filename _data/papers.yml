@@ -1,0 +1,129 @@
+# Paper lists. Each section shows in the middle column in this order.
+#
+# Fields per paper:
+#   id            short name. If _writeups/<id>.md exists, clicking anywhere on the
+#                 entry (outside its links) opens that write-up.
+#   title         HTML allowed (e.g. <i>k</i>)
+#   under_review  true shows red "under review" after the title
+#   authors       plain text; names listed under `me` in _config.yml get bolded
+#   venue         shown after the authors
+#   links         any of website / paper / arXiv / code / doi, shown in the order written;
+#                 the title links to the first one
+#   bibtex        optional; shows a [bibtex] toggle
+
+- section: Robotics & ML
+  id: robotics
+  papers:
+    - id: kwm
+      title: "<i>k</i>-WM: Predicting <i>k</i> Steps at Once for Long-Horizon Planning with World Models"
+      under_review: true
+      authors: "X. A. Jiang*, Y. Wang*, L. Pinto, Y. LeCun, G. Zhou"
+      venue: ICLR 2027 submission.
+      links:
+        website: https://anon-k-wm.github.io/
+
+    - id: panotac
+      title: "PanoTac: A Dense Three-Axis Tactile Sensor for Robust Touch-Centric Manipulation"
+      under_review: true
+      authors: "B. Wang*, X. Jiang*, Z. Teng, X. Liu, Y. Li, L. Pinto, Z. J. Cui, B. Huang"
+      venue: ICRA 2027 submission.
+      links:
+        website: https://panotac-anon.github.io/
+
+    - id: yor
+      title: "YOR: Your Own Mobile Manipulator for Generalizable Robotics"
+      authors: "M. H. Anjaria, M. E. Erciyes, V. Ghatnekar, N. Navarkar, H. Etukuru, X. Jiang, K. Patel, D. Kabra, N. Wojno, R. A. Prayage, S. Chintala, L. Pinto, N. M. M. Shafiullah, Z. J. Cui"
+      venue: arXiv 2026.
+      links:
+        website: https://www.yourownrobot.ai/
+        arXiv: https://arxiv.org/abs/2602.11150
+      bibtex: |
+        @article{anjaria2026yor,
+          title   = {YOR: Your Own Mobile Manipulator for Generalizable Robotics},
+          author  = {Anjaria, M. H. and Erciyes, M. E. and Ghatnekar, V. and Navarkar, N. and Etukuru, H. and Jiang, X. and Patel, K. and Kabra, D. and Wojno, N. and Prayage, R. A. and Chintala, S. and Pinto, L. and Shafiullah, N. M. M. and Cui, Z. J.},
+          journal = {arXiv preprint arXiv:2602.11150},
+          year    = {2026}
+        }
+
+- section: Physics
+  id: physics
+  papers:
+    - id: modular
+      title: "Modular Hamiltonians for Future-Perturbed States"
+      authors: "X. Jiang, D. Kabat, A. Marthandan, D. Sarkar"
+      venue: JHEP 02 (2026) 210.
+      links:
+        arXiv: https://arxiv.org/abs/2509.18464
+        doi: https://doi.org/10.1007/JHEP02(2026)210
+      bibtex: |
+        @article{jiang2026modular,
+          title   = {Modular Hamiltonians for Future-Perturbed States},
+          author  = {Jiang, Xiaole and Kabat, Daniel and Marthandan, Aakash and Sarkar, Debajyoti},
+          journal = {JHEP},
+          volume  = {02},
+          pages   = {210},
+          year    = {2026},
+          doi     = {10.1007/JHEP02(2026)210},
+          eprint  = {2509.18464},
+          archivePrefix = {arXiv}
+        }
+
+    - id: groups
+      title: "Entanglement Groups"
+      authors: "X. Jiang, D. Kabat, G. Lifschytz, A. Marthandan"
+      venue: Annals of Physics 494 (2026) 170634.
+      links:
+        arXiv: https://arxiv.org/abs/2307.06437
+        doi: https://doi.org/10.1016/j.aop.2026.170634
+      bibtex: |
+        @article{jiang2026groups,
+          title   = {Entanglement Groups},
+          author  = {Jiang, Xiaole and Kabat, Daniel and Lifschytz, Gilad and Marthandan, Aakash},
+          journal = {Annals of Physics},
+          volume  = {494},
+          pages   = {170634},
+          year    = {2026},
+          doi     = {10.1016/j.aop.2026.170634},
+          eprint  = {2307.06437},
+          archivePrefix = {arXiv}
+        }
+
+    - id: inflation
+      title: "Inflation from Dynamical Projective Connections"
+      authors: "M. Abdullah, C. Bavor, B. Chafamo, X. Jiang, M. H. Kalim, K. Stiffler, C. A. Whiting"
+      venue: Physical Review D 106 (2022) 084049.
+      links:
+        arXiv: https://arxiv.org/abs/2203.04435
+        doi: https://doi.org/10.1103/PhysRevD.106.084049
+      bibtex: |
+        @article{abdullah2022inflation,
+          title   = {Inflation from Dynamical Projective Connections},
+          author  = {Abdullah, Muhammad and Bavor, Calvin and Chafamo, Biruk and Jiang, Xiaole and Kalim, Muhammad Hamza and Stiffler, Kory and Whiting, Catherine A.},
+          journal = {Phys. Rev. D},
+          volume  = {106},
+          pages   = {084049},
+          year    = {2022},
+          doi     = {10.1103/PhysRevD.106.084049},
+          eprint  = {2203.04435},
+          archivePrefix = {arXiv}
+        }
+
+    - id: shells
+      title: "Shell Potentials for Microgravity Bose–Einstein Condensates"
+      authors: "N. Lundblad, R. A. Carollo, C. Lannert, M. J. Gold, X. Jiang, D. Paseltiner, N. Sergay, D. C. Aveline"
+      venue: npj Microgravity 5, 30 (2019).
+      links:
+        arXiv: https://arxiv.org/abs/1906.05885
+        doi: https://doi.org/10.1038/s41526-019-0087-y
+      bibtex: |
+        @article{lundblad2019shell,
+          title   = {Shell Potentials for Microgravity {Bose--Einstein} Condensates},
+          author  = {Lundblad, N. and Carollo, R. A. and Lannert, C. and Gold, M. J. and Jiang, X. and Paseltiner, D. and Sergay, N. and Aveline, D. C.},
+          journal = {npj Microgravity},
+          volume  = {5},
+          pages   = {30},
+          year    = {2019},
+          doi     = {10.1038/s41526-019-0087-y},
+          eprint  = {1906.05885},
+          archivePrefix = {arXiv}
+        }

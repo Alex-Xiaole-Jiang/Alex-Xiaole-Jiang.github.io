@@ -1,0 +1,42 @@
+---
+layout: default
+---
+<div class="page">
+
+  <header class="me">
+    <img class="photo" src="{{ site.photo | relative_url }}" width="176" height="194" alt="Photo of {{ site.name }}">
+    <h1>{{ site.name }}</h1>
+    <p class="tag">{% for line in site.tagline %}<span>{{ line }}</span>{% unless forloop.last %}<br>{% endunless %}{% endfor %}</p>
+    <p class="contact">{% include contact.html %}</p>
+  </header>
+
+  <main class="list">
+    <p class="about">I work on world models and planning for robots at the GRAIL lab at NYU. Theoretical physics is my background; I'm in the last year of my PhD at the CUNY Graduate Center, and I happen to love philosophy. Always happy to talk ideas across fields!</p>
+    <p class="contact contact-inline">{% include contact.html %}</p>
+
+    {% for s in site.data.papers %}
+    <details class="sec" id="{{ s.id }}" open>
+      <summary><h2>{{ s.section }}</h2></summary>
+      <ul class="papers">
+        {% for p in s.papers %}{% include paper.html p=p %}{% endfor %}
+      </ul>
+    </details>
+    {% endfor %}
+  </main>
+
+  {%- comment -%} Every write-up is rendered here; the JS shows one at a time (and moves it into its entry on phones). {%- endcomment %}
+  <aside class="reader" id="reader" aria-label="Write-up">
+    {% for s in site.data.papers %}{% for p in s.papers %}
+    {%- assign writeup = site.writeups | where: "slug", p.id | first -%}
+    {%- if writeup %}
+    <article class="writeup" id="{{ p.id }}" tabindex="-1">
+      <p class="x">[<a class="close" href="#p-{{ p.id }}" aria-label="Close write-up">close</a>]</p>
+      <h2>{{ p.title }}</h2>
+      {% if writeup.meta %}<p class="meta">{{ writeup.meta }}</p>{% endif %}
+      {{ writeup.content | markdownify }}
+    </article>
+    {%- endif %}
+    {% endfor %}{% endfor %}
+  </aside>
+
+</div>
