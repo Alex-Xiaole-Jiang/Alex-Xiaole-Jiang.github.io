@@ -18,9 +18,10 @@
 // the screen is a torus. Lengths are in units of UNIT_PX CSS pixels.
 //
 // The colours come from site.css (--field-plus and --field-minus), so they
-// follow the light and dark themes. Threads are drawn with plain alpha blending: additive ("lighter") on dark
-// and "multiply" on light would be the physical choices, but at these
-// opacities they look the same and cost 3 to 5 times as much to paint.
+// follow the light and dark themes. Threads are drawn with plain alpha
+// blending: additive ("lighter") on dark and "multiply" on light would be the
+// physical choices, but at these opacities they look the same and cost 3 to 5
+// times as much to paint.
 (() => {
   const canvas = document.getElementById("qft");
   const ctx = canvas && canvas.getContext && canvas.getContext("2d");
@@ -178,9 +179,10 @@
     let lo = Infinity, hi = -Infinity;
     for (let b = 0; b < blocks; b++) {
       let bl = Infinity, bh = -Infinity;
+      // the curve pieces of a block reach to the points either side of it
       const end = Math.min(n, (b + 1) * BLOCK);
-      for (let k = b * BLOCK; k <= end; k++) {
-        const zk = pts[3 * k + 2];
+      for (let k = b * BLOCK - 1; k <= end; k++) {
+        const zk = pts[3 * ((k + n) % n) + 2];
         if (zk < bl) bl = zk;
         if (zk > bh) bh = zk;
       }
@@ -229,108 +231,109 @@
 
   const wrap = (v, period) => ((v % period) + period) % period;
 
-  // Threads are batched into one path per (colour, age band). A run is a
-  // stretch of consecutive points of one loop in one band; it is drawn as
-  // quadratic curves through the midpoints, which smooths the corners.
-  let bands = [];
-  const runX = [], runY = [];
-  let runBand = -1;
+  // A loop is drawn as one smooth closed curve, a quadratic piece per point:
+  // from the midpoint before the point to the midpoint after it, with the
+  // point as control. Each piece goes whole into one path per (colour, age
+  // band), and the plane cuts a piece at the exact point where the curve
+  // reaches it, so the curve is the same in every frame and only its shading
+  // moves along it.
 
-  function endRun() {
-    const m = runX.length;
-    if (m >= 2) {
-      const path = bands[runBand];
-      path.moveTo(runX[0], runY[0]);
-      for (let i = 1; i < m - 1; i++) {
-        path.quadraticCurveTo(runX[i], runY[i], (runX[i] + runX[i + 1]) / 2, (runY[i] + runY[i + 1]) / 2);
-      }
-      path.lineTo(runX[m - 1], runY[m - 1]);
-    }
-    runX.length = 0;
-    runY.length = 0;
-    runBand = -1;
+  // the point at t of the piece from a to b with control c
+  const bezier = (a, c, b, t) => (1 - t) * (1 - t) * a + 2 * t * (1 - t) * c + t * t * b;
+
+  // Where the piece reaches the plane, for ends on opposite sides of it:
+  // then exactly one root of bezier(za, zc, zb, t) = tau is in [0, 1].
+  function crossing(za, zc, zb) {
+    const A = za - 2 * zc + zb, B = 2 * (zc - za), C = za - tau;
+    if (Math.abs(A) < 1e-6) return -C / B;
+    const r = Math.sqrt(Math.max(0, B * B - 4 * A * C));
+    const t = (-B + r) / (2 * A);
+    return t >= 0 && t <= 1 ? t : (-B - r) / (2 * A);
   }
 
-  // Adds one loop's threads and crossings. A segment's age is how far below
-  // the plane it is; segments younger than 0 are in the future, older than
-  // depth have faded out.
-  function traceLoop(loop, particles, antiparticles) {
+  // Adds one loop's threads and crossings. A piece's age is how far below the
+  // plane it is; pieces younger than 0 are in the future, older than depth
+  // have faded out.
+  function traceLoop(loop, bands, particles, antiparticles) {
     const p = loop.pts, n = loop.n;
-    let shiftX = 0, shiftY = 0;  // puts the current run's start inside the screen
-    let lastSeg = -2;            // last segment added to the run, -2 if none
+    let shiftX = 0, shiftY = 0;  // puts the current thread's start on the screen
+    let last = -1, lastBand = -1;  // the piece the current thread ends with, -1 if none
 
     for (let b = 0; b < loop.blockLo.length; b++) {
-      if (loop.blockLo[b] > tau || loop.blockHi[b] < tau - depth) {
-        lastSeg = -2;
-        continue;
-      }
+      if (loop.blockLo[b] > tau || loop.blockHi[b] < tau - depth) continue;
       const end = Math.min(n, (b + 1) * BLOCK);
-      for (let i = b * BLOCK; i < end; i++) {
-        let xa = p[3 * i], ya = p[3 * i + 1];
-        let xb = p[3 * i + 3], yb = p[3 * i + 4];
-        const za = p[3 * i + 2], zb = p[3 * i + 5];
-        let ageA = tau - za, ageB = tau - zb;
+      for (let k = b * BLOCK; k < end; k++) {
+        const h = 3 * ((k + n - 1) % n), j = 3 * k, l = 3 * k + 3;  // points k - 1, k, k + 1
+        let ax = (p[h] + p[j]) / 2, ay = (p[h + 1] + p[j + 1]) / 2;
+        let cx = p[j], cy = p[j + 1];
+        let bx = (p[j] + p[l]) / 2, by = (p[j + 1] + p[l + 1]) / 2;
+        const az = (p[h + 2] + p[j + 2]) / 2, cz = p[j + 2], bz = (p[j + 2] + p[l + 2]) / 2;
+        let ageA = tau - az, ageB = tau - bz;
+        let open = true;         // the thread goes on past this piece
 
-        // Crossing the plane: a dot there, and the segment is cut at it, as
-        // threads are the past only.
+        // Crossing the plane: a dot there, and the piece is cut at it, as
+        // threads are the past only. Either part of a quadratic cut at t is
+        // again quadratic, its control a fraction t along the original's.
         if ((ageA < 0) !== (ageB < 0)) {
-          const f = ageA / (ageA - ageB);
-          const cx = xa + f * (xb - xa), cy = ya + f * (yb - ya);
-          const sx = wrap(cx, width) * UNIT_PX, sy = wrap(cy, height) * UNIT_PX;
-          const path = zb > za ? particles : antiparticles;
+          const t = crossing(az, cz, bz);
+          const x = bezier(ax, cx, bx, t), y = bezier(ay, cy, by, t);
+          const sx = wrap(x, width) * UNIT_PX, sy = wrap(y, height) * UNIT_PX;
+          const path = bz > az ? particles : antiparticles;
           path.moveTo(sx + DOT_RADIUS, sy);
           path.arc(sx, sy, DOT_RADIUS, 0, 2 * Math.PI);
-          if (ageA < 0) {
-            xa = cx;
-            ya = cy;
+          if (ageA < 0) {        // keep the part after t
+            cx += t * (bx - cx);
+            cy += t * (by - cy);
+            ax = x;
+            ay = y;
             ageA = 0;
-          } else {
-            xb = cx;
-            yb = cy;
+          } else {               // keep the part before t
+            cx = ax + t * (cx - ax);
+            cy = ay + t * (cy - ay);
+            bx = x;
+            by = y;
             ageB = 0;
+            open = false;
           }
         } else if (ageA < 0 || (ageA > depth && ageB > depth)) {
-          endRun();
-          lastSeg = -2;
+          last = -1;
           continue;
         }
 
-        // colour by direction of travel in tau, over a few steps so it doesn't flicker
-        const down = p[3 * Math.min(n, i + 3) + 2] < p[3 * Math.max(0, i - 2) + 2];
+        // colour by direction of travel in tau, over a few points so it doesn't flicker
+        const down = p[3 * ((k + 2) % n) + 2] < p[3 * ((k + n - 2) % n) + 2];
         const age = Math.min(AGE_BANDS - 1, Math.floor(((ageA + ageB) / 2 / depth) * AGE_BANDS));
         const band = (down ? AGE_BANDS : 0) + age;
+        const path = bands[band];
 
-        // A new run when the thread breaks, changes band, or wanders more than
-        // a unit off screen (then it is re-wrapped onto the screen).
-        const offScreen = xa + shiftX < -1 || xa + shiftX > width + 1 ||
-                          ya + shiftY < -1 || ya + shiftY > height + 1;
-        if (lastSeg !== i - 1 || band !== runBand || offScreen) {
-          endRun();
-          shiftX = wrap(xa, width) - xa;
-          shiftY = wrap(ya, height) - ya;
-          runBand = band;
-          runX.push((xa + shiftX) * UNIT_PX);
-          runY.push((ya + shiftY) * UNIT_PX);
+        // A new thread starts on the screen; one that wanders more than a
+        // unit off it is moved back on, by whole periods.
+        const offScreen = ax + shiftX < -1 || ax + shiftX > width + 1 ||
+                          ay + shiftY < -1 || ay + shiftY > height + 1;
+        if (last !== k - 1 || offScreen) {
+          shiftX = wrap(ax, width) - ax;
+          shiftY = wrap(ay, height) - ay;
         }
-        runX.push((xb + shiftX) * UNIT_PX);
-        runY.push((yb + shiftY) * UNIT_PX);
-        // a thread that has just come down through the plane ends there
-        lastSeg = ageB === 0 && ageA > 0 ? -2 : i;
+        if (last !== k - 1 || offScreen || band !== lastBand) {
+          path.moveTo((ax + shiftX) * UNIT_PX, (ay + shiftY) * UNIT_PX);
+        }
+        path.quadraticCurveTo((cx + shiftX) * UNIT_PX, (cy + shiftY) * UNIT_PX,
+                              (bx + shiftX) * UNIT_PX, (by + shiftY) * UNIT_PX);
+        last = open ? k : -1;
+        lastBand = band;
       }
     }
-    endRun();
   }
 
   function draw() {
     const particles = new Path2D(), antiparticles = new Path2D();
-    bands = [];
-    for (let i = 0; i < 2 * AGE_BANDS; i++) bands.push(new Path2D());
+    const bands = Array.from({ length: 2 * AGE_BANDS }, () => new Path2D());
 
     const closedOnly = still();
     depth = closedOnly ? STILL_DEPTH : DEPTH;
     for (const loop of loops) {
       if (loop.lo <= tau && loop.hi >= tau - depth && !(closedOnly && loop.hi > tau)) {
-        traceLoop(loop, particles, antiparticles);
+        traceLoop(loop, bands, particles, antiparticles);
       }
     }
 
