@@ -134,9 +134,10 @@
   }
 })();
 
-// [night]/[day] and [hide text]. The theme follows the system until it is
-// switched; the choice is kept in localStorage, and the inline script in
-// default.html applies it before the page is drawn.
+// [night]/[day], [hide text] and [animate]/[stop]. The theme follows the
+// system until it is switched; [animate] overrides a system request for
+// reduced motion (qft.js). Both choices are kept in localStorage, and the
+// inline script in default.html applies them before the page is drawn.
 (() => {
   const root = document.documentElement;
   const systemDark = window.matchMedia("(prefers-color-scheme: dark)");
@@ -146,6 +147,9 @@
   function label() {
     buttons("theme").forEach((b) => {
       b.textContent = isDark() ? "day" : "night";
+    });
+    buttons("motion").forEach((b) => {
+      b.textContent = root.dataset.motion ? "stop" : "animate";
     });
   }
 
@@ -158,6 +162,17 @@
     try {
       if (theme) localStorage.setItem("theme", theme);
       else localStorage.removeItem("theme");
+    } catch (e) {}
+    label();
+  }
+
+  function toggleMotion() {
+    const on = !root.dataset.motion;
+    if (on) root.dataset.motion = "on";
+    else delete root.dataset.motion;
+    try {
+      if (on) localStorage.setItem("motion", "on");
+      else localStorage.removeItem("motion");
     } catch (e) {}
     label();
   }
@@ -184,6 +199,8 @@
       setBare(false);
     } else if (b && b.dataset.switch === "theme") {
       toggleTheme();
+    } else if (b && b.dataset.switch === "motion") {
+      toggleMotion();
     } else if (b && b.dataset.switch === "bare") {
       setBare(true, b);
     }

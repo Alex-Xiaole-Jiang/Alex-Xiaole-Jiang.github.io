@@ -50,7 +50,12 @@
   // skip the parts that are nowhere near the plane.
   const BLOCK = 24;
 
+  const root = document.documentElement;
   const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  // With reduced motion the soup holds still, unless the [animate] switch
+  // (site.js) has set data-motion. Held still, it shows every loop that the
+  // moving picture would show part of, whole.
+  const still = () => motion.matches && root.dataset.motion !== "on";
   // In the phone layout the text covers the whole screen, so the background
   // isn't drawn at all. Keep in sync with site.css.
   const roomy = window.matchMedia("(min-width: 36em)");
@@ -59,7 +64,7 @@
   // particles and threads moving up in tau, antiparticles and threads moving down
   let plus = "", minus = "";
   function readColors() {
-    const style = getComputedStyle(document.documentElement);
+    const style = getComputedStyle(root);
     plus = style.getPropertyValue("--field-plus").trim();
     minus = style.getPropertyValue("--field-minus").trim();
   }
@@ -245,14 +250,14 @@
 
   // Adds one loop's threads and crossings. A segment's age is how far below
   // the plane it is; segments younger than 0 are in the future, older than
-  // DEPTH have faded out.
-  function traceLoop(loop, particles, antiparticles) {
+  // DEPTH have faded out. A whole loop is drawn all round, at age 0.
+  function traceLoop(loop, whole, particles, antiparticles) {
     const p = loop.pts, n = loop.n;
     let shiftX = 0, shiftY = 0;  // puts the current run's start inside the screen
     let lastSeg = -2;            // last segment added to the run, -2 if none
 
     for (let b = 0; b < loop.blockLo.length; b++) {
-      if (loop.blockLo[b] > tau || loop.blockHi[b] < tau - DEPTH) {
+      if (!whole && (loop.blockLo[b] > tau || loop.blockHi[b] < tau - DEPTH)) {
         lastSeg = -2;
         continue;
       }
@@ -263,8 +268,8 @@
         const za = p[3 * i + 2], zb = p[3 * i + 5];
         let ageA = tau - za, ageB = tau - zb;
 
-        // Crossing the plane: a dot there, and the segment is cut at it, as
-        // threads are the past only.
+        // Crossing the plane: a dot there, and unless the loop is drawn whole,
+        // the segment is cut at it, as threads are the past only.
         if ((ageA < 0) !== (ageB < 0)) {
           const f = ageA / (ageA - ageB);
           const cx = xa + f * (xb - xa), cy = ya + f * (yb - ya);
@@ -272,16 +277,16 @@
           const path = zb > za ? particles : antiparticles;
           path.moveTo(sx + DOT_RADIUS, sy);
           path.arc(sx, sy, DOT_RADIUS, 0, 2 * Math.PI);
-          if (ageA < 0) {
+          if (!whole && ageA < 0) {
             xa = cx;
             ya = cy;
             ageA = 0;
-          } else {
+          } else if (!whole) {
             xb = cx;
             yb = cy;
             ageB = 0;
           }
-        } else if (ageA < 0 || (ageA > DEPTH && ageB > DEPTH)) {
+        } else if (!whole && (ageA < 0 || (ageA > DEPTH && ageB > DEPTH))) {
           endRun();
           lastSeg = -2;
           continue;
@@ -289,7 +294,7 @@
 
         // colour by direction of travel in tau, over a few steps so it doesn't flicker
         const down = p[3 * Math.min(n, i + 3) + 2] < p[3 * Math.max(0, i - 2) + 2];
-        const age = Math.min(AGE_BANDS - 1, Math.floor(((ageA + ageB) / 2 / DEPTH) * AGE_BANDS));
+        const age = whole ? 0 : Math.min(AGE_BANDS - 1, Math.floor(((ageA + ageB) / 2 / DEPTH) * AGE_BANDS));
         const band = (down ? AGE_BANDS : 0) + age;
 
         // A new run when the thread breaks, changes band, or wanders more than
@@ -307,7 +312,7 @@
         runX.push((xb + shiftX) * UNIT_PX);
         runY.push((yb + shiftY) * UNIT_PX);
         // a thread that has just come down through the plane ends there
-        lastSeg = ageB === 0 && ageA > 0 ? -2 : i;
+        lastSeg = !whole && ageB === 0 && ageA > 0 ? -2 : i;
       }
     }
     endRun();
@@ -318,9 +323,10 @@
     bands = [];
     for (let i = 0; i < 2 * AGE_BANDS; i++) bands.push(new Path2D());
 
+    const whole = still();
     for (const loop of loops) {
       if (loop.lo <= tau && loop.hi >= tau - DEPTH) {
-        traceLoop(loop, particles, antiparticles);
+        traceLoop(loop, whole, particles, antiparticles);
       }
     }
 
@@ -372,7 +378,7 @@
   // rate. A step is capped at 0.1 s, so the plane doesn't jump after a stall.
   function frame(now) {
     raf = 0;
-    if (document.hidden || motion.matches || !roomy.matches) return;
+    if (document.hidden || still() || !roomy.matches) return;
     raf = requestAnimationFrame(frame);
     if (lastTime && now - lastTime < 1000 / (FPS + 1)) return;
     if (lastTime) tau += SPEED * Math.min(0.1, (now - lastTime) / 1000);
@@ -382,7 +388,7 @@
   }
 
   function start() {
-    if (raf || document.hidden || motion.matches || !roomy.matches) return;
+    if (raf || document.hidden || still() || !roomy.matches) return;
     lastTime = 0;
     raf = requestAnimationFrame(frame);
   }
@@ -405,14 +411,21 @@
     readColors();
     if (width) draw();
   };
-  // the [night]/[day] switch (site.js) sets data-theme on the root
-  new MutationObserver(onThemeChange).observe(document.documentElement, { attributeFilter: ["data-theme"] });
+  const onMotionChange = () => {
+    if (width) draw();
+    start();
+  };
+  // the switches (site.js) set data-theme and data-motion on the root
+  new MutationObserver((changes) => {
+    if (changes.some((c) => c.attributeName === "data-theme")) onThemeChange();
+    if (changes.some((c) => c.attributeName === "data-motion")) onMotionChange();
+  }).observe(root, { attributeFilter: ["data-theme", "data-motion"] });
   if (motion.addEventListener) {
-    motion.addEventListener("change", start);
+    motion.addEventListener("change", onMotionChange);
     roomy.addEventListener("change", onLayoutChange);
     dark.addEventListener("change", onThemeChange);
   } else {                        // Safari < 14
-    motion.addListener(start);
+    motion.addListener(onMotionChange);
     roomy.addListener(onLayoutChange);
     dark.addListener(onThemeChange);
   }
