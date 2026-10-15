@@ -1,7 +1,11 @@
 // Opens and closes paper write-ups. Wide/tablet: in the right column.
 // Phone: inline, right under the paper's entry. The URL hash (#kwm) names the open one.
-// Without JS the write-ups still open through CSS :target.
+// Without JS the write-ups still open through CSS :target. The "js" class that
+// switches that off is set here, not inline, so a browser too old to run this
+// file keeps the CSS-only behavior instead of ending up with neither.
 (() => {
+  document.documentElement.classList.add("js");
+
   const phone = window.matchMedia("(max-width: 640px)");
   const reader = document.getElementById("reader");
   let current = null;
@@ -92,9 +96,11 @@
     if (e.key === "Escape") close();
   });
 
-  phone.addEventListener("change", () => {
+  const onLayoutChange = () => {
     if (current) place(writeup(current));
-  });
+  };
+  if (phone.addEventListener) phone.addEventListener("change", onLayoutChange);
+  else phone.addListener(onLayoutChange);   // Safari < 14
 
   window.addEventListener("hashchange", () => {
     const id = location.hash.slice(1);

@@ -61,6 +61,7 @@ img { max-width: 100%; height: auto; }
   grid-template-columns: 11rem minmax(0, 34rem) minmax(0, 46rem);
   justify-content: center;
   column-gap: var(--colgap);
+  padding: 0 2rem;                          /* fallback for browsers without clamp() */
   padding: 0 clamp(1.5rem, 3vw, 4rem);
 }
 
@@ -108,7 +109,8 @@ img { max-width: 100%; height: auto; }
   cursor: pointer;
   background: var(--box);
   padding: 0.55rem var(--bleed);
-  margin-inline: calc(-1 * var(--bleed));
+  margin-left: calc(-1 * var(--bleed));
+  margin-right: calc(-1 * var(--bleed));
 }
 @media (hover: hover) { .paper[data-w]:hover { background: var(--box-hover); } }
 .paper[data-w].is-open { background: var(--box-open); }
@@ -214,9 +216,10 @@ img { max-width: 100%; height: auto; }
   .paper.is-open .pm::before { content: "\2212"; }
   .ln a, .bibbtn { padding: 0.2rem 0; }
 
-  /* The aside only shows here without JS; with JS the write-up moves into its entry. */
-  .reader { display: none; }
-  .reader:has(.writeup:target) { display: block; position: static; height: auto; margin: 0; border-top: var(--rule); padding: 1.5rem 0 3rem; }
+  /* Without JS the targeted write-up shows below the lists (the aside is empty,
+     so zero height, otherwise). With JS the write-up moves into its entry. */
+  .reader { position: static; height: auto; margin: 0; overflow: visible; }
+  .reader .writeup:target { border-top: var(--rule); padding: 1.5rem 0 3rem; scroll-margin-top: 3.5rem; }
   .js .reader { display: none; }
 
   .paper > .writeup {
