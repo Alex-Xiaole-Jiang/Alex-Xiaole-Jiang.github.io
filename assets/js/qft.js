@@ -43,10 +43,12 @@
   const FADE = 1.6;            // opacity falls as (1 - age/depth)^FADE
   const ALPHA = 0.32;          // opacity of the newest thread
   const LINE = 2.8;            // width of the newest thread, CSS px
-  // Threads narrow to 1 px over this much of their fade and stay so: browsers
-  // draw lines up to 1 px wide by a fast path, wider ones at several times the
-  // cost, and most of the length is in the faint old part.
+  // Threads narrow to one device pixel over this much of their fade and stay
+  // so, darker to make up the width: browsers draw lines up to a pixel wide by
+  // a fast path, wider ones at several times the cost, and most of the length
+  // is in the faint old part.
   const THICK = 0.2;
+  const MAX_DENSITY = 2;       // device pixels per CSS px drawn, at most
   const DOT_RADIUS = 2.1;      // CSS px
   const DOT_ALPHA = 0.72;
   const FLASH = 0.2;           // tau a creation or annihilation flashes for
@@ -100,6 +102,7 @@
   }
 
   let width = 0, height = 0;   // viewport, in length units; 0 while not drawn
+  let density = 1;             // canvas pixels per CSS px
   let tau = 0;                 // height of the plane
   let depth = DEPTH;           // DEPTH, or STILL_DEPTH when held still
   let loops = [];
@@ -389,13 +392,16 @@
       }
     }
 
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.setTransform(density, 0, 0, density, 0, 0);   // draw in CSS px
     ctx.lineJoin = "round";
     ctx.lineCap = "butt";        // neighbouring bands meet end to end; round caps would overlap there
     bands.forEach((path, i) => {
       const age = ((i % AGE_BANDS) + 0.5) / AGE_BANDS;
-      ctx.lineWidth = 1 + (LINE - 1) * Math.max(0, 1 - age / THICK);
-      ctx.globalAlpha = ALPHA * Math.pow(1 - age, FADE);
+      const hair = 1 / density;
+      ctx.lineWidth = hair + (LINE - hair) * Math.max(0, 1 - age / THICK);
+      ctx.globalAlpha = Math.min(1, ALPHA * Math.pow(1 - age, FADE) / Math.min(1, ctx.lineWidth));
       ctx.strokeStyle = i < AGE_BANDS ? plus : minus;
       ctx.stroke(path);
     });
@@ -426,11 +432,11 @@
       loops = [];
       return;
     }
-    // One canvas pixel per CSS pixel, even on high-density screens: the
-    // threads are faint enough that it barely shows, and it paints about 6
-    // times faster.
-    canvas.width = innerWidth;
-    canvas.height = innerHeight;
+    // Drawn at the screen's own resolution, so threads are sharp on
+    // high-density screens, up to MAX_DENSITY.
+    density = Math.min(MAX_DENSITY, window.devicePixelRatio || 1);
+    canvas.width = Math.round(innerWidth * density);
+    canvas.height = Math.round(innerHeight * density);
     const w = innerWidth / UNIT_PX, h = innerHeight / UNIT_PX;
     // Phones resize the viewport as the address bar slides in and out; only
     // a real change of size gets a new soup.
