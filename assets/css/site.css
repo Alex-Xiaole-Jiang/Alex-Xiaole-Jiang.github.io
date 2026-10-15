@@ -15,8 +15,7 @@
   --gray: #5a5a5a;
   --faint: #8a8a8a;
   --dots: #777;
-  --link: #0000ee;
-  --visited: #551a8b;
+  --link: #2b4f81;       /* links stay this color once visited too */
   --red: #cc0000;
   --box: #f3f3f3;        /* entry with a write-up */
   --box-hover: #ebebeb;
@@ -31,15 +30,15 @@
      and the write-up gets a column of its own only when all three fit.
      Otherwise it opens in a panel over the list. So the breakpoints are:
        phone below:      list + 2*phone-pad                           = 36rem
-       photo column:     2*pad + side + colgap + list                 = 54.5rem
-       write-up column:  2*pad + side + colgap + list + colgap + read = 104rem
+       photo column:     2*pad + side + colgap + list                 = 56rem
+       write-up column:  2*pad + side + colgap + list + colgap + read = 107rem
      Media queries can't use variables, so these numbers are written out there
      and in site.js; keep them in sync. (Media-query em is the browser's default
      font size, the same as rem here since html sets no font size.) */
   --side: 11rem;
   --list: 34rem;
   --read: 46rem;
-  --colgap: 3.5rem;
+  --colgap: 5rem;
   --pad: 3rem;           /* outer margin, at least */
   --top: 3.5rem;         /* space above the columns */
   --panel-pad: 2.5rem;   /* inside the write-up panel */
@@ -56,20 +55,20 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: "Charter", "Bitstream Charter", Georgia, serif;
-  font-size: 17px;
+  font-size: 16px;
   line-height: 1.55;
   font-kerning: normal;
   overflow-wrap: break-word;
 }
 
 a, .bibbtn { color: var(--link); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.16em; }
-a:visited { color: var(--visited); }
+a:visited { color: var(--link); }
 a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
 
 h1, h2 { font-weight: 700; line-height: 1.25; }
 img { max-width: 100%; height: auto; }
 
-/* ---------- three columns (≥ 104em): photo | list | write-up ---------- */
+/* ---------- three columns (≥ 107em): photo | list | write-up ---------- */
 
 /* The columns sit centered as a group; only the write-up column grows. */
 .page {
@@ -88,8 +87,8 @@ img { max-width: 100%; height: auto; }
   padding: var(--top) 0 2rem;
 }
 .me .photo { display: block; width: 100%; aspect-ratio: 100 / 110; object-fit: cover; background: var(--photo-bg); }
-.me h1 { font-size: 1.35rem; margin: 1rem 0 0.25rem; }
-.me .tag { margin: 0 0 1rem; }
+.me h1 { font-size: 1.9rem; font-weight: 400; line-height: 1.15; margin: 1.1rem 0 0.4rem; }
+.me .tag { margin: 0 0 1.1rem; color: var(--gray); font-size: 0.9rem; line-height: 1.5; }
 .contact a { display: block; width: max-content; }
 .contact-inline { display: none; }   /* phone-only copy of the contact links */
 
@@ -136,7 +135,7 @@ img { max-width: 100%; height: auto; }
 .intro:focus-visible { position: static; width: auto; height: auto; clip-path: none; margin-left: 0.4em; font-size: 0.9em; }
 
 .ur { color: var(--red); white-space: nowrap; }
-.by, .ln { font-size: 0.94em; }
+.by, .ln { font-size: 0.875em; }
 .by { color: var(--gray); }
 .by b { color: var(--text); }
 
@@ -177,13 +176,13 @@ img { max-width: 100%; height: auto; }
 .todo { display: none; }
 .dev .todo { display: block; color: var(--faint); font-style: italic; }
 
-/* ---------- photo | list (< 104em): the write-up slides in over the list ---------- */
+/* ---------- photo | list (< 107em): the write-up slides in over the list ---------- */
 
 /* The panel is as wide as the full write-up column, but its left edge stops
    colgap/2 short of the photo column: half the window plus half the page,
    less the photo column and that gap. It is a little see-through, so the list
    shows behind it. */
-@media not all and (min-width: 104em) {
+@media not all and (min-width: 107em) {
   .page { grid-template-columns: var(--side) var(--list); }
   .reader {
     visibility: hidden;
@@ -211,19 +210,19 @@ img { max-width: 100%; height: auto; }
   }
 }
 @supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
-  @media not all and (min-width: 104em) {
+  @media not all and (min-width: 107em) {
     .reader { background: rgba(255, 255, 255, 0.7); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
   }
 }
 /* without JS (separate rule: a browser without :has() would drop the whole list) */
-@media not all and (min-width: 104em) {
+@media not all and (min-width: 107em) {
   html:not(.js) .reader:has(.writeup:target) { visibility: visible; opacity: 1; transform: none; }
 }
 @media (prefers-reduced-motion: reduce) { .reader { transition: none !important; } }
 
-/* ---------- one column (< 54.5em): write-ups open inside their entry ---------- */
+/* ---------- one column (< 56em): write-ups open inside their entry ---------- */
 
-@media not all and (min-width: 54.5em) {
+@media not all and (min-width: 56em) {
   /* the list, centered, never closer than --phone-pad to the screen edge */
   .page {
     display: block;
@@ -241,7 +240,7 @@ img { max-width: 100%; height: auto; }
     padding: 3rem 0 0;
   }
   .me .photo { grid-row: 1 / span 3; height: 100%; }
-  .me h1 { margin: 0 0 0.15rem; }
+  .me h1 { font-size: 1.6rem; margin: 0 0 0.2rem; }
   .me .tag { margin: 0 0 0.35rem; }
   .me .contact { margin: 0; }
   .me .contact a { display: inline; margin-right: 0.6em; }
@@ -273,8 +272,6 @@ img { max-width: 100%; height: auto; }
 /* ---------- phone (< 36em): sticky name strip ---------- */
 
 @media not all and (min-width: 36em) {
-  body { font-size: 16.5px; }
-
   .me {
     position: sticky; top: 0; z-index: 2;
     display: flex; align-items: center; gap: 0.6rem;

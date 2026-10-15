@@ -7,8 +7,8 @@
   document.documentElement.classList.add("js");
 
   // layouts; keep in sync with site.css
-  const oneColumn = window.matchMedia("not all and (min-width: 54.5em)");
-  const docked = window.matchMedia("(min-width: 104em)");
+  const oneColumn = window.matchMedia("not all and (min-width: 56em)");
+  const docked = window.matchMedia("(min-width: 107em)");
   const panel = () => !oneColumn.matches && !docked.matches;
   const reader = document.getElementById("reader");
   let current = null;
