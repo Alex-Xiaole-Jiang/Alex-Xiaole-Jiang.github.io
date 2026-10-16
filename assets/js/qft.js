@@ -259,7 +259,61 @@
 
   /* ---------- drawing ---------- */
 
-  const wrap = (v, period) => ((v % period) + period) % period;
+  // Loops are stored unwrapped. Anything drawn is drawn once for every shift
+  // by whole periods that puts part of it on the screen: once for most
+  // things, twice across an edge and four times across a corner. This calls
+  // visit(i, j) for each shift (i widths, j heights) that puts some of the box
+  // [x0, x1] x [y0, y1], widened by `margin`, on the screen.
+  function eachCopy(x0, x1, y0, y1, margin, visit) {
+    for (let i = Math.ceil((-margin - x1) / width); i * width + x0 - margin <= width; i++) {
+      for (let j = Math.ceil((-margin - y1) / height); j * height + y0 - margin <= height; j++) {
+        visit(i, j);
+      }
+    }
+  }
+
+  // The copies of the thread being traced that are on the screen. Each copy
+  // is collected as a run of curve pieces and added to its band's path when
+  // the thread leaves that copy, breaks or changes band, so that every copy
+  // is one continuous sub-path, with round joins between its pieces.
+  const runs = [];             // { i, j, band, part, pts: x, y, then cx, cy, x, y per piece }
+  let runCount = 0;
+
+  function addPiece(i, j, band, part, x0, y0, xc, yc, x1, y1) {
+    const dx = i * width, dy = j * height;
+    let run = null;
+    for (let r = 0; r < runCount && !run; r++) {
+      if (runs[r].i === i && runs[r].j === j) run = runs[r];
+    }
+    if (!run) {
+      run = runs[runCount] || (runs[runCount] = { pts: [] });
+      runCount++;
+      run.i = i;
+      run.j = j;
+      run.band = band;
+      run.pts.length = 0;
+      run.pts.push((x0 + dx) * UNIT_PX, (y0 + dy) * UNIT_PX);
+    }
+    run.part = part;
+    run.pts.push((xc + dx) * UNIT_PX, (yc + dy) * UNIT_PX, (x1 + dx) * UNIT_PX, (y1 + dy) * UNIT_PX);
+  }
+
+  // adds every run not continued by `part` to its path; -1 adds them all
+  function endRuns(bands, part) {
+    let kept = 0;
+    for (let r = 0; r < runCount; r++) {
+      const run = runs[r];
+      if (run.part === part) {
+        runs[r] = runs[kept];
+        runs[kept++] = run;
+        continue;
+      }
+      const path = bands[run.band], q = run.pts;
+      path.moveTo(q[0], q[1]);
+      for (let k = 2; k < q.length; k += 4) path.quadraticCurveTo(q[k], q[k + 1], q[k + 2], q[k + 3]);
+    }
+    runCount = kept;
+  }
 
   // A loop is drawn as one smooth closed curve, a quadratic piece per point:
   // from the midpoint before the point to the midpoint after it, with the
@@ -303,8 +357,8 @@
   // depth have faded out. `flashes` is null when nothing should flash.
   function traceLoop(loop, bands, particles, antiparticles, flashes) {
     const p = loop.pts, n = loop.n;
-    let shiftX = 0, shiftY = 0;  // puts the current thread's start on the screen
-    let last = -1, lastBand = -1;  // the piece the current thread ends with, -1 if none
+    let last = -2, lastBand = -1;  // the piece the current thread ends with, -2 if none
+    let part = 0;                  // counts the parts drawn, to tell which runs go on
 
     for (let b = 0; b < loop.blockLo.length; b++) {
       if (loop.blockLo[b] > tau || loop.blockHi[b] < tau - depth) continue;
@@ -317,7 +371,7 @@
         const az = (p[h + 2] + p[j + 2]) / 2, cz = p[j + 2], bz = (p[j + 2] + p[l + 2]) / 2;
         const ageA = tau - az, ageB = tau - bz;
         const follows = last === k - 1;
-        last = -1;
+        last = -2;
 
         // Where the piece turns in tau, a pair is created (a minimum) or
         // annihilates (a maximum), and flashes for FLASH after the plane passes.
@@ -325,8 +379,10 @@
         if (flashes && turn >= 0) {
           const since = tau - bezier(az, cz, bz, turn);
           if (since >= 0 && since < FLASH) {
-            flashes.push(wrap(bezier(ax, cx, bx, turn), width) * UNIT_PX,
-                         wrap(bezier(ay, cy, by, turn), height) * UNIT_PX, since / FLASH);
+            const x = bezier(ax, cx, bx, turn), y = bezier(ay, cy, by, turn);
+            eachCopy(x, x, y, y, Math.max(FLASH_RADIUS, INK_RADIUS) / UNIT_PX, (ci, cj) => {
+              flashes.push((x + ci * width) * UNIT_PX, (y + cj * height) * UNIT_PX, since / FLASH);
+            });
           }
         }
 
@@ -338,12 +394,14 @@
         // quadratic is again a quadratic.
         for (let i = 0; i < m; i++) {
           const t = roots[i];
-          const sx = wrap(bezier(ax, cx, bx, t), width) * UNIT_PX;
-          const sy = wrap(bezier(ay, cy, by, t), height) * UNIT_PX;
+          const x = bezier(ax, cx, bx, t), y = bezier(ay, cy, by, t);
           const up = (1 - t) * (cz - az) + t * (bz - cz) > 0;
           const path = up ? particles : antiparticles;
-          path.moveTo(sx + DOT_RADIUS, sy);
-          path.arc(sx, sy, DOT_RADIUS, 0, 2 * Math.PI);
+          eachCopy(x, x, y, y, DOT_RADIUS / UNIT_PX, (ci, cj) => {
+            const sx = (x + ci * width) * UNIT_PX, sy = (y + cj * height) * UNIT_PX;
+            path.moveTo(sx + DOT_RADIUS, sy);
+            path.arc(sx, sy, DOT_RADIUS, 0, 2 * Math.PI);
+          });
         }
 
         // colour by direction of travel in tau, over a few points so it doesn't flicker
@@ -353,31 +411,26 @@
           const s = i === 0 ? 0 : roots[i - 1], e = i === m ? 1 : roots[i];
           const ageS = s === 0 ? ageA : 0, ageE = e === 1 ? ageB : 0;
           if (ageS > depth && ageE > depth) continue;
-          const sx = bezier(ax, cx, bx, s), sy = bezier(ay, cy, by, s);
           const age = Math.min(AGE_BANDS - 1, Math.floor(((ageS + ageE) / 2 / depth) * AGE_BANDS));
           const band = (down ? AGE_BANDS : 0) + age;
-          const path = bands[band];
 
-          // A new thread starts on the screen; one that wanders more than a
-          // unit off it is moved back on, by whole periods.
-          const joined = s === 0 && follows;
-          const offScreen = sx + shiftX < -1 || sx + shiftX > width + 1 ||
-                            sy + shiftY < -1 || sy + shiftY > height + 1;
-          if (!joined || offScreen) {
-            shiftX = wrap(sx, width) - sx;
-            shiftY = wrap(sy, height) - sy;
-          }
-          if (!joined || offScreen || band !== lastBand) {
-            path.moveTo((sx + shiftX) * UNIT_PX, (sy + shiftY) * UNIT_PX);
-          }
-          path.quadraticCurveTo(
-            (control(ax, cx, bx, s, e) + shiftX) * UNIT_PX, (control(ay, cy, by, s, e) + shiftY) * UNIT_PX,
-            (bezier(ax, cx, bx, e) + shiftX) * UNIT_PX, (bezier(ay, cy, by, e) + shiftY) * UNIT_PX);
+          // A part carries on the thread if it starts where the last one
+          // ended, in the same band; otherwise the thread breaks here.
+          if (!(s === 0 && follows && band === lastBand)) endRuns(bands, -1);
+          const x0 = bezier(ax, cx, bx, s), y0 = bezier(ay, cy, by, s);
+          const xc = control(ax, cx, bx, s, e), yc = control(ay, cy, by, s, e);
+          const x1 = bezier(ax, cx, bx, e), y1 = bezier(ay, cy, by, e);
+          part++;
+          // the part lies within the box of its three points
+          eachCopy(Math.min(x0, xc, x1), Math.max(x0, xc, x1), Math.min(y0, yc, y1), Math.max(y0, yc, y1),
+            LINE / 2 / UNIT_PX, (ci, cj) => addPiece(ci, cj, band, part, x0, y0, xc, yc, x1, y1));
+          endRuns(bands, part);
           if (e === 1) last = k;
           lastBand = band;
         }
       }
     }
+    endRuns(bands, -1);
   }
 
   function draw() {
