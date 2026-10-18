@@ -4,7 +4,7 @@ layout: default
 <div class="page">
 
   <header class="me">
-    <img class="photo" src="{{ site.photo | relative_url }}" width="176" height="194" alt="Photo of {{ site.name }}">
+    <img class="photo" src="{{ site.photo | relative_url }}" width="176" height="176" alt="Photo of {{ site.name }}">
     <h1>{{ site.name }}</h1>
     <p class="tag">{% for line in site.tagline %}<span>{{ line }}</span>{% unless forloop.last %}<br>{% endunless %}{% endfor %}</p>
     <p class="contact">{% include contact.html %}</p>

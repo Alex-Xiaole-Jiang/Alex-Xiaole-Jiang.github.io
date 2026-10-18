@@ -8,7 +8,7 @@ baseurl: ""
 name: Alex Jiang
 tagline:
   - A physicist who doesn't like philosophy makes a poor roboticist.
-photo: /assets/img/photo.svg
+photo: /assets/img/photo.jpg
 email: xiaole.jiang.alex@gmail.com
 cv: /assets/xiaole-alex-jiang-cv.pdf
 scholar: ""  # paste the Google Scholar profile URL here and the link appears
