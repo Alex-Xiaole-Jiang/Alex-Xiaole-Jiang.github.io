@@ -17,6 +17,9 @@
 // MAX_DURATION is an infrared cutoff, like a small mass. Space is periodic:
 // the screen is a torus. Lengths are in units of UNIT_PX CSS pixels.
 //
+// A click on the bare background adds a loop of its own: a pair is created
+// under the pointer and wanders off until it annihilates.
+//
 // The colours come from site.css (--field-plus and --field-minus), so they
 // follow the light and dark themes. Threads are drawn with plain alpha
 // blending: additive ("lighter") on dark and "multiply" on light would be the
@@ -29,7 +32,7 @@
 
   // physics
   const UNIT_PX = 30;
-  const MIN_DURATION = 16;     // shortest loop kept
+  const MIN_DURATION = 8;      // shortest loop kept
   const MAX_DURATION = 600;    // longest
   const STEP = 0.3;            // proper time per walk step
   const MAX_STEPS = 1500;      // per loop; longer loops take coarser steps
@@ -479,6 +482,63 @@
     ctx.globalAlpha = 1;
   }
 
+  /* ---------- clicks ---------- */
+
+  // A loop born at (x0, y0) on the plane: its lowest point in tau is there,
+  // so the pair is created under the pointer as it is clicked. Held still,
+  // nothing is created, so the loop is instead one that has just closed
+  // there, its highest point at the plane, and shows whole at once.
+  function spawn(x0, y0) {
+    // dt/t over the soup's own range: equal weight to every octave of size
+    const duration = MIN_DURATION * Math.pow(MAX_DURATION / MIN_DURATION, Math.random());
+    const loop = makeLoop(0, 0, 0, duration);
+    const p = loop.pts, n = loop.n;
+    const top = still();
+    let k0 = 0;
+    for (let k = 1; k < n; k++) {
+      if (top ? p[3 * k + 2] > p[3 * k0 + 2] : p[3 * k + 2] < p[3 * k0 + 2]) k0 = k;
+    }
+    const h = 3 * ((k0 + n - 1) % n), j = 3 * k0, l = 3 * k0 + 3;
+    // The point to put at the click. Held still, the extreme point itself: it
+    // bounds the curve, so the whole loop is then below the plane. Moving,
+    // the curve's own turning point beside it (the curve passes between the
+    // points), so the flash is exactly where and when the click was.
+    let x = p[j], y = p[j + 1], z = p[j + 2];
+    if (!top) {
+      const ax = (p[h] + x) / 2, ay = (p[h + 1] + y) / 2, az = (p[h + 2] + z) / 2;
+      const bx = (x + p[l]) / 2, by = (y + p[l + 1]) / 2, bz = (z + p[l + 2]) / 2;
+      const t = (az - z) / (az - 2 * z + bz);
+      x = bezier(ax, x, bx, t);
+      y = bezier(ay, y, by, t);
+      z = bezier(az, z, bz, t);
+    }
+    const dx = x0 - x, dy = y0 - y, dz = tau - z;
+    for (let k = 0; k <= n; k++) {
+      p[3 * k] += dx;
+      p[3 * k + 1] += dy;
+      p[3 * k + 2] += dz;
+    }
+    for (let b = 0; b < loop.blockLo.length; b++) {
+      loop.blockLo[b] += dz;
+      loop.blockHi[b] += dz;
+    }
+    loop.lo += dz;
+    loop.hi += dz;
+    loops.push(loop);
+    if (!raf) draw();
+  }
+
+  // Only the bare background counts: the page itself, the gaps between the
+  // columns, and the write-up column while it is empty. The text columns sit
+  // on their panes, and the canvas itself takes no clicks.
+  function onClick(e) {
+    if (!width) return;
+    const t = e.target;
+    const bare = t === document.documentElement || t === document.body || t.classList.contains("page")
+      || (t.classList.contains("reader") && !t.classList.contains("is-open"));
+    if (bare) spawn(e.clientX / UNIT_PX, e.clientY / UNIT_PX);
+  }
+
   /* ---------- size, animation, pausing ---------- */
 
   function resize() {
@@ -556,6 +616,7 @@
   if (window.ResizeObserver) new ResizeObserver(onResize).observe(canvas);
   else window.addEventListener("resize", onResize);
   document.addEventListener("visibilitychange", start);
+  document.addEventListener("click", onClick);
   const onLayoutChange = () => {
     resize();
     start();
