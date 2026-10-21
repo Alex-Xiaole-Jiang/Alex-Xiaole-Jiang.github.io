@@ -12,11 +12,13 @@ Plain Jekyll, built by GitHub Pages on push. No theme, no plugins, no build step
 | Long write-up for a paper | `_writeups/<paper id>.md` |
 | Look | `assets/css/site.css` |
 | Open/close behavior | `assets/js/site.js` |
+| Background animation | `assets/js/qft.js` |
+| Favicon | `assets/img/favicon.svg` |
 
-In a write-up, a paragraph followed by `{: .todo}` is a note to self: it shows in
-gray italics on `jekyll serve` and is hidden on the live site.
-
-To swap in a real photo, drop it in `assets/img/` and point `photo:` at it.
+A note to self in a write-up goes inside
+`{% if jekyll.environment == "development" %} ... {% endif %}`, with `{: .todo}`
+after the paragraph: it shows in gray italics on `jekyll serve` and is left out
+of the live site altogether.
 
 ## Preview locally
 

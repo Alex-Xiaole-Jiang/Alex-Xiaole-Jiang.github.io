@@ -102,6 +102,7 @@
   }
 
   let width = 0, height = 0;   // viewport, in length units; 0 while not drawn
+  let soupW = 0, soupH = 0;    // the size the soup was made for
   let density = 1;             // canvas pixels per CSS px
   let tau = 0;                 // height of the plane
   let depth = DEPTH;           // DEPTH, or STILL_DEPTH when held still
@@ -192,7 +193,7 @@
       pts[3 * k + 2] += z0 - f * z;
     }
 
-    if (scratch.length < 3 * n) scratch = new Float32Array(3 * MAX_STEPS);
+    if (SMOOTH_PASSES && scratch.length < 3 * n) scratch = new Float32Array(3 * MAX_STEPS);
     for (let pass = 0; pass < SMOOTH_PASSES; pass++) {
       for (let k = 0; k < n; k++) {
         const prev = 3 * ((k + n - 1) % n), here = 3 * k, next = 3 * ((k + 1) % n);
@@ -248,6 +249,8 @@
 
   // a fresh soup, already filled below the plane so the first frame is complete
   function reset() {
+    soupW = width;
+    soupH = height;
     tau = 0;
     loops = [];
     bins = makeBins();
@@ -338,7 +341,7 @@
     const A = za - 2 * zc + zb, B = 2 * (zc - za), C = za - tau;
     const r = () => Math.sqrt(Math.max(0, B * B - 4 * A * C));
     if ((za < tau) !== (zb < tau)) {
-      if (Math.abs(A) < 1e-6) roots[0] = -C / B;
+      if (Math.abs(A) < 1e-6) roots[0] = B ? -C / B : 0.5;   // B = 0 too: the whole piece is at the plane
       else {
         const t = (-B + r()) / (2 * A);
         roots[0] = t >= 0 && t <= 1 ? t : (-B - r()) / (2 * A);
@@ -481,22 +484,23 @@
   function resize() {
     if (!roomy.matches) {
       canvas.width = canvas.height = 0;
-      width = height = 0;
+      width = height = soupW = soupH = 0;
       loops = [];
       return;
     }
     // Drawn at the screen's own resolution, so threads are sharp on
-    // high-density screens, up to MAX_DENSITY.
+    // high-density screens, up to MAX_DENSITY. The size is the canvas's own
+    // box, not the window's: the window includes a scrollbar, and a canvas
+    // wider than its box is squashed onto it, which blurs every thread.
     density = Math.min(MAX_DENSITY, window.devicePixelRatio || 1);
-    canvas.width = Math.round(innerWidth * density);
-    canvas.height = Math.round(innerHeight * density);
-    const w = innerWidth / UNIT_PX, h = innerHeight / UNIT_PX;
+    const pxW = canvas.clientWidth, pxH = canvas.clientHeight;
+    canvas.width = Math.round(pxW * density);
+    canvas.height = Math.round(pxH * density);
+    width = pxW / UNIT_PX;
+    height = pxH / UNIT_PX;
     // Phones resize the viewport as the address bar slides in and out; only
-    // a real change of size gets a new soup.
-    const changed = Math.abs(w - width) > 0.5 || Math.abs(h - height) > 0.25 * height;
-    width = w;
-    height = h;
-    if (changed) reset();
+    // a real change from the size the soup was made for gets a new soup.
+    if (Math.abs(width - soupW) > 0.5 || Math.abs(height - soupH) > 0.25 * soupH) reset();
     draw();
   }
 
@@ -521,15 +525,36 @@
     raf = requestAnimationFrame(frame);
   }
 
+  const onChange = (query, fn) =>
+    query.addEventListener ? query.addEventListener("change", fn) : query.addListener(fn);   // addListener: Safari < 14
+
+  // The canvas's box changes with the window and when a scrollbar comes or
+  // goes, which fires no resize event; a ResizeObserver sees both.
+  let resizeTimer = 0;
+  const onResize = () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(resize, 150);
+  };
+  // Moving the window to a screen of another density changes
+  // devicePixelRatio without a resize. The query matching the old density
+  // stops matching; then watch the new one.
+  function watchDensity() {
+    const query = window.matchMedia(`(resolution: ${window.devicePixelRatio}dppx)`);
+    let done = false;
+    onChange(query, () => {
+      if (done) return;
+      done = true;
+      watchDensity();
+      resize();
+    });
+  }
+
   readColors();
   resize();
   start();
-
-  let resizeTimer = 0;
-  window.addEventListener("resize", () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(resize, 150);
-  });
+  watchDensity();
+  if (window.ResizeObserver) new ResizeObserver(onResize).observe(canvas);
+  else window.addEventListener("resize", onResize);
   document.addEventListener("visibilitychange", start);
   const onLayoutChange = () => {
     resize();
@@ -548,13 +573,7 @@
     if (changes.some((c) => c.attributeName === "data-theme")) onThemeChange();
     if (changes.some((c) => c.attributeName === "data-motion")) onMotionChange();
   }).observe(root, { attributeFilter: ["data-theme", "data-motion"] });
-  if (motion.addEventListener) {
-    motion.addEventListener("change", onMotionChange);
-    roomy.addEventListener("change", onLayoutChange);
-    dark.addEventListener("change", onThemeChange);
-  } else {                        // Safari < 14
-    motion.addListener(onMotionChange);
-    roomy.addListener(onLayoutChange);
-    dark.addListener(onThemeChange);
-  }
+  onChange(motion, onMotionChange);
+  onChange(roomy, onLayoutChange);
+  onChange(dark, onThemeChange);
 })();

@@ -7,5 +7,7 @@ When a robot plans, it imagines what will happen if it takes some actions, then 
 
 Across three families of world models and four control tasks, long-horizon planning succeeded 37% more often with gradient-based planning and 15% more often with sampling-based planning, and ran up to 3.3× faster. The trained model's internal space also ends up mirroring the real layout of the environment.
 
+{% if jekyll.environment == "development" %}
 [what you'd like to try next]
 {: .todo}
+{% endif %}

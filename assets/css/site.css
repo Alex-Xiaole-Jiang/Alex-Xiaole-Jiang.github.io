@@ -191,12 +191,15 @@ img { max-width: 100%; height: auto; }
 
 /* hide text: only the background stays, and a [show text] in the corner. The
    text fades out, then turns invisible; it comes back visible at once, so
-   focus can return to it. */
+   focus can return to it. Only where the background is drawn: narrower, the
+   text stays whatever the switch says. */
 .page { transition: opacity 0.25s; }
-.bare .page { opacity: 0; visibility: hidden; transition: opacity 0.25s, visibility 0s 0.25s; }
-.bare .unbare {
-  display: block; position: fixed; left: 1rem; bottom: 0.75rem; z-index: 5;
-  font-size: 0.875em;
+@media (min-width: 36em) {
+  .bare .page { opacity: 0; visibility: hidden; transition: opacity 0.25s, visibility 0s 0.25s; }
+  .bare .unbare {
+    display: block; position: fixed; left: 1rem; bottom: 0.75rem; z-index: 5;
+    font-size: 0.875em;
+  }
 }
 .unbare::before { content: "["; color: var(--gray); }
 .unbare::after { content: "]"; color: var(--gray); }
@@ -283,9 +286,8 @@ img { max-width: 100%; height: auto; }
 .writeup p { margin: 0 0 1em; }
 .writeup img, .writeup video { display: block; max-width: 100%; margin: 1rem 0; }
 
-/* gray prompts in drafts: shown only on `jekyll serve` */
-.todo { display: none; }
-.dev .todo { display: block; color: var(--faint); font-style: italic; }
+/* notes to self in drafts; the write-ups include them only on `jekyll serve` */
+.todo { color: var(--faint); font-style: italic; }
 
 /* ---------- photo | list (< 107em): the write-up slides in over the list ---------- */
 
@@ -299,8 +301,6 @@ img { max-width: 100%; height: auto; }
     visibility: hidden;
     opacity: 0;
     transition: opacity 0.1s, transform 0.1s, visibility 0.1s;
-  }
-  .reader {
     position: fixed; top: 0; right: 0; bottom: 0; z-index: 3;
     width: calc(var(--read) + 2 * var(--panel-pad));
     width: min(var(--read) + 2 * var(--panel-pad),
@@ -393,10 +393,15 @@ img { max-width: 100%; height: auto; }
   }
   .me .photo { width: 2.1rem; height: 2.1rem; }
   .me h1 { font-size: 1rem; margin: 0; white-space: nowrap; }
-  .me .tag { margin: 0 0 0 auto; color: var(--gray); font-size: 0.9em; text-align: right; }
+  .me .tag { margin: 0 0 0 auto; font-size: 0.9em; text-align: right; }
   .me .tag span:not(:first-child), .me .tag br, .me .contact, .js .me .switches { display: none; }
 
   .list { padding: 1.25rem 0 4rem; }
+  /* The frosted panes (36em and up): the strip has its own ground, so it
+     needs none, and the list's must stay inside the page padding, or it
+     would stick out past the screen and add a horizontal scroll. */
+  .me::before { display: none; }
+  .list::before { inset: -2rem calc(-1 * var(--phone-pad)); }
   .about { margin-bottom: 0.5rem; }
   .contact-inline { display: block; margin: 0 0 1.75rem; }
   .contact-inline a { display: inline; margin-right: 0.75em; }

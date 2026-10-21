@@ -38,6 +38,8 @@
     const el = writeup(id);
     if (!el) return;
     if (current) mark(current, false);
+    const section = entry(id).closest("details");
+    if (section) section.open = true;   // the entry may be in a folded section
     place(el);
     mark(id, true);
     reader.classList.add("is-open");
@@ -49,13 +51,11 @@
   }
 
   function close() {
-    const id = current;
-    if (!id) return null;
-    mark(id, false);
+    if (!current) return;
+    mark(current, false);
     reader.classList.remove("is-open");
     current = null;
     setHash("");
-    return id;
   }
 
   // Close, and put focus back on the entry if it was in the write-up (which is
@@ -82,6 +82,8 @@
   }
 
   document.addEventListener("click", (e) => {
+    // a modified click (open in a new tab, and so on) is the browser's
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     const t = e.target;
 
     const intro = t.closest(".intro");
@@ -125,6 +127,7 @@
   window.addEventListener("hashchange", () => {
     const id = location.hash.slice(1);
     if (writeup(id)) open(id);
+    else close();
   });
 
   const start = location.hash.slice(1);
