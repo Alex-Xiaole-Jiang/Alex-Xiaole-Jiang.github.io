@@ -205,7 +205,7 @@ img { max-width: 100%; height: auto; }
 .unbare::after { content: "]"; color: var(--gray); }
 
 /* middle column: about + paper lists */
-.list { padding: var(--top) 0 6rem; min-width: 0; }
+.list { padding: var(--top) 0 2rem; min-width: 0; }
 .about { margin: 0 0 2rem; }
 
 /* Section titles read like a table of contents: ▾ Title . . . . . . up to the box edge */
