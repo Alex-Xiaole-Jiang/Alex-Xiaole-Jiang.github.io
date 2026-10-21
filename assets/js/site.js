@@ -7,7 +7,7 @@
   document.documentElement.classList.add("js");
 
   // the layout with a write-up column; keep in sync with site.css
-  const docked = window.matchMedia("(min-width: 107em)");
+  const docked = window.matchMedia("(min-width: 109em)");
   const reader = document.getElementById("reader");
   let current = null;
 

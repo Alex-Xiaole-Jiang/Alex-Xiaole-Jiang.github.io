@@ -13,7 +13,12 @@
   <meta property="og:description" content="{{ site.description }}">
   <meta property="og:url" content="{{ site.url }}{{ page.url | relative_url }}">
   <link rel="icon" href="{{ '/assets/img/favicon.svg' | relative_url }}" type="image/svg+xml">
+  {%- comment %} All four faces, so no text swaps in after the page is drawn: italic and
+      bold are on the first screen, and bold italic shows up in a write-up's heading. {% endcomment %}
   <link rel="preload" href="{{ '/assets/fonts/charter-regular.woff2' | relative_url }}" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="{{ '/assets/fonts/charter-italic.woff2' | relative_url }}" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="{{ '/assets/fonts/charter-bold.woff2' | relative_url }}" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="{{ '/assets/fonts/charter-bold-italic.woff2' | relative_url }}" as="font" type="font/woff2" crossorigin>
   <script>try { var r = document.documentElement, t = localStorage.getItem("theme"); if (t) r.setAttribute("data-theme", t); if (localStorage.getItem("motion")) r.setAttribute("data-motion", "on"); } catch (e) {}</script>
   <link rel="stylesheet" href="{{ '/assets/css/site.css' | relative_url }}?v={{ v }}">
   <script src="{{ '/assets/js/site.js' | relative_url }}?v={{ v }}" defer></script>

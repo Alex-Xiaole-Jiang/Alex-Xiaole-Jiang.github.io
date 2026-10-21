@@ -35,15 +35,15 @@
      and the write-up gets a column of its own only when all three fit.
      Otherwise it opens inside its entry. So the breakpoints are:
        phone below:      list + 2*phone-pad                           = 36rem
-       photo column:     2*pad + side + colgap + list                 = 56rem
-       write-up column:  2*pad + side + colgap + list + colgap + read = 107rem
+       photo column:     2*pad + side + colgap + list                 = 57rem
+       write-up column:  2*pad + side + colgap + list + colgap + read = 109rem
      Media queries can't use variables, so these numbers are written out there
      and in site.js; keep them in sync. (Media-query em is the browser's default
      font size, the same as rem here since html sets no font size.) */
   --side: 11rem;
   --list: 34rem;
   --read: 46rem;
-  --colgap: 5rem;
+  --colgap: 6rem;        /* 2rem of clear space between the frosted panes */
   --pad: 3rem;           /* outer margin, at least */
   --top: 3.5rem;         /* space above the columns */
   --phone-pad: 1rem;
@@ -114,7 +114,7 @@ body {
 /* The text columns sit on frosted glass: a see-through, blurred pane whose
    edge feathers into the background. Browsers without color-mix get it
    opaque. Phones don't draw the background, so they need none, and below
-   107em the write-up opens inside the list, on its pane. */
+   109em the write-up opens inside the list, on its pane. */
 :root {
   --edge-x: linear-gradient(to right, transparent, #000 1.75rem, #000 calc(100% - 1.75rem), transparent);
   --edge-y: linear-gradient(to bottom, transparent, #000 1.75rem, #000 calc(100% - 1.75rem), transparent);
@@ -133,12 +133,12 @@ body {
     mask-image: var(--edge); mask-composite: intersect;
   }
 }
-/* stacked (36em to 56em): the name block and the list share one pane, joined without a seam */
-@media (min-width: 36em) and (max-width: 55.99em) {
+/* stacked (36em to 57em): the name block and the list share one pane, joined without a seam */
+@media (min-width: 36em) and (max-width: 56.99em) {
   .me::before { bottom: 0; --edge: var(--edge-x), linear-gradient(to bottom, transparent, #000 1.75rem); }
   .list::before { top: 0; --edge: var(--edge-x), linear-gradient(to top, transparent, #000 1.75rem); }
 }
-@media (min-width: 107em) {
+@media (min-width: 109em) {
   .reader.is-open {
     background: var(--bg);
     background: color-mix(in srgb, var(--bg) var(--glass), transparent);
@@ -155,7 +155,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
 h1, h2 { font-weight: 700; line-height: 1.25; }
 img { max-width: 100%; height: auto; }
 
-/* ---------- three columns (≥ 107em): photo | list | write-up ---------- */
+/* ---------- three columns (≥ 109em): photo | list | write-up ---------- */
 
 /* The columns sit centered as a group; only the write-up column grows. */
 .page {
@@ -296,9 +296,9 @@ img { max-width: 100%; height: auto; }
 /* notes to self in drafts; the write-ups include them only on `jekyll serve` */
 .todo { color: var(--faint); font-style: italic; }
 
-/* ---------- photo | list (< 107em): write-ups open inside their entry ---------- */
+/* ---------- photo | list (< 109em): write-ups open inside their entry ---------- */
 
-@media not all and (min-width: 107em) {
+@media not all and (min-width: 109em) {
   .page { grid-template-columns: var(--side) var(--list); }
 
   .pm { display: inline-block; width: 1.1em; }
@@ -321,9 +321,9 @@ img { max-width: 100%; height: auto; }
 }
 @media (prefers-reduced-motion: reduce) { .page { transition: none !important; } }
 
-/* ---------- one column (< 56em) ---------- */
+/* ---------- one column (< 57em) ---------- */
 
-@media not all and (min-width: 56em) {
+@media not all and (min-width: 57em) {
   /* the list, centered, never closer than --phone-pad to the screen edge */
   .page {
     display: block;
