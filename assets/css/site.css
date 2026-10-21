@@ -276,9 +276,11 @@ img { max-width: 100%; height: auto; }
   height: calc(100vh - var(--top) + 1rem);    /* fallback for browsers without dvh */
   height: calc(100dvh - var(--top) + 1rem);
   overflow-y: auto;
-  overscroll-behavior: contain;
   min-width: 0;
 }
+/* Scrolling past the write-up's ends stays in it; closed, the empty box
+   would swallow the wheel instead of passing it on to the page. */
+.reader.is-open { overscroll-behavior: contain; }
 
 /* JS adds .open; without JS, :target does the same job */
 .writeup { display: none; line-height: 1.6; }
