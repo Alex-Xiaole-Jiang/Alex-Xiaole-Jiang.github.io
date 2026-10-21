@@ -1,4 +1,6 @@
-# alex-xiaole-jiang.github.io
+# Alex Jiang's website
+
+Source for my personal academic site, live at **<https://alex-xiaole-jiang.github.io>**: about, papers, and longer write-ups.
 
 Plain Jekyll, built by GitHub Pages on push. No theme, no plugins, no build step.
 
@@ -24,4 +26,6 @@ of the live site altogether.
 
     jekyll serve      # http://localhost:4000
 
-Fonts: Bitstream Charter, converted to WOFF2 (see `assets/fonts/LICENSE-charter.txt`).
+## Credits
+
+Body text is set in Bitstream Charter, converted to WOFF2. Its license is at `assets/fonts/LICENSE-charter.txt`.
