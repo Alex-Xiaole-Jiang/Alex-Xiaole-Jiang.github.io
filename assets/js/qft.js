@@ -32,7 +32,7 @@
 
   // physics
   const UNIT_PX = 30;
-  const MIN_DURATION = 10;     // shortest loop kept
+  const MIN_DURATION = 12;     // shortest loop kept
   const MAX_DURATION = 600;    // longest
   const STEP = 0.3;            // proper time per walk step
   const MAX_STEPS = 1500;      // per loop; longer loops take coarser steps
