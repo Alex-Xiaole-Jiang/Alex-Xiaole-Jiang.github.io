@@ -29,6 +29,11 @@
   --field-minus: #002b36;  /* deep slate */
   --glass: 55%;          /* how much of the page colour the text's frosted ground has */
 
+  /* Reading scale; keep the root size independent of layout dimensions. */
+  --type-small: 1rem;
+  --type-body: 1.125rem;
+  --type-heading: 1.25rem;
+
   /* Column widths. The list is --list wide, or the screen less --phone-pad on
      each side when that is narrower; wider windows never stretch it. The photo
      column outranks the write-up: it stays whenever it fits beside the list,
@@ -103,7 +108,7 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: "Charter", "Bitstream Charter", Georgia, serif;
-  font-size: 16px;
+  font-size: var(--type-body);
   line-height: 1.55;
   font-kerning: normal;
   overflow-wrap: break-word;
@@ -177,7 +182,7 @@ img { max-width: 100%; height: auto; }
 .mobile-nav { display: none; }
 .me .photo { display: block; width: var(--side); aspect-ratio: 1; object-fit: cover; background: var(--photo-bg); }
 .me h1 { font-size: 1.9rem; font-weight: 400; line-height: 1.15; margin: 1.1rem 0 0.4rem; }
-.me .tag { margin: 0 0 1.1rem; color: var(--gray); font-size: 0.9rem; line-height: 1.5; }
+.me .tag { margin: 0 0 1.1rem; color: var(--gray); font-size: var(--type-small); line-height: 1.5; }
 .contact a { display: block; width: max-content; }
 .contact-inline { display: none; }   /* phone-only copy of the contact links */
 
@@ -186,7 +191,7 @@ img { max-width: 100%; height: auto; }
    the text and nothing to animate. [animate] is for those whose system asks
    for reduced motion, which holds the background still. */
 .switches, .unbare, .motion-switch { display: none; }
-.js .me .switches { display: block; margin: 0.9rem 0 0; color: var(--gray); font-size: 0.875em; }
+.js .me .switches { display: block; margin: 0.9rem 0 0; color: var(--gray); font-size: var(--type-small); }
 .switch-item { white-space: nowrap; }
 @media (prefers-reduced-motion: reduce) and (min-width: 36em) { .motion-switch { display: inline; } }
 @media not all and (min-width: 36em) { .bare-switch { display: none; } }
@@ -200,7 +205,7 @@ img { max-width: 100%; height: auto; }
   .bare .page { opacity: 0; visibility: hidden; transition: opacity 0.25s, visibility 0s 0.25s; }
   .bare .unbare {
     display: block; position: fixed; left: 1rem; bottom: 0.75rem; z-index: 5;
-    font-size: 0.875em;
+    font-size: var(--type-small);
   }
 }
 .unbare::before { content: "["; color: var(--gray); }
@@ -222,14 +227,14 @@ img { max-width: 100%; height: auto; }
   margin: 0 calc(-1 * var(--bleed)) 0.75rem 0;
 }
 .sec > summary::-webkit-details-marker { display: none; }
-.sec > summary::before { content: "\25B8"; font-size: 0.9em; }
+.sec > summary::before { content: "\25B8"; font-size: var(--type-small); }
 .sec[open] > summary::before { content: "\25BE"; }
 .sec > summary::after {
   content: ""; flex: 1; height: 0.25em;
   background: radial-gradient(circle, var(--dots) 0.09em, transparent 0.11em) left bottom / 0.5em 0.25em;
   background-repeat: space no-repeat;   /* whole dots only, last one flush with the box edge */
 }
-.sec > summary h2 { font-size: 1.15rem; margin: 0; }
+.sec > summary h2 { font-size: var(--type-heading); margin: 0; }
 
 .papers { list-style: none; margin: 0; padding: 0; }
 .paper { margin: 0 0 1.15rem; scroll-margin-top: 1rem; }
@@ -250,17 +255,17 @@ img { max-width: 100%; height: auto; }
 
 /* keyboard/screen-reader handle for the write-up; visible only when focused */
 .intro { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-.intro:focus-visible { position: static; width: auto; height: auto; clip-path: none; margin-left: 0.4em; font-size: 0.9em; }
+.intro:focus-visible { position: static; width: auto; height: auto; clip-path: none; margin-left: 0.4em; font-size: var(--type-small); }
 
 .ur { color: var(--red); white-space: nowrap; }
-.by, .ln { font-size: 0.875em; }
+.by, .ln { font-size: var(--type-small); }
 .by { color: var(--gray); }
 .by b { color: var(--text); }
 
 .bibbtn, .switch { font: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
 .bib {
   margin: 0.4rem 0 0; padding: 0.6rem 0.75rem; background: var(--code-bg);
-  font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12.5px; line-height: 1.45;
+  font-family: ui-monospace, Menlo, Consolas, monospace; font-size: var(--type-small); line-height: 1.45;
   white-space: pre-wrap; overflow-wrap: anywhere; user-select: all;
 }
 
@@ -288,9 +293,9 @@ img { max-width: 100%; height: auto; }
 .writeup:target, .js .writeup.open { display: block; }
 .js .writeup:target:not(.open) { display: none; }
 .writeup:focus { outline: none; }
-.writeup h2 { font-size: 1.2rem; margin: 0 0 0.25rem; }
-.writeup .meta { color: var(--gray); font-size: 0.94em; margin: 0 0 1.25rem; }
-.writeup .x { float: right; margin: 0 0 0.5rem 1rem; font-size: 0.94em; }
+.writeup h2 { font-size: var(--type-heading); margin: 0 0 0.25rem; }
+.writeup .meta { color: var(--gray); font-size: var(--type-small); margin: 0 0 1.25rem; }
+.writeup .x { float: right; margin: 0 0 0.5rem 1rem; font-size: var(--type-small); }
 .writeup p { margin: 0 0 1em; }
 .writeup img, .writeup video { display: block; max-width: 100%; margin: 1rem 0; }
 
@@ -362,7 +367,7 @@ img { max-width: 100%; height: auto; }
     padding: 0.25rem var(--phone-pad);
     background: var(--bg);
     border-bottom: var(--rule);
-    font-size: 0.875rem;
+    font-size: var(--type-small);
   }
   .mobile-nav a { display: flex; align-items: center; min-height: 2rem; }
   .me { display: block; margin: 1.5rem 0 0; }
