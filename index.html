@@ -26,7 +26,7 @@ layout: default
     {% endfor %}
   </main>
 
-  {%- comment -%} Every write-up is rendered here; the JS shows one at a time (and moves it into its entry on phones). {%- endcomment %}
+  {%- comment -%} Every write-up is rendered here; the JS shows one at a time (and moves it into its entry below 107em). {%- endcomment %}
   <aside class="reader" id="reader" aria-label="Write-up">
     {% for s in site.data.papers %}{% for p in s.papers %}
     {%- assign writeup = site.writeups | where: "slug", p.id | first -%}

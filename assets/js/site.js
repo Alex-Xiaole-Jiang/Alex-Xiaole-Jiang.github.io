@@ -1,15 +1,13 @@
-// Opens and closes paper write-ups. Wide: in the right column. Narrower: in a
-// panel that slides over the list. One column: inline, right under the paper's entry. The URL hash (#kwm) names the open one.
+// Opens and closes paper write-ups. Wide: in the right column. Narrower:
+// inline, right under the paper's entry. The URL hash (#kwm) names the open one.
 // Without JS the write-ups still open through CSS :target. The "js" class that
 // switches that off is set here, not inline, so a browser too old to run this
 // file keeps the CSS-only behavior instead of ending up with neither.
 (() => {
   document.documentElement.classList.add("js");
 
-  // layouts; keep in sync with site.css
-  const oneColumn = window.matchMedia("not all and (min-width: 56em)");
+  // the layout with a write-up column; keep in sync with site.css
   const docked = window.matchMedia("(min-width: 107em)");
-  const panel = () => !oneColumn.matches && !docked.matches;
   const reader = document.getElementById("reader");
   let current = null;
 
@@ -21,7 +19,7 @@
   const handle = (id) => entry(id).querySelector(".intro");
 
   function place(el) {
-    (oneColumn.matches ? entry(el.id) : reader).appendChild(el);
+    (docked.matches ? reader : entry(el.id)).appendChild(el);
   }
 
   function setHash(id) {
@@ -45,8 +43,7 @@
     reader.classList.add("is-open");
     current = id;
     setHash(id);
-    if (!oneColumn.matches) reader.scrollTop = 0;
-    if (panel()) el.focus({ preventScroll: true });
+    if (docked.matches) reader.scrollTop = 0;
     window.goatcounter?.count?.({ path: "write-up/" + id, title: id, event: true });
   }
 
@@ -59,14 +56,14 @@
   }
 
   // Close, and put focus back on the entry if it was in the write-up (which is
-  // now hidden). One column: scroll back up to the entry if it's off screen.
+  // now hidden). Inline: scroll back up to the entry if it's off screen.
   function closeAndReturn() {
     const id = current;
     if (!id) return;
     const wasInside = writeup(id).contains(document.activeElement);
     close();
     if (wasInside) handle(id).focus({ preventScroll: true });
-    if (oneColumn.matches && entry(id).getBoundingClientRect().top < 0) entry(id).scrollIntoView();
+    if (!docked.matches && entry(id).getBoundingClientRect().top < 0) entry(id).scrollIntoView();
   }
 
   const toggle = (id) => (id === current ? close() : open(id));
@@ -100,12 +97,6 @@
       return;
     }
 
-    // panel: a click outside it, other than on a link or button, closes it
-    if (current && panel() && !t.closest(".reader, a, button")) {
-      closeAndReturn();
-      return;
-    }
-
     const bib = t.closest(".bibbtn");
     if (bib) {
       const pre = document.getElementById(bib.getAttribute("aria-controls"));
@@ -121,8 +112,8 @@
   const onLayoutChange = () => {
     if (current) place(writeup(current));
   };
-  if (oneColumn.addEventListener) oneColumn.addEventListener("change", onLayoutChange);
-  else oneColumn.addListener(onLayoutChange);   // Safari < 14
+  if (docked.addEventListener) docked.addEventListener("change", onLayoutChange);
+  else docked.addListener(onLayoutChange);   // Safari < 14
 
   window.addEventListener("hashchange", () => {
     const id = location.hash.slice(1);
@@ -130,10 +121,19 @@
     else close();
   });
 
+  // A link to #id lands on the entry, not the write-up. The browser would
+  // keep scrolling to the write-up itself, the element with that id, until
+  // loading ends, so the hash stays off the URL until then.
   const start = location.hash.slice(1);
   if (writeup(start)) {
     open(start);
-    entry(start).scrollIntoView();
+    setHash("");
+    const toEntry = () => entry(start).scrollIntoView();
+    toEntry();
+    window.addEventListener("load", () => {
+      setHash(start);
+      toEntry();   // again, as the fonts may have reflowed the page
+    }, { once: true });
   }
 })();
 

@@ -1,7 +1,7 @@
 /* Alex Jiang — one stylesheet, no framework.
-   Wide: photo | list | write-up.  Narrower: photo | list, with the write-up in
-   a panel that slides over the list. Then one column with write-ups opening
-   inline; phones add a sticky name strip. */
+   Wide: photo | list | write-up.  Narrower: photo | list, with write-ups
+   opening inline under their entry. Then one column; phones add a sticky
+   name strip. */
 
 @font-face { font-family: "Charter"; src: url("../fonts/charter-regular.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
 @font-face { font-family: "Charter"; src: url("../fonts/charter-italic.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: swap; }
@@ -33,7 +33,7 @@
      each side when that is narrower; wider windows never stretch it. The photo
      column outranks the write-up: it stays whenever it fits beside the list,
      and the write-up gets a column of its own only when all three fit.
-     Otherwise it opens in a panel over the list. So the breakpoints are:
+     Otherwise it opens inside its entry. So the breakpoints are:
        phone below:      list + 2*phone-pad                           = 36rem
        photo column:     2*pad + side + colgap + list                 = 56rem
        write-up column:  2*pad + side + colgap + list + colgap + read = 107rem
@@ -46,7 +46,6 @@
   --colgap: 5rem;
   --pad: 3rem;           /* outer margin, at least */
   --top: 3.5rem;         /* space above the columns */
-  --panel-pad: 2.5rem;   /* inside the write-up panel */
   --phone-pad: 1rem;
   --bleed: 0.7rem;       /* how far gray boxes and dot leaders reach past the text */
 }
@@ -115,13 +114,14 @@ body {
 /* The text columns sit on frosted glass: a see-through, blurred pane whose
    edge feathers into the background. Browsers without color-mix get it
    opaque. Phones don't draw the background, so they need none, and below
-   107em the write-up is a slide-in panel with its own ground (further down). */
+   107em the write-up opens inside the list, on its pane. */
 :root {
   --edge-x: linear-gradient(to right, transparent, #000 1.75rem, #000 calc(100% - 1.75rem), transparent);
   --edge-y: linear-gradient(to bottom, transparent, #000 1.75rem, #000 calc(100% - 1.75rem), transparent);
   --edge: var(--edge-x), var(--edge-y);
 }
 @media (min-width: 36em) {
+  :root { --phone-pad: 2rem; }   /* the panes reach 2rem past the text; room for that */
   .me, .list { z-index: 0; }
   .list { position: relative; }
   .me::before, .list::before {
@@ -240,7 +240,7 @@ img { max-width: 100%; height: auto; }
 }
 @media (hover: hover) { .paper[data-w]:hover { background: var(--box-hover); } }
 .paper[data-w].is-open { background: var(--box-open); }
-.pm { display: none; }   /* +/− marker, one-column layout only */
+.pm { display: none; }   /* +/− marker, where write-ups open inline */
 
 /* keyboard/screen-reader handle for the write-up; visible only when focused */
 .intro { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
@@ -289,49 +289,32 @@ img { max-width: 100%; height: auto; }
 /* notes to self in drafts; the write-ups include them only on `jekyll serve` */
 .todo { color: var(--faint); font-style: italic; }
 
-/* ---------- photo | list (< 107em): the write-up slides in over the list ---------- */
+/* ---------- photo | list (< 107em): write-ups open inside their entry ---------- */
 
-/* The panel is as wide as the full write-up column, but its left edge stops
-   colgap/2 short of the photo column: half the window plus half the page,
-   less the photo column and that gap. It is a little see-through, so the list
-   shows behind it. */
 @media not all and (min-width: 107em) {
   .page { grid-template-columns: var(--side) var(--list); }
-  .reader {
-    visibility: hidden;
-    opacity: 0;
-    transition: opacity 0.1s, transform 0.1s, visibility 0.1s;
-    position: fixed; top: 0; right: 0; bottom: 0; z-index: 3;
-    width: calc(var(--read) + 2 * var(--panel-pad));
-    width: min(var(--read) + 2 * var(--panel-pad),
-               50vw + (var(--side) + var(--colgap) + var(--list)) / 2 - var(--side) - var(--colgap) / 2);
-    height: auto;
-    align-self: stretch;   /* fill top to bottom (alignment applies to fixed boxes too) */
-    margin: 0;
-    padding: var(--top) var(--panel-pad) 3rem;
-    background: var(--bg);
-    border-left: var(--rule);
-    box-shadow: -0.25rem 0 0.75rem rgba(0, 0, 0, 0.04);
-    transform: translateX(1.5rem);
-  }
-  /* opening: a quick slide in from the right; visible at once, so focus can move into it */
-  .reader.is-open {
-    visibility: visible; opacity: 1; transform: none;
-    transition: opacity 0.14s ease-out, transform 0.14s ease-out;
-  }
-}
-@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
-  @media not all and (min-width: 107em) {
-    .reader { background: color-mix(in srgb, var(--bg) 70%, transparent); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
-  }
-}
-/* without JS (separate rule: a browser without :has() would drop the whole list) */
-@media not all and (min-width: 107em) {
-  html:not(.js) .reader:has(.writeup:target) { visibility: visible; opacity: 1; transform: none; }
-}
-@media (prefers-reduced-motion: reduce) { .reader, .page { transition: none !important; } }
 
-/* ---------- one column (< 56em): write-ups open inside their entry ---------- */
+  .pm { display: inline-block; width: 1.1em; }
+  .pm::before { content: "+"; }
+  .paper.is-open .pm::before { content: "\2212"; }
+
+  /* Without JS the targeted write-up shows below the lists (the aside is empty,
+     so zero height, otherwise). With JS the write-up moves into its entry. */
+  .reader { position: static; grid-column: 2; height: auto; margin: 0; padding: 0; overflow: visible; }
+  .reader .writeup:target { border-top: var(--rule); padding: 1.5rem 0 3rem; }
+  .js .reader { display: none; }
+
+  .paper > .writeup {
+    margin: 0.75rem 0 1.5rem;
+    padding-left: 0.9rem;
+    border-left: var(--rule);
+  }
+  .paper > .writeup h2 { display: none; }
+  .paper > .writeup .x { margin-bottom: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .page { transition: none !important; } }
+
+/* ---------- one column (< 56em) ---------- */
 
 @media not all and (min-width: 56em) {
   /* the list, centered, never closer than --phone-pad to the screen edge */
@@ -357,28 +340,6 @@ img { max-width: 100%; height: auto; }
   .me .contact a { display: inline; margin-right: 0.6em; }
   .js .me .switches { grid-column: 2; grid-row: 3; align-self: baseline; justify-self: end; margin: 0; }
   .list { padding-top: 1.75rem; }
-
-  .pm { display: inline-block; width: 1.1em; }
-  .pm::before { content: "+"; }
-  .paper.is-open .pm::before { content: "\2212"; }
-
-  /* Without JS the targeted write-up shows below the lists (the aside is empty,
-     so zero height, otherwise). With JS the write-up moves into its entry. */
-  .reader {
-    position: static; width: auto; height: auto; margin: 0; padding: 0; overflow: visible;
-    background: none; border: 0; box-shadow: none; visibility: visible; opacity: 1; transform: none; transition: none;
-    -webkit-backdrop-filter: none; backdrop-filter: none;
-  }
-  .reader .writeup:target { border-top: var(--rule); padding: 1.5rem 0 3rem; }
-  .js .reader { display: none; }
-
-  .paper > .writeup {
-    margin: 0.75rem 0 1.5rem;
-    padding-left: 0.9rem;
-    border-left: var(--rule);
-  }
-  .paper > .writeup h2 { display: none; }
-  .paper > .writeup .x { margin-bottom: 0; }
 }
 
 /* ---------- phone (< 36em): sticky name strip ---------- */
@@ -397,11 +358,6 @@ img { max-width: 100%; height: auto; }
   .me .tag span:not(:first-child), .me .tag br, .me .contact, .js .me .switches { display: none; }
 
   .list { padding: 1.25rem 0 4rem; }
-  /* The frosted panes (36em and up): the strip has its own ground, so it
-     needs none, and the list's must stay inside the page padding, or it
-     would stick out past the screen and add a horizontal scroll. */
-  .me::before { display: none; }
-  .list::before { inset: -2rem calc(-1 * var(--phone-pad)); }
   .about { margin-bottom: 0.5rem; }
   .contact-inline { display: block; margin: 0 0 1.75rem; }
   .contact-inline a { display: inline; margin-right: 0.75em; }
