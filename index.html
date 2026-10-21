@@ -39,7 +39,7 @@ layout: default
       <p class="x">[<a class="close" href="#p-{{ p.id }}" aria-label="Close write-up">close</a>]</p>
       <h2>{{ p.title }}</h2>
       {% if writeup.meta %}<p class="meta">{{ writeup.meta }}</p>{% endif %}
-      {{ writeup.content | markdownify }}
+      {{ writeup.content }}
     </article>
     {%- endif %}
     {% endfor %}{% endfor %}

@@ -297,6 +297,8 @@ img { max-width: 100%; height: auto; }
 .writeup .meta { color: var(--gray); font-size: var(--type-small); margin: 0 0 1.25rem; }
 .writeup .x { float: right; margin: 0 0 0.5rem 1rem; font-size: var(--type-small); }
 .writeup p { margin: 0 0 1em; }
+.writeup .katex { font-size: 1em; }
+.writeup .katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.15em 0; }
 .writeup img, .writeup video { display: block; max-width: 100%; margin: 1rem 0; }
 
 /* notes to self in drafts; the write-ups include them only on `jekyll serve` */

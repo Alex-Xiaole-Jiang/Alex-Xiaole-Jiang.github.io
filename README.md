@@ -22,6 +22,10 @@ A note to self in a write-up goes inside
 after the paragraph: it shows in gray italics on `jekyll serve` and is left out
 of the live site altogether.
 
+Write equations with `$...$` inline and `$$...$$` on separate lines for display math.
+Use `\lvert` for ket bars (for example `$\lvert\psi\rangle$`) so Markdown does not
+interpret them as table separators. The site renders write-up math with KaTeX.
+
 ## Preview locally
 
     jekyll serve      # http://localhost:4000
