@@ -47,12 +47,12 @@
     window.goatcounter?.count?.({ path: "write-up/" + id, title: id, event: true });
   }
 
-  function close() {
+  function close(clearHash = true) {
     if (!current) return;
     mark(current, false);
     reader.classList.remove("is-open");
     current = null;
-    setHash("");
+    if (clearHash) setHash("");
   }
 
   // Close, and put focus back on the entry if it was in the write-up (which is
@@ -82,6 +82,15 @@
     // a modified click (open in a new tab, and so on) is the browser's
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     const t = e.target;
+
+    const navLink = t.closest(".mobile-nav a");
+    if (navLink) {
+      // Close before the browser scrolls, so inline content cannot shift the target.
+      close(false);
+      const section = document.getElementById(navLink.hash.slice(1));
+      if (section?.matches("details.sec")) section.open = true;
+      return;   // ordinary anchor navigation, including browser history
+    }
 
     const intro = t.closest(".intro");
     const li = intro ? null : clickedEntry(t);
@@ -118,7 +127,11 @@
   window.addEventListener("hashchange", () => {
     const id = location.hash.slice(1);
     if (writeup(id)) open(id);
-    else close();
+    else {
+      close(false);   // preserve section anchors when leaving a write-up
+      const section = document.getElementById(id);
+      if (section?.matches("details.sec")) section.open = true;
+    }
   });
 
   // A link to #id lands on the entry, not the write-up. The browser would

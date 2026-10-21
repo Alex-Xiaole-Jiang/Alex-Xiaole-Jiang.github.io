@@ -1,9 +1,13 @@
 ---
 layout: default
 ---
+<nav class="mobile-nav" aria-label="Page sections">
+  <a href="#start">Start</a>
+  {% for s in site.data.papers %}<a href="#{{ s.id }}">{{ s.section | escape }}</a>{% endfor %}
+</nav>
 <div class="page">
 
-  <header class="me">
+  <header class="me" id="start">
     <img class="photo" src="{{ site.photo_night | relative_url }}" data-night="{{ site.photo_night | relative_url }}" data-day="{{ site.photo_day | relative_url }}" width="176" height="176" alt="Photo of {{ site.name }}">
     <h1>{{ site.name }}</h1>
     <p class="tag">{% for line in site.tagline %}<span>{{ line }}</span>{% unless forloop.last %}<br>{% endunless %}{% endfor %}</p>
