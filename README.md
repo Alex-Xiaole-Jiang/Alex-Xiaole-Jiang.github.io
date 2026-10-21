@@ -1,6 +1,6 @@
 # Alex Jiang's website
 
-Source for my personal academic site, live at **<https://alex-xiaole-jiang.github.io>**: about, papers, and longer write-ups.
+Source for my personal site, live at **<https://alex-xiaole-jiang.github.io>**: about, papers, and longer write-ups.
 
 Plain Jekyll, built by GitHub Pages on push. No theme, no plugins, no build step.
 
