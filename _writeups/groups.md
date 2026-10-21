@@ -1,8 +1,6 @@
 ---
 # meta: Annals of Physics 2026
 ---
-A group-theoretic way to classify the different ways several quantum systems can be entangled.
-
 Everyone has heard of entanglement, from your undergraduate physics friends to your coworker obsessed with popular science: "spooky action at a distance"! The fame is well deserved: entanglement is fundamental to our understanding of quantum phenomena. It also plays a central role in recent advances in quantum gravity, which we (I) care a lot about.
 
 In this paper, we aim to investigate entanglement and propose a different way of thinking about it. A familiar way to characterize entanglement goes as follows. Pick your favorite pure state (vector) $\lvert\psi\rangle \in \mathcal{H}$, where $\mathcal{H}$ is the space of possible states (it's a vector space!). We divide the system into two parts, $A$ and $B$, so that $\mathcal{H} = \mathcal{H}_A \otimes \mathcal{H}_B$, and compute the *entanglement entropy*, $S_A$, across this division:
