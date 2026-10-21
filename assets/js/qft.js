@@ -550,26 +550,40 @@
   cue.hidden = true;
   document.body.appendChild(cue);
   let pointer = null;
+  let cueTimer = 0;
+  const CUE_DELAY = 160;       // show only once the mouse has settled
 
   function updateCue() {
-    cue.hidden = !pointer || document.hidden
+    cue.hidden = !pointer || cueTimer !== 0 || document.hidden
       || !canCreate(document.elementFromPoint(pointer.x, pointer.y));
     if (!cue.hidden) {
-      const x = Math.max(0, Math.min(pointer.x + 8, root.clientWidth - 14));
-      const y = Math.max(0, pointer.y - 19);
-      cue.style.transform = `translate(${x}px, ${y}px)`;
+      // Center the glyph above the native cursor hotspot, its foot at the tip.
+      const x = Math.max(0, Math.min(pointer.x - 7, root.clientWidth - 14));
+      const y = Math.max(0, pointer.y - 16);
+      cue.style.transform = `translate3d(${x}px, ${y}px, 0)`;
     }
   }
 
   function hideCue() {
+    clearTimeout(cueTimer);
+    cueTimer = 0;
     pointer = null;
     cue.hidden = true;
+  }
+
+  function deferCue() {
+    clearTimeout(cueTimer);
+    cue.hidden = true;
+    cueTimer = setTimeout(() => {
+      cueTimer = 0;
+      updateCue();
+    }, CUE_DELAY);
   }
 
   function onPointer(e) {
     if (e.pointerType !== "mouse") return hideCue();
     pointer = { x: e.clientX, y: e.clientY };
-    updateCue();
+    deferCue();
   }
 
   document.addEventListener("pointermove", onPointer, { passive: true });
@@ -577,12 +591,12 @@
   document.addEventListener("pointerdown", onPointer, { passive: true });
   document.addEventListener("pointerout", (e) => { if (!e.relatedTarget) hideCue(); });
   document.addEventListener("pointercancel", hideCue);
-  document.addEventListener("scroll", updateCue, { passive: true, capture: true });
+  document.addEventListener("scroll", deferCue, { passive: true, capture: true });
   document.addEventListener("visibilitychange", hideCue);
   window.addEventListener("blur", hideCue);
-  window.addEventListener("resize", updateCue);
+  window.addEventListener("resize", deferCue);
   // Opening a write-up can move content beneath a stationary pointer.
-  document.addEventListener("click", () => requestAnimationFrame(updateCue));
+  document.addEventListener("click", () => requestAnimationFrame(() => updateCue()));
 
   /* ---------- size, animation, pausing ---------- */
 
