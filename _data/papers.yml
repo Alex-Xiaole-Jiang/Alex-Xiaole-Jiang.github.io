@@ -28,7 +28,7 @@
       authors: "B. Wang*, X. Jiang*, Z. Teng, X. Liu, Y. Li, L. Pinto, Z. J. Cui, B. Huang"
       venue: ICRA 2027 submission.
       links:
-        website: https://panotac-anon.github.io/
+        website: https://panotac.github.io/
 
     - id: yor
       title: "YOR: Your Own Mobile Manipulator for Generalizable Robotics"
