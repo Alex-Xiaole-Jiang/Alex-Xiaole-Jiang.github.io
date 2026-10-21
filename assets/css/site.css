@@ -17,7 +17,7 @@
   --faint: #8a8a8a;
   --dots: #777;
   --link: #2b4f81;       /* links stay this color once visited too */
-  --red: #cc0000;
+  --red: #a83a2e;        /* brick, not signal red: quieter beside the walnut */
   --box: #eae7e1;        /* entry with a write-up */
   --box-hover: #e3e1db;
   --box-open: #dddbd5;
@@ -62,7 +62,7 @@
     --faint: #7d7a73;
     --dots: #6c6a65;
     --link: #9fc6ee;
-    --red: #ff8a7a;
+    --red: #dc9a8e;
     --box: #171c25;
     --box-hover: #1d232d;
     --box-open: #232a35;
@@ -82,7 +82,7 @@
     --faint: #7d7a73;
     --dots: #6c6a65;
     --link: #9fc6ee;
-    --red: #ff8a7a;
+    --red: #dc9a8e;
     --box: #171c25;
     --box-hover: #1d232d;
     --box-open: #232a35;
