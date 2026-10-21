@@ -8,7 +8,7 @@ Plain Jekyll, built by GitHub Pages on push. No theme, no plugins, no build step
 
 | What | Where |
 |---|---|
-| Name, tagline, links, photo | `_config.yml` (add the Scholar URL there) |
+| Name, tagline, links, the two photos | `_config.yml` (add the Scholar URL there) |
 | About paragraph | `index.html` |
 | Paper list (title, authors, venue, links, bibtex) | `_data/papers.yml` |
 | Long write-up for a paper | `_writeups/<paper id>.md` |

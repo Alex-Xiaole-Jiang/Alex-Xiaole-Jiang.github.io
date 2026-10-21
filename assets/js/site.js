@@ -147,6 +147,30 @@
   const isDark = () => (root.dataset.theme ? root.dataset.theme === "dark" : systemDark.matches);
   const buttons = (name) => document.querySelectorAll(`[data-switch="${name}"]`);
 
+  // Two photos (_config.yml). The night one is in the HTML, so it shows first
+  // whatever the theme. Once the theme changes, night rests on the night photo
+  // and day on the day one. Hovering shows the other; a click (a tap, on a
+  // phone) makes the other one the resting photo.
+  const photo = document.querySelector(".me .photo");
+  const twoPhotos = !!(photo && photo.dataset.night && photo.dataset.day);
+  let resting = "night";
+  const other = () => (resting === "night" ? "day" : "night");
+  function showPhoto(which) {
+    if (photo.getAttribute("src") !== photo.dataset[which]) photo.setAttribute("src", photo.dataset[which]);
+  }
+  function restPhoto(which) {
+    resting = which;
+    showPhoto(which);
+  }
+  const photoForTheme = () => restPhoto(isDark() ? "night" : "day");
+  if (twoPhotos) {
+    photo.addEventListener("mouseenter", () => showPhoto(other()));
+    photo.addEventListener("mouseleave", () => showPhoto(resting));
+    photo.addEventListener("click", () => restPhoto(other()));
+    // fetch the day photo once the page is up, so the first hover is instant
+    window.addEventListener("load", () => { new Image().src = photo.dataset.day; }, { once: true });
+  }
+
   function label() {
     buttons("theme").forEach((b) => {
       b.textContent = isDark() ? "day" : "night";
@@ -167,6 +191,7 @@
       else localStorage.removeItem("theme");
     } catch (e) {}
     label();
+    if (twoPhotos) photoForTheme();
   }
 
   function toggleMotion() {
@@ -215,7 +240,11 @@
     }
   }, true);
 
-  if (systemDark.addEventListener) systemDark.addEventListener("change", label);
-  else systemDark.addListener(label);   // Safari < 14
+  const onSystemChange = () => {
+    label();
+    if (twoPhotos && !root.dataset.theme) photoForTheme();   // following the system
+  };
+  if (systemDark.addEventListener) systemDark.addEventListener("change", onSystemChange);
+  else systemDark.addListener(onSystemChange);   // Safari < 14
   label();
 })();

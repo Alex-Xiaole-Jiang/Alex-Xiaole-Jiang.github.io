@@ -8,7 +8,11 @@ baseurl: ""
 name: Alex Jiang
 tagline:
   - A physicist who doesn't like philosophy makes a poor roboticist.
-photo: /assets/img/photo.jpg
+# Two photos. The night one shows first, whatever the theme. Once the theme is
+# switched, night shows photo_night and day shows photo_day; hovering over the
+# photo (tapping, on a phone) shows the other one.
+photo_night: /assets/img/photo-night.jpg
+photo_day: /assets/img/photo-day.jpg
 email: xiaole.jiang.alex@gmail.com
 cv: /assets/xiaole-alex-jiang-cv.pdf
 scholar: ""  # paste the Google Scholar profile URL here and the link appears
