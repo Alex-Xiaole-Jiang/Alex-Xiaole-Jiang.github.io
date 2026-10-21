@@ -531,13 +531,58 @@
   // Only the bare background counts: the page itself, the gaps between the
   // columns, and the write-up column while it is empty. The text columns sit
   // on their panes, and the canvas itself takes no clicks.
-  function onClick(e) {
-    if (!width) return;
-    const t = e.target;
-    const bare = t === document.documentElement || t === document.body || t.classList.contains("page")
-      || (t.classList.contains("reader") && !t.classList.contains("is-open"));
-    if (bare) spawn(e.clientX / UNIT_PX, e.clientY / UNIT_PX);
+  function canCreate(t) {
+    return width > 0 && roomy.matches && t instanceof Element
+      && (t === root || t === document.body || t.classList.contains("page")
+        || (t.classList.contains("reader") && !t.classList.contains("is-open")));
   }
+
+  function onClick(e) {
+    if (canCreate(e.target)) spawn(e.clientX / UNIT_PX, e.clientY / UNIT_PX);
+  }
+
+  // A small creation-operator dagger accompanies the native cursor only
+  // where a click can add a loop. It never intercepts a click or selects text.
+  const cue = document.createElement("span");
+  cue.className = "creation-cue";
+  cue.textContent = "†";
+  cue.setAttribute("aria-hidden", "true");
+  cue.hidden = true;
+  document.body.appendChild(cue);
+  let pointer = null;
+
+  function updateCue() {
+    cue.hidden = !pointer || document.hidden
+      || !canCreate(document.elementFromPoint(pointer.x, pointer.y));
+    if (!cue.hidden) {
+      const x = Math.max(0, Math.min(pointer.x + 8, root.clientWidth - 14));
+      const y = Math.max(0, pointer.y - 19);
+      cue.style.transform = `translate(${x}px, ${y}px)`;
+    }
+  }
+
+  function hideCue() {
+    pointer = null;
+    cue.hidden = true;
+  }
+
+  function onPointer(e) {
+    if (e.pointerType !== "mouse") return hideCue();
+    pointer = { x: e.clientX, y: e.clientY };
+    updateCue();
+  }
+
+  document.addEventListener("pointermove", onPointer, { passive: true });
+  document.addEventListener("pointerover", onPointer, { passive: true });
+  document.addEventListener("pointerdown", onPointer, { passive: true });
+  document.addEventListener("pointerout", (e) => { if (!e.relatedTarget) hideCue(); });
+  document.addEventListener("pointercancel", hideCue);
+  document.addEventListener("scroll", updateCue, { passive: true, capture: true });
+  document.addEventListener("visibilitychange", hideCue);
+  window.addEventListener("blur", hideCue);
+  window.addEventListener("resize", updateCue);
+  // Opening a write-up can move content beneath a stationary pointer.
+  document.addEventListener("click", () => requestAnimationFrame(updateCue));
 
   /* ---------- size, animation, pausing ---------- */
 
