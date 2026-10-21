@@ -12,7 +12,9 @@
   <meta property="og:title" content="{{ site.title }}">
   <meta property="og:description" content="{{ site.description }}">
   <meta property="og:url" content="{{ site.url }}{{ page.url | relative_url }}">
-  <link rel="icon" href="{{ '/assets/img/favicon.svg' | relative_url }}" type="image/svg+xml">
+  {%- comment %} No tab icon for now. An empty data: URL keeps the tab blank and stops the
+      browser asking for /favicon.ico. To bring it back: href="{{ '/assets/img/favicon.svg' | relative_url }}" type="image/svg+xml" {% endcomment %}
+  <link rel="icon" href="data:,">
   {%- comment %} All four faces, so no text swaps in after the page is drawn: italic and
       bold are on the first screen, and bold italic shows up in a write-up's heading. {% endcomment %}
   <link rel="preload" href="{{ '/assets/fonts/charter-regular.woff2' | relative_url }}" as="font" type="font/woff2" crossorigin>

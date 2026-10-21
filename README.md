@@ -15,7 +15,7 @@ Plain Jekyll, built by GitHub Pages on push. No theme, no plugins, no build step
 | Look | `assets/css/site.css` |
 | Open/close behavior | `assets/js/site.js` |
 | Background animation | `assets/js/qft.js` |
-| Favicon | `assets/img/favicon.svg` |
+| Favicon (off for now; see `_layouts/default.html`) | `assets/img/favicon.svg` |
 
 A note to self in a write-up goes inside
 `{% if jekyll.environment == "development" %} ... {% endif %}`, with `{: .todo}`
