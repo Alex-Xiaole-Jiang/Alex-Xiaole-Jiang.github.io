@@ -11,6 +11,18 @@
   const reader = document.getElementById("reader");
   let current = null;
 
+  const list = document.querySelector(".list");
+  function sizeReader() {
+    if (!docked.matches) return;
+    // The reader starts one padding-width above the middle column's text.
+    // Including that offset makes its bottom stop at the middle column's end.
+    const offset = parseFloat(getComputedStyle(reader).paddingTop);
+    reader.style.setProperty("--reader-column-limit", `${list.getBoundingClientRect().height + offset}px`);
+  }
+  if (window.ResizeObserver) new ResizeObserver(sizeReader).observe(list);
+  window.addEventListener("resize", sizeReader);
+  sizeReader();
+
   const writeup = (id) => {
     const el = id && document.getElementById(id);
     return el && el.classList.contains("writeup") ? el : null;
@@ -120,6 +132,7 @@
 
   const onLayoutChange = () => {
     if (current) place(writeup(current));
+    sizeReader();
   };
   if (docked.addEventListener) docked.addEventListener("change", onLayoutChange);
   else docked.addListener(onLayoutChange);   // Safari < 14

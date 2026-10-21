@@ -279,8 +279,10 @@ img { max-width: 100%; height: auto; }
   /* 2rem of padding all round, outside the text, for the frosted ground's feathered edge */
   margin: calc(var(--top) - 2rem) -2rem 1rem;
   padding: 2rem;
-  height: calc(100vh - var(--top) + 1rem);    /* fallback for browsers without dvh */
-  height: calc(100dvh - var(--top) + 1rem);
+  height: auto;
+  /* Fit the text, capped by both the viewport and the middle column. */
+  max-height: min(calc(100vh - 2 * var(--top) + 2rem), var(--reader-column-limit, 100vh));
+  max-height: min(calc(100dvh - 2 * var(--top) + 2rem), var(--reader-column-limit, 100dvh));
   overflow-y: auto;
   min-width: 0;
 }
@@ -315,7 +317,7 @@ img { max-width: 100%; height: auto; }
 
   /* Without JS the targeted write-up shows below the lists (the aside is empty,
      so zero height, otherwise). With JS the write-up moves into its entry. */
-  .reader { position: static; grid-column: 2; height: auto; margin: 0; padding: 0; overflow: visible; }
+  .reader { position: static; grid-column: 2; height: auto; max-height: none; margin: 0; padding: 0; overflow: visible; }
   .reader .writeup:target { border-top: var(--rule); padding: 1.5rem 0 3rem; }
   .js .reader { display: none; }
 
