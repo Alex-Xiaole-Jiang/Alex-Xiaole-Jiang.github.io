@@ -17,7 +17,7 @@ $$
  g_A \lvert\psi\rangle = g_B^{-1}\lvert\psi\rangle,
 $$
 
-where $g_A$ acts only on $A$, and $g_B$ acts only on $B$. In other words, acting on one side can have the same effect as acting on the other. Roughly, collecting these coordinated transformations gives us the *entanglement group* of $\lvert\psi\rangle$.\* This lets us describe entanglement through the operations that different parts of a system can perform for one another.
+where $g_A$ acts only on $A$, and $g_B$ acts only on $B$. In other words, acting on one side can have the same effect as acting on the other. Roughly, collecting these coordinated transformations gives us the ***entanglement group*** of $\lvert\psi\rangle$.\* This lets us describe entanglement through the operations that different parts of a system can perform for one another.
 
 Our prescription extends naturally to multipartite systems, capturing entanglement structure that entropy alone does not fully describe. Using this language, we propose a way to characterize and classify *multipartite entanglement*, show how monogamy of entanglement arises, identify this entanglement structure in a range of quantum algorithms and protocols, and extend the formulation to mixed states.
 
