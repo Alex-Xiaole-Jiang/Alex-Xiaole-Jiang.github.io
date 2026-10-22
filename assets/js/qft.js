@@ -541,26 +541,25 @@
     if (canCreate(e.target)) spawn(e.clientX / UNIT_PX, e.clientY / UNIT_PX);
   }
 
-  // A small creation-operator dagger accompanies the native cursor only
-  // where a click can add a loop. It never intercepts a click or selects text.
-  const cue = document.createElement("span");
-  cue.className = "creation-cue";
-  cue.textContent = "†";
-  cue.setAttribute("aria-hidden", "true");
-  cue.hidden = true;
-  document.body.appendChild(cue);
+  // After a deliberate pause, the browser itself draws a creation-operator
+  // cursor. There is no separate mark following the mouse across the page.
   let pointer = null;
+  let cueTarget = null;
   let cueTimer = 0;
-  const CUE_DELAY = 160;       // show only once the mouse has settled
+  const CUE_DELAY = 1500;
+
+  function clearCue() {
+    if (cueTarget) cueTarget.classList.remove("creation-ready");
+    cueTarget = null;
+  }
 
   function updateCue() {
-    cue.hidden = !pointer || cueTimer !== 0 || document.hidden
-      || !canCreate(document.elementFromPoint(pointer.x, pointer.y));
-    if (!cue.hidden) {
-      // Center the glyph above the native cursor hotspot, its foot at the tip.
-      const x = Math.max(0, Math.min(pointer.x - 7, root.clientWidth - 14));
-      const y = Math.max(0, pointer.y - 16);
-      cue.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+    clearCue();
+    if (!pointer || cueTimer || document.hidden) return;
+    const target = document.elementFromPoint(pointer.x, pointer.y);
+    if (canCreate(target)) {
+      cueTarget = target;
+      cueTarget.classList.add("creation-ready");
     }
   }
 
@@ -568,12 +567,14 @@
     clearTimeout(cueTimer);
     cueTimer = 0;
     pointer = null;
-    cue.hidden = true;
+    clearCue();
   }
 
   function deferCue() {
     clearTimeout(cueTimer);
-    cue.hidden = true;
+    cueTimer = 0;
+    clearCue();
+    if (!pointer) return;
     cueTimer = setTimeout(() => {
       cueTimer = 0;
       updateCue();
@@ -581,14 +582,15 @@
   }
 
   function onPointer(e) {
-    if (e.pointerType !== "mouse") return hideCue();
+    if (e.pointerType !== "mouse" || e.buttons || !canCreate(e.target)) return hideCue();
     pointer = { x: e.clientX, y: e.clientY };
     deferCue();
   }
 
   document.addEventListener("pointermove", onPointer, { passive: true });
   document.addEventListener("pointerover", onPointer, { passive: true });
-  document.addEventListener("pointerdown", onPointer, { passive: true });
+  document.addEventListener("pointerdown", hideCue, { passive: true });
+  document.addEventListener("pointerup", onPointer, { passive: true });
   document.addEventListener("pointerout", (e) => { if (!e.relatedTarget) hideCue(); });
   document.addEventListener("pointercancel", hideCue);
   document.addEventListener("scroll", deferCue, { passive: true, capture: true });

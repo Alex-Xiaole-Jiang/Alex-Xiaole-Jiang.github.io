@@ -116,14 +116,11 @@ body {
 
 /* Background: a slowly rising slice of a loop soup (assets/js/qft.js). */
 #qft { position: fixed; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
-/* A small dagger at the native cursor tip on the clickable background. */
-.creation-cue {
-  position: fixed; top: 0; left: 0; z-index: 10;
-  width: 14px; height: 18px;
-  color: var(--gray); font: 16px/18px "Charter", Georgia, serif;
-  text-align: center; pointer-events: none; user-select: none;
+/* Resting on the background reveals a small creation-operator cursor.
+   Its hotspot is the crossbar intersection, so clicks stay precise. */
+@media screen and (min-width: 36em) {
+  .creation-ready { cursor: url("../img/creation-cursor.svg") 8 7, default; }
 }
-@media (max-width: 35.99em), print { .creation-cue { display: none; } }
 /* The text columns sit on frosted glass: a see-through, blurred pane whose
    edge feathers into the background. Browsers without color-mix get it
    opaque. Phones don't draw the background, so they need none, and below
