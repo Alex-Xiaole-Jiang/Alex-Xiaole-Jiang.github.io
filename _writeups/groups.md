@@ -9,7 +9,7 @@ $$
 S_A = -\operatorname{Tr}(\rho_A \log \rho_A).
 $$
 
-Here, $\rho_A$ describes the state of $A$ when we ignore $B$ (mathematically, we trace out subsystem $B$). For our pure state $\lvert\psi\rangle$, if this entropy is nonzero, we say the two parts are entangled; otherwise, they are not. In the latter case, the state is a *tensor product state*, $\lvert\psi\rangle = \lvert\psi_A\rangle \otimes \lvert\psi_B\rangle$.
+Here, $\rho_A$ describes the state of $A$ when we ignore $B$ (mathematically, we trace out subsystem $B$). For our pure state $\lvert\psi\rangle$, if this entropy is nonzero, we say the two parts are entangled; otherwise, they are not. In the latter case, the state is a *tensor product state*, $\lvert\psi\rangle = \lvert\psi_A\rangle \otimes \lvert\psi_B\rangle.$
 
 We propose to instead think of entanglement as a property of the state that lets us perform some action on one part, $A$, and undo it with a corresponding action on the other part, $B$. Mathematically, we describe "doing something to parts of a state" using group actions. Here, these are unitary transformations (basically rotation matrices). Calling the two operations $g_A$ and $g_B$, we can translate the idea into math:
 

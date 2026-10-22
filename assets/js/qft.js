@@ -492,7 +492,7 @@
   // nothing is created, so the loop is instead one that has just closed
   // there, its highest point at the plane, and shows whole at once.
   function spawn(x0, y0, duration = MIN_DURATION * Math.pow(MAX_DURATION / MIN_DURATION, Math.random())) {
-    // Clicks sample dt/t over the soup's range; hover hints use half its lower cutoff.
+    // Clicks sample dt/t over the soup's range; hover hints use a quarter of its lower cutoff.
     const loop = makeLoop(0, 0, 0, duration);
     const p = loop.pts, n = loop.n;
     const top = still();
@@ -549,7 +549,7 @@
   let cueTarget = null;
   let cueTimer = 0;
   const CUE_DELAY = 800;
-  const HINT_DURATION = MIN_DURATION / 2;
+  const HINT_DURATION = MIN_DURATION / 4;
   // Half the continuum mean active lifetime: about two active hover loops.
   // Fading trails remain visible beyond their active lifetimes.
   const HINT_MEAN_INTERVAL = 500 * Math.sqrt(Math.PI * HINT_DURATION / 2) / SPEED;

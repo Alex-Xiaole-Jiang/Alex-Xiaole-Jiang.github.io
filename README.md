@@ -23,6 +23,7 @@ after the paragraph: it shows in gray italics on `jekyll serve` and is left out
 of the live site altogether.
 
 Write equations with `$...$` inline and `$$...$$` on separate lines for display math.
+Keep trailing punctuation inside the math delimiters (`$x.$` or `$x,$`) so it cannot wrap onto a line by itself.
 Use `\lvert` for ket bars (for example `$\lvert\psi\rangle$`) so Markdown does not
 interpret them as table separators. The site renders write-up math with KaTeX.
 
