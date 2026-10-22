@@ -16,6 +16,7 @@
 // resolution of about sqrt(MIN_DURATION); leaving out those longer than
 // MAX_DURATION is an infrared cutoff, like a small mass. Space is periodic:
 // the screen is a torus. Lengths are in units of UNIT_PX CSS pixels.
+// LOOP_DENSITY uniformly thins the background soup for visual clarity.
 //
 // A click on the bare background adds a loop of its own: a pair is created
 // under the pointer and wanders off until it annihilates.
@@ -39,6 +40,7 @@
   const SMOOTH_PASSES = 0;     // passes of a (1,2,1)/4 filter round each loop, softening the walk; 0 keeps it raw
 
   // look
+  const LOOP_DENSITY = 0.8;    // fraction of the background soup to generate
   const DEPTH = 14;            // how far back in tau threads reach
   const STILL_DEPTH = 45;      // the same, when held still (below)
   const SPEED = 0.35;          // tau per second
@@ -138,7 +140,8 @@
   /* ---------- the soup ---------- */
 
   // Loop durations are split into log-spaced bins. Bin [lo, hi] holds
-  // C * (2/3) * (lo^-1.5 - hi^-1.5) loops per unit volume, C = (2 pi)^-1.5.
+  // LOOP_DENSITY * C * (2/3) * (lo^-1.5 - hi^-1.5) loops per unit volume,
+  // C = (2 pi)^-1.5.
   // Each bin is generated in its own slabs: about as thick as its loops are
   // wide, and kept `reach` ahead of the plane, which is further than its loops
   // extend in tau.
@@ -153,7 +156,7 @@
       out.push({
         lo,
         hi,
-        density: C * (2 / 3) * (Math.pow(lo, -1.5) - Math.pow(hi, -1.5)),
+        density: LOOP_DENSITY * C * (2 / 3) * (Math.pow(lo, -1.5) - Math.pow(hi, -1.5)),
         slab: Math.max(0.5, Math.sqrt(lo)),
         reach: 3 * Math.sqrt(hi) + 0.5,
         front: 0,              // generated up to here
