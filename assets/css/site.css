@@ -27,6 +27,7 @@
   /* the background's particles and antiparticles (assets/js/qft.js) */
   --field-plus: #63452c;   /* walnut */
   --field-minus: #002b36;  /* deep slate */
+  --creation-cursor: url("../img/creation-cursor.svg?v=plain-math-1") 8 7, default;
   --glass: 55%;          /* how much of the page colour the text's frosted ground has */
 
   /* Reading scale; keep the root size independent of layout dimensions. */
@@ -76,6 +77,7 @@
     --rule: 1px dotted #5c5f66;
     --field-plus: #f2b27a;
     --field-minus: #8cc2ea;
+    --creation-cursor: url("../img/creation-cursor-dark.svg?v=plain-math-1") 8 7, default;
   }
 }
 @media screen {
@@ -96,6 +98,7 @@
     --rule: 1px dotted #5c5f66;
     --field-plus: #f2b27a;
     --field-minus: #8cc2ea;
+    --creation-cursor: url("../img/creation-cursor-dark.svg?v=plain-math-1") 8 7, default;
   }
 }
 
@@ -119,7 +122,7 @@ body {
 /* Resting on the background reveals a small creation-operator cursor.
    Its hotspot is the crossbar intersection, so clicks stay precise. */
 @media screen and (min-width: 36em) {
-  .creation-ready { cursor: url("../img/creation-cursor.svg") 8 7, default; }
+  .creation-ready { cursor: var(--creation-cursor); }
 }
 /* The text columns sit on frosted glass: a see-through, blurred pane whose
    edge feathers into the background. Browsers without color-mix get it

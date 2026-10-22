@@ -491,9 +491,8 @@
   // so the pair is created under the pointer as it is clicked. Held still,
   // nothing is created, so the loop is instead one that has just closed
   // there, its highest point at the plane, and shows whole at once.
-  function spawn(x0, y0) {
-    // dt/t over the soup's own range: equal weight to every octave of size
-    const duration = MIN_DURATION * Math.pow(MAX_DURATION / MIN_DURATION, Math.random());
+  function spawn(x0, y0, duration = MIN_DURATION * Math.pow(MAX_DURATION / MIN_DURATION, Math.random())) {
+    // Clicks sample dt/t over the soup's range; hover hints use its lower cutoff.
     const loop = makeLoop(0, 0, 0, duration);
     const p = loop.pts, n = loop.n;
     const top = still();
@@ -549,11 +548,23 @@
   let pointer = null;
   let cueTarget = null;
   let cueTimer = 0;
-  const CUE_DELAY = 1500;
+  const CUE_DELAY = 800;
+  const HINT_INTERVAL = 1000; // one hover loop per second
+  let hintTimer = 0;
 
   function clearCue() {
     if (cueTarget) cueTarget.classList.remove("creation-ready");
     cueTarget = null;
+    clearTimeout(hintTimer);
+    hintTimer = 0;
+  }
+
+  function showHint() {
+    hintTimer = 0;
+    if (!pointer || !cueTarget || document.hidden || still()) return;
+    if (!canCreate(document.elementFromPoint(pointer.x, pointer.y))) return hideCue();
+    spawn(pointer.x / UNIT_PX, pointer.y / UNIT_PX, MIN_DURATION);
+    hintTimer = setTimeout(showHint, HINT_INTERVAL);
   }
 
   function updateCue() {
@@ -563,6 +574,7 @@
     if (canCreate(target)) {
       cueTarget = target;
       cueTarget.classList.add("creation-ready");
+      showHint();
     }
   }
 
@@ -634,7 +646,14 @@
   // rate. A step is capped at 0.1 s, so the plane doesn't jump after a stall.
   function frame(now) {
     raf = 0;
-    if (document.hidden || still() || !roomy.matches) return;
+    if (document.hidden || !roomy.matches) return;
+    if (still()) {
+      // Stop hover emission even if the media-query event arrives late.
+      clearTimeout(hintTimer);
+      hintTimer = 0;
+      draw();
+      return;
+    }
     raf = requestAnimationFrame(frame);
     if (lastTime && now - lastTime < 1000 / (FPS + 1)) return;
     if (lastTime) tau += SPEED * Math.min(0.1, (now - lastTime) / 1000);
@@ -682,6 +701,7 @@
   document.addEventListener("visibilitychange", start);
   document.addEventListener("click", onClick);
   const onLayoutChange = () => {
+    hideCue();
     resize();
     start();
   };
@@ -690,6 +710,7 @@
     if (width) draw();
   };
   const onMotionChange = () => {
+    updateCue();
     if (width) draw();
     start();
   };
