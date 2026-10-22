@@ -47,6 +47,7 @@
 
 - section: Physics
   id: physics
+  note: Authors are listed alphabetically in high-energy theory.
   papers:
     - id: modular
       title: "Modular Hamiltonians for Future-Perturbed States"

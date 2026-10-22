@@ -243,6 +243,7 @@ img { max-width: 100%; height: auto; }
   background-repeat: space no-repeat;   /* whole dots only, last one flush with the box edge */
 }
 .sec > summary h2 { font-size: var(--type-heading); margin: 0; }
+.section-note { margin: -0.35rem 0 0.75rem; color: var(--gray); font-size: var(--type-small); line-height: 1.5; }
 
 .papers { list-style: none; margin: 0; padding: 0; }
 .paper { margin: 0 0 1.15rem; scroll-margin-top: 1rem; }

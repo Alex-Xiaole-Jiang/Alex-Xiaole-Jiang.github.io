@@ -23,6 +23,7 @@ layout: default
     {% for s in site.data.papers %}
     <details class="sec" id="{{ s.id }}" open>
       <summary><h2>{{ s.section }}</h2></summary>
+      {% if s.note %}<p class="section-note">{{ s.note | escape }}</p>{% endif %}
       <ul class="papers">
         {% for p in s.papers %}{% include paper.html p=p %}{% endfor %}
       </ul>
