@@ -190,6 +190,7 @@ img { max-width: 100%; height: auto; }
 .mobile-nav { display: none; }
 .me .photo { display: block; width: var(--side); aspect-ratio: 1; object-fit: cover; background: var(--photo-bg); }
 .me h1 { font-size: 1.9rem; font-weight: 400; line-height: 1.15; margin: 1.1rem 0 0.4rem; }
+.me h1 .zh { display: block; font-size: var(--type-heading); line-height: 1.4; margin-top: 0.15rem; letter-spacing: 0.08em; }
 .me .tag { margin: 0 0 1.1rem; color: var(--gray); font-size: var(--type-small); line-height: 1.5; }
 .contact a { display: block; width: max-content; }
 .contact-inline { display: none; }   /* phone-only copy of the contact links */

@@ -6,6 +6,7 @@ baseurl: ""
 
 # Left column
 name: Alex Jiang
+name_zh: 姜晓乐
 tagline:
   - A physicist who doesn't like philosophy makes a poor roboticist.
 # Two photos. The night one shows first, whatever the theme. Once the theme is
