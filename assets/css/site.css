@@ -328,16 +328,20 @@ img { max-width: 100%; height: auto; }
   /* 2rem of padding all round, outside the text, for the frosted ground's feathered edge */
   margin: calc(var(--top) - 2rem) -2rem 1rem;
   padding: 2rem;
-  height: auto;
-  /* Fit the text, capped by both the viewport and the middle column. */
-  max-height: min(calc(100vh - 2 * var(--top) + 2rem), var(--reader-column-limit, 100vh));
-  max-height: min(calc(100dvh - 2 * var(--top) + 2rem), var(--reader-column-limit, 100dvh));
-  overflow-y: auto;
   min-width: 0;
+}
+/* The write-up scrolls in a box inside the padding, so its scrollbar sits
+   against the text rather than out at the pane's feathered edge. It fits the
+   text, capped by both the viewport and the middle column (the caps are for
+   the pane; its padding comes off). */
+.reader .scroll {
+  max-height: min(calc(100vh - 2 * var(--top) - 2rem), calc(var(--reader-column-limit, 100vh) - 4rem));
+  max-height: min(calc(100dvh - 2 * var(--top) - 2rem), calc(var(--reader-column-limit, 100dvh) - 4rem));
+  overflow-y: auto;
 }
 /* Scrolling past the write-up's ends stays in it; closed, the empty box
    would swallow the wheel instead of passing it on to the page. */
-.reader.is-open { overscroll-behavior: contain; }
+.reader.is-open .scroll { overscroll-behavior: contain; }
 
 /* JS adds .open; without JS, :target does the same job */
 .writeup { display: none; line-height: 1.6; }
@@ -369,7 +373,8 @@ img { max-width: 100%; height: auto; }
 
   /* Without JS the targeted write-up shows below the lists (the aside is empty,
      so zero height, otherwise). With JS the write-up moves into its entry. */
-  .reader { position: static; grid-column: 2; height: auto; max-height: none; margin: 0; padding: 0; overflow: visible; }
+  .reader { position: static; grid-column: 2; margin: 0; padding: 0; }
+  .reader .scroll { max-height: none; overflow: visible; }
   .reader .writeup:target { border-top: var(--rule); padding: 1.5rem 0 3rem; }
   .js .reader { display: none; }
 

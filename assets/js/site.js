@@ -9,6 +9,7 @@
   // the layout with a write-up column; keep in sync with site.css
   const docked = window.matchMedia("(min-width: 109em)");
   const reader = document.getElementById("reader");
+  const scroll = reader.querySelector(".scroll");   // the write-up scrolls in here
   let current = null;
 
   const list = document.querySelector(".list");
@@ -31,7 +32,7 @@
   const handle = (id) => entry(id).querySelector(".intro");
 
   function place(el) {
-    (docked.matches ? reader : entry(el.id)).appendChild(el);
+    (docked.matches ? scroll : entry(el.id)).appendChild(el);
   }
 
   function setHash(id) {
@@ -55,7 +56,7 @@
     reader.classList.add("is-open");
     current = id;
     setHash(id);
-    if (docked.matches) reader.scrollTop = 0;
+    if (docked.matches) scroll.scrollTop = 0;
     window.goatcounter?.count?.({ path: "write-up/" + id, title: id, event: true });
   }
 
