@@ -150,8 +150,8 @@ body {
 }
 /* stacked (36em to 57em): the name block and the list share one pane, joined without a seam */
 @media (min-width: 36em) and (max-width: 56.99em) {
-  .me::before { bottom: 0; --edge: var(--edge-x), linear-gradient(to bottom, transparent, #000 1.75rem); }
-  .list::before { top: 0; --edge: var(--edge-x), linear-gradient(to top, transparent, #000 1.75rem); }
+  .me::before { bottom: 0; --edge: var(--edge-x), linear-gradient(to bottom, transparent, #000 var(--feather)); }
+  .list::before { top: 0; --edge: var(--edge-x), linear-gradient(to top, transparent, #000 var(--feather)); }
 }
 @media (min-width: 109em) {
   .reader.is-open::before {
@@ -322,17 +322,17 @@ img { max-width: 100%; height: auto; }
   white-space: pre-wrap; overflow-wrap: anywhere; user-select: all;
 }
 
-/* right column: the open write-up, scrolls on its own. No divider: the gap from
-   the boxes' right edge to the write-up equals the gap from the left column to
-   the boxes' left edge (colgap - bleed). The scroll box is the solid part of
-   the frosted pane: 0.25rem past the text, 0.5rem on the right, then the
-   scrollbar (its width is --scrollbar, measured by site.js). The pane itself
-   is a pseudo-element behind the box (below) that reaches a feather's width
-   past it, so the fade lies outside the bar's track and the bar's ends line
-   up with where the frost looks solid. */
+/* right column: the open write-up, scrolling in a box of its own. No divider:
+   the gap from the boxes' right edge to the write-up equals the gap from the
+   left column to the boxes' left edge (colgap - bleed).
+   The box is the solid part of the frosted pane: --gap past the text, with
+   the scrollbar --bar-gap from the text. The pane is a pseudo-element behind
+   the box (at 109em, below) reaching a feather past it, so the fade lies
+   outside the bar's track and the bar's ends sit where the frost looks solid.
+   site.js measures the bar's width into --scrollbar. */
 .reader {
-  --gap: 0.25rem;        /* from the text to the box's edge, where the frost is solid */
-  --bar-gap: 0.5rem;     /* from the text to the scrollbar */
+  --gap: 0.25rem;
+  --bar-gap: 0.5rem;
   position: sticky;
   top: calc(var(--top) - var(--gap));
   align-self: start;
@@ -340,11 +340,12 @@ img { max-width: 100%; height: auto; }
   margin: calc(var(--top) - var(--gap)) calc(-1 * (var(--bar-gap) + var(--scrollbar, 0px))) 1rem calc(-1 * var(--gap));
   min-width: 0;
 }
-/* The box fits the text, capped by both the viewport and the middle column. */
+/* The box fits the text, capped by the viewport (the pane's fade ends --top
+   above its bottom) and by the middle column (--reader-column-limit, site.js). */
 .reader .scroll {
   padding: var(--gap) var(--bar-gap) var(--gap) var(--gap);
-  max-height: min(calc(100vh - 2 * var(--top) - 2rem + 2 * var(--gap)), var(--reader-column-limit, 100vh));
-  max-height: min(calc(100dvh - 2 * var(--top) - 2rem + 2 * var(--gap)), var(--reader-column-limit, 100dvh));
+  max-height: min(calc(100vh - 2 * var(--top) + var(--gap) - var(--feather)), var(--reader-column-limit, 100vh));
+  max-height: min(calc(100dvh - 2 * var(--top) + var(--gap) - var(--feather)), var(--reader-column-limit, 100dvh));
   overflow-y: auto;
   scrollbar-gutter: stable;   /* the bar's space is there even when nothing scrolls, so --scrollbar can be measured */
 }
