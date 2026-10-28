@@ -29,6 +29,7 @@
   --field-minus: #002b36;  /* deep slate */
   --creation-cursor: url("../img/creation-cursor.svg?v=plain-math-1") 8 7, default;
   --glass: 55%;          /* how much of the page colour the text's frosted ground has */
+  --frost: 6px;          /* how far the ground is blurred; readability comes from both */
 
   /* Reading scale; keep the root size independent of layout dimensions. */
   --type-small: 1rem;
@@ -141,7 +142,7 @@ body {
     content: ""; position: absolute; inset: -2rem; z-index: -1; pointer-events: none;
     background: var(--bg);
     background: color-mix(in srgb, var(--bg) var(--glass), transparent);
-    -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(var(--frost)); backdrop-filter: blur(var(--frost));
     -webkit-mask-image: var(--edge); -webkit-mask-composite: source-in;
     mask-image: var(--edge); mask-composite: intersect;
   }
@@ -155,7 +156,7 @@ body {
   .reader.is-open {
     background: var(--bg);
     background: color-mix(in srgb, var(--bg) var(--glass), transparent);
-    -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(var(--frost)); backdrop-filter: blur(var(--frost));
     -webkit-mask-image: var(--edge); -webkit-mask-composite: source-in;
     mask-image: var(--edge); mask-composite: intersect;
   }
