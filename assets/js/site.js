@@ -17,8 +17,10 @@
     if (!docked.matches) return;
     // The reader starts one padding-width above the middle column's text.
     // Including that offset makes its bottom stop at the middle column's end.
-    const offset = parseFloat(getComputedStyle(reader).paddingTop);
+    const offset = parseFloat(getComputedStyle(scroll).paddingTop);
     reader.style.setProperty("--reader-column-limit", `${list.getBoundingClientRect().height + offset}px`);
+    // The pane stops short of the scrollbar by its width (site.css).
+    reader.style.setProperty("--scrollbar", `${scroll.offsetWidth - scroll.clientWidth}px`);
   }
   if (window.ResizeObserver) new ResizeObserver(sizeReader).observe(list);
   window.addEventListener("resize", sizeReader);
