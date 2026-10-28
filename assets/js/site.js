@@ -47,7 +47,12 @@
     handle(id).setAttribute("aria-expanded", String(isOpen));
   }
 
-  function open(id) {
+  // A write-up shown without being asked for (see the end of this block) stays
+  // out of the URL and the count. The tab remembers whether it is still up, so
+  // a refresh gives back what was on screen: "" once it is closed or replaced.
+  let unasked = null;
+  const remember = (v) => { try { sessionStorage.setItem("intro", v); } catch (e) {} };
+  function open(id, asked = true) {
     const el = writeup(id);
     if (!el) return;
     if (current) mark(current, false);
@@ -57,8 +62,17 @@
     mark(id, true);
     reader.classList.add("is-open");
     current = id;
-    setHash(id);
     if (docked.matches) scroll.scrollTop = 0;
+    if (!asked) {
+      unasked = id;
+      remember(id);
+      return;
+    }
+    if (unasked) {
+      unasked = null;
+      remember("");
+    }
+    setHash(id);
     window.goatcounter?.count?.({ path: "write-up/" + id, title: id, event: true });
   }
 
@@ -67,6 +81,10 @@
     mark(current, false);
     reader.classList.remove("is-open");
     current = null;
+    if (unasked) {
+      unasked = null;
+      remember("");
+    }
     if (clearHash) setHash("");
   }
 
@@ -170,6 +188,14 @@
       setHash(start);
       toEntry();   // again, as the fonts may have reflowed the page
     }, { once: true });
+  } else if (!location.hash && docked.matches) {
+    // With all three columns up and nothing asked for, the first write-up
+    // shows, so that the third column is seen to exist. On a refresh, the
+    // one the tab remembers, or none once it was closed.
+    let seen = null;
+    try { seen = sessionStorage.getItem("intro"); } catch (e) {}
+    const id = seen === null ? scroll.querySelector(".writeup")?.id : seen;
+    if (id) open(id, false);
   }
 })();
 
