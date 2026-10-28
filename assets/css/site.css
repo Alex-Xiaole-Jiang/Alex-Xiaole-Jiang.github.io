@@ -249,6 +249,44 @@ img { max-width: 100%; height: auto; }
 .papers { list-style: none; margin: 0; padding: 0; }
 .paper { margin: 0 0 1.15rem; scroll-margin-top: 1rem; }
 
+/* A paper's hint (papers.yml): a speech bubble that follows the pointer while
+   it is over the entry, below and to the right of it so the title stays
+   readable, with a tail from the nearest corner to the cursor. site.js sets
+   --x/--y to the pointer, .on while it shows, and .l/.u to open it to the left
+   or upward instead where it would leave the window, and moves it out to
+   <body>. It moves by transform alone, on its own layer, so following the
+   pointer costs no layout. */
+.hint {
+  --t: 0.45em;                           /* how far the tail reaches past the corner, along each edge */
+  --off: calc(var(--t) + 0.35em);        /* from the cursor to the box's corner: the tail, plus air */
+  --dx: var(--off); --dy: var(--off); --sx: 1; --sy: 1;
+  position: fixed; left: 0; top: 0; z-index: 2;
+  transform: translate(var(--x, 0), var(--y, 0)) translate(var(--dx), var(--dy));
+  will-change: transform;
+  width: max-content; max-width: 13.5rem; padding: 0.15rem 0.45rem;
+  background: var(--bg); color: var(--text); border: 1px solid var(--text);
+  font-size: var(--type-small); line-height: 1.3; text-align: center;
+  visibility: hidden; opacity: 0; pointer-events: none;
+  transition: opacity 0.15s, visibility 0.15s;
+}
+.hint.on { visibility: visible; opacity: 1; }
+.hint.l { --dx: calc(-100% - var(--off)); --sx: -1; }
+.hint.u { --dy: calc(-100% - var(--off)); --sy: -1; }
+/* The tail (paper.html) is a 2t square centred on the border's corner, its tip
+   at the square's outer corner: a triangle in the page colour covers the
+   corner of the border, and an open path draws the two edges at 1px. */
+.hint .tail {
+  --c: calc(-1 * var(--t) - 0.5px);      /* the border is drawn half a pixel in from the box edge */
+  position: absolute; top: var(--c); left: var(--c);
+  width: calc(2 * var(--t)); height: calc(2 * var(--t));
+  display: block; overflow: visible;
+  transform: scale(var(--sx), var(--sy));
+}
+.hint.l .tail { left: auto; right: var(--c); }
+.hint.u .tail { top: auto; bottom: var(--c); }
+.hint .tail path:first-child { fill: var(--bg); }
+.hint .tail path:last-child { fill: none; stroke: var(--text); stroke-width: 1; vector-effect: non-scaling-stroke; }
+
 /* Titles go to the paper. An entry with a write-up sits in a light gray box,
    and a click anywhere else in the box opens it. The negative margins keep the
    text lined up with the entries around it. */

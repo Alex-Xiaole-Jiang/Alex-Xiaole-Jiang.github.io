@@ -274,3 +274,40 @@
   else systemDark.addListener(onSystemChange);   // Safari < 14
   label();
 })();
+
+// A paper's hint (papers.yml) is a speech bubble that follows the pointer while
+// it is over the entry, opening to the left or upward where it would leave the
+// window (site.css). A click on the entry, away from its links, puts it away
+// until the pointer leaves and returns. The bubble moves out to <body>, so
+// that no column's stacking context can paint another column over it.
+(() => {
+  if (!window.matchMedia("(hover: hover)").matches) return;
+  document.querySelectorAll(".paper > .hint").forEach((hint) => {
+    const li = hint.parentElement;
+    document.body.append(hint);
+    let dismissed = false;
+    let box = null;   // the bubble's size, and its offset from the pointer, measured once
+    const hide = () => hint.classList.remove("on");
+    li.addEventListener("mousemove", (e) => {
+      if (dismissed) return;
+      hint.style.setProperty("--x", `${e.clientX}px`);
+      hint.style.setProperty("--y", `${e.clientY}px`);
+      if (!box) {
+        const r = hint.getBoundingClientRect();
+        box = { w: r.width, h: r.height, off: r.left - e.clientX };
+      }
+      hint.classList.toggle("l", e.clientX + box.off + box.w > window.innerWidth - 8);
+      hint.classList.toggle("u", e.clientY + box.off + box.h > window.innerHeight - 8);
+      hint.classList.add("on");
+    });
+    li.addEventListener("mouseleave", () => {
+      hide();
+      dismissed = false;
+    });
+    li.addEventListener("click", (e) => {
+      if (e.target.closest("a, button")) return;
+      hide();
+      dismissed = true;
+    });
+  });
+})();

@@ -1,6 +1,8 @@
 {%- comment -%}
   One entry in a paper list. Takes p = a paper from _data/papers.yml.
   If _writeups/<p.id>.md exists, the entry gets data-w and opens that write-up.
+  A hint is a speech bubble that follows the pointer (site.js); its tail is an
+  SVG triangle plus its two outer edges, which site.css sizes and colours.
 {%- endcomment -%}
 {%- assign p = include.p -%}
 {%- assign writeup = site.writeups | where: "slug", p.id | first -%}
@@ -11,6 +13,7 @@
 {%- endfor -%}
 {%- assign authors = authors | replace: "</b>*", "*</b>" -%}
 <li class="paper" id="p-{{ p.id }}"{% if writeup %} data-w="{{ p.id }}"{% endif %}>
+  {% if p.hint %}<span class="hint">{{ p.hint }}<svg class="tail" viewBox="0 0 100 100" aria-hidden="true"><path d="M0 0 100 50 50 100Z"/><path d="M100 50 0 0 50 100"/></svg></span>{% endif -%}
   {% if writeup %}<span class="pm" aria-hidden="true"></span>{% endif -%}
   {% for link in p.links limit: 1 %}<a href="{{ link[1] }}">{{ p.title }}</a>{% endfor -%}
   {%- if p.under_review %} <em class="ur">under review</em>{% endif -%}

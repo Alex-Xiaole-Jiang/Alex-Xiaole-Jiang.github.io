@@ -10,6 +10,7 @@
 #   links         any of website / paper / arXiv / code / doi, shown in the order written;
 #                 the title links to the first one
 #   bibtex        optional; shows a [bibtex] toggle
+#   hint          optional; a speech bubble the cursor shows while it is over the entry
 
 - section: Robotics & ML
   id: robotics
@@ -27,6 +28,7 @@
       under_review: true
       authors: "B. Wang*, X. Jiang*, Z. Teng, X. Liu, Y. Li, L. Pinto, Z. J. Cui, B. Huang"
       venue: ICRA 2027 submission.
+      hint: Make sure you scroll to the bottom of the website!
       links:
         website: https://panotac.github.io/
 
