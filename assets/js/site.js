@@ -321,3 +321,77 @@
     });
   });
 })();
+
+// Tabbed figures in write-ups: [k-WM] [next-step] above one visible pane
+// (data-pane names the pane each tab opens). The k-WM method diagram also
+// plays its inference: the next-step model's outputs appear one predictor
+// call at a time, k-WM's all in one, and the predictor block flashes for each
+// call. It plays when the diagram comes into view, on a tab switch, and on
+// [replay]; with reduced motion the finished state shows at once.
+(() => {
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+  let timers = [];
+  const stop = () => { timers.forEach(clearTimeout); timers = []; };
+  const steps = (svg) => [...svg.querySelectorAll(".ms")].map((g) => g.dataset.ms);
+  const isOutput = (id) => /^[cd][1-9]$/.test(id);   // the build steps after the inputs
+  const show = (svg, id, on) => svg.querySelectorAll(`.ms[data-ms="${id}"]`).forEach((g) => g.classList.toggle("show", on));
+
+  function reset(svg) {
+    steps(svg).forEach((id) => show(svg, id, !isOutput(id)));
+  }
+
+  function play(svg) {
+    stop();
+    reset(svg);
+    const outputs = steps(svg).filter(isOutput);
+    if (reduced.matches) {
+      outputs.forEach((id) => show(svg, id, true));
+      return;
+    }
+    const block = svg.querySelector(".pulse-c, .pulse-d");   // the inference panel's predictor
+    const pulse = () => {
+      if (!block) return;
+      block.classList.remove("pulse");
+      void block.getBBox();   // restart the animation
+      block.classList.add("pulse");
+    };
+    // the next-step steps alternate output, fed-back input, output, ...; a call per output
+    outputs.forEach((id, j) => timers.push(setTimeout(() => {
+      show(svg, id, true);
+      if (j % 2 === 0) pulse();
+    }, 400 + j * 550)));
+  }
+
+  const diagrams = document.querySelectorAll(".method");
+  diagrams.forEach(reset);
+  const played = new WeakSet();
+  if (window.IntersectionObserver) {
+    const seen = new IntersectionObserver((entries) => entries.forEach((en) => {
+      if (!en.isIntersecting || played.has(en.target)) return;
+      played.add(en.target);
+      play(en.target);
+    }), { threshold: 0.4 });
+    diagrams.forEach((svg) => seen.observe(svg));
+  } else {
+    diagrams.forEach((svg) => steps(svg).forEach((id) => show(svg, id, true)));
+  }
+
+  document.querySelectorAll(".tabfig").forEach((fig) => {
+    const tabs = [...fig.querySelectorAll("button.tab[data-pane]")];
+    const panes = [...fig.querySelectorAll(".pane")];
+    const shown = () => fig.querySelector(".pane:not([hidden]) .method");
+    fig.addEventListener("click", (e) => {
+      const tab = e.target.closest("button.tab");
+      if (!tab) return;
+      if (tab.dataset.pane) {
+        tabs.forEach((t) => t.setAttribute("aria-selected", String(t === tab)));
+        panes.forEach((p) => { p.hidden = p.dataset.pane !== tab.dataset.pane; });
+      }
+      const svg = shown();
+      if (svg) {
+        played.add(svg);
+        play(svg);
+      }
+    });
+  });
+})();

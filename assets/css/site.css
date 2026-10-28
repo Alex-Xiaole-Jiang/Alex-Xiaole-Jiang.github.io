@@ -471,3 +471,30 @@ img { max-width: 100%; height: auto; }
   .mobile-nav, .reader, .bibbtn, .contact-inline, .switches, .unbare, #qft { display: none !important; }
   a { color: inherit; }
 }
+
+/* ---------- tabbed figures in write-ups ---------- */
+
+/* [k-WM] [next-step]: each tab opens one pane; the open one reads as plain
+   bold text. A pane wider than the column scrolls sideways on its own. */
+.tabs { margin: 0 0 0.35rem; font-size: var(--type-small); color: var(--gray); }
+.tab {
+  font: inherit; background: none; border: 0; padding: 0; cursor: pointer;
+  color: var(--link); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.16em;
+}
+.tab[aria-selected="true"] { color: var(--text); font-weight: 700; text-decoration: none; cursor: default; }
+.tabfig .pane { overflow-x: auto; }
+.tabfig .pane > svg, .wide > svg { min-width: 30rem; margin: 0; }
+.wide { overflow-x: auto; }
+.tabfig figcaption { margin-top: 0.5rem; }
+
+/* The k-WM method diagram (fig-kwm-method-*.svg) carries its build steps in
+   data-ms. With JS the inference outputs appear one predictor call at a time
+   and the predictor block flashes for each call (site.js); without, all show. */
+.js .method .ms { opacity: 0; transition: opacity 0.5s ease; }
+.js .method .ms.show { opacity: 1; }
+.method .pulse { animation: method-pulse 0.9s ease; }
+@keyframes method-pulse { 0% { fill: #e2edf3; } 35% { fill: #cdb6e4; } 100% { fill: #e2edf3; } }
+@media (prefers-reduced-motion: reduce) {
+  .js .method .ms { opacity: 1; transition: none; }
+  .method .pulse { animation: none; }
+}

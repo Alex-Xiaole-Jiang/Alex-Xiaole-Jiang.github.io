@@ -1,0 +1,233 @@
+<svg stroke-linejoin="round" stroke-linecap="butt" class="method" fill="currentColor" viewBox="762 8 1022 1020" width="736" height="735" role="img" aria-label="k-WM: training on k future latents at once, with the last context latent repeated at the future positions, and inference in one call" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<marker id="m-flow-kwm" markerWidth="7" markerHeight="7" refX="7" refY="3.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L7 3.5 L0 7 Z" fill="currentColor" fill-opacity="0.7"/></marker>
+<marker id="m-pred-kwm" markerWidth="7" markerHeight="7" refX="7" refY="3.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0 L7 3.5 L0 7 Z" fill="#82639e"/></marker>
+</defs>
+<g class="panel" data-panel="b" transform="translate(0,12)">
+<g class="ms" data-ms="b">
+<text x="774" y="29" font-size="34.09"><tspan font-style="italic">k</tspan>-WM training</text>
+<rect x="782" y="86" width="72" height="72" rx="2.5" fill="white" stroke="#b6c5cf" stroke-width="1.6"/>
+<rect x="778" y="90" width="72" height="72" rx="2.5" fill="white" stroke="#b6c5cf" stroke-width="1.6"/>
+<rect x="774" y="94" width="72" height="72" rx="2.5" fill="white" stroke="#b6c5cf" stroke-width="1.6"/>
+<g transform="translate(813.0,118) rotate(-42) scale(0.85)">
+<path d="M-17,-12 H11 V-6 H0 V15 H-6 V-6 H-17Z" fill="#88bd91" transform="translate(-4,4)"/>
+<path d="M-14,-12 H14 V-6 H3 V15 H-3 V-6 H-14Z" fill="#70849c"/>
+<circle cx="5" cy="21" r="3" fill="#b28a45"/></g>
+<text x="779" y="156" font-style="italic" font-size="25.0" text-anchor="start" fill="black">o<tspan baseline-shift="sub" font-size="55%">1:c+k</tspan></text>
+<text x="810.0" y="200" font-size="25.0" text-anchor="middle" fill="currentColor" font-weight="normal">Obs.</text>
+<path d="M858.64,130.0 L875.36,130.0" fill="none" stroke="currentColor" stroke-opacity="0.7" stroke-width="1.8" marker-end="url(#m-flow-kwm)"/>
+<rect x="886" y="94" width="72" height="72" rx="2.5" fill="#e2edf3" stroke="#849eaf" stroke-width="1.6"/>
+<text x="922.0" y="72" font-size="25.0" text-anchor="middle" fill="currentColor" font-weight="normal">Encoder</text>
+<text x="922.0" y="138.0" font-style="italic" font-size="25.0" text-anchor="middle" fill="black">E<tspan baseline-shift="sub" font-size="65%">θ</tspan></text>
+<path d="M970.16,130.0 L983.84,130.0" fill="none" stroke="currentColor" stroke-opacity="0.7" stroke-width="1.8" marker-end="url(#m-flow-kwm)"/>
+<path d="M922.0,178 L922.0,260.0" fill="none" stroke="currentColor" stroke-opacity="0.7" stroke-width="1.8"/>
+<path d="M922.0,317.4 L922.0,351.6" fill="none" stroke="currentColor" stroke-opacity="0.7" stroke-width="1.8" marker-end="url(#m-flow-kwm)"/>
+<circle cx="922.0" cy="286.0" r="26" fill="white" stroke="currentColor" stroke-opacity="0.7" stroke-width="1.8"/>
+<text x="922.0" y="291.0" font-size="25.0" text-anchor="middle" fill="black" font-weight="normal">reg.</text>
+<rect x="1006" y="86" width="72" height="72" rx="2.5" fill="#cee5f3" stroke="#5085a5" stroke-width="1.6"/>
+<rect x="1002" y="90" width="72" height="72" rx="2.5" fill="#cee5f3" stroke="#5085a5" stroke-width="1.6"/>
+<rect x="998" y="94" width="72" height="72" rx="2.5" fill="#cee5f3" stroke="#5085a5" stroke-width="1.6"/>
+<g transform="translate(1037.0,118) rotate(-42) scale(0.85)">
+<path d="M-14,-12 H14 V-6 H3 V15 H-3 V-6 H-14Z" fill="#5085a5"/>
+<circle cx="5" cy="21" r="3" fill="#b28a45"/></g>
+<text x="1003" y="156" font-style="italic" font-size="25.0" text-anchor="start" fill="black">z<tspan baseline-shift="sub" font-size="65%">1:c</tspan></text>
+<rect x="1006" y="176" width="72" height="24" rx="2.5" fill="#e5c58a" stroke="#b28a45" stroke-width="1.6"/>
+<rect x="1002" y="180" width="72" height="24" rx="2.5" fill="#e5c58a" stroke="#b28a45" stroke-width="1.6"/>
+<rect x="998" y="184" width="72" height="24" rx="2.5" fill="#e5c58a" stroke="#b28a45" stroke-width="1.6"/>
+<text x="1003" y="201" font-style="italic" font-size="25.0" text-anchor="start" fill="black">a<tspan baseline-shift="sub" font-size="65%">1:c</tspan></text>
+<path d="M1038.0,215.32 L1038.0,242.68" fill="none" stroke="currentColor" stroke-opacity="0.7" stroke-width="1.8" marker-end="url(#m-flow-kwm)"/>
+<path d="M998,79 V73 H1078 V79" fill="none" stroke="#5085a5" stroke-width="1.8"/>
+<text x="1038.0" y="62" font-style="italic" font-size="25.0" text-anchor="middle" fill="currentColor">c = 3</text>
+<rect x="1112" y="94" width="72" height="72" rx="2.5" fill="#cee5f3" stroke="#5085a5" stroke-width="1.6" stroke-dasharray="2 4"/>
+<g transform="translate(1151.0,118) rotate(-42) scale(0.85)">
+<path d="M-14,-12 H14 V-6 H3 V15 H-3 V-6 H-14Z" fill="#5085a5"/>
+<circle cx="5" cy="21" r="3" fill="#b28a45"/></g>
+<text x="1117" y="156" font-style="italic" font-size="25.0" text-anchor="start" fill="black">z<tspan baseline-shift="sub" font-size="65%">c</tspan></text>
+<rect x="1112" y="180" width="72" height="24" rx="2.5" fill="#e5c58a" stroke="#b28a45" stroke-width="1.6"/>
+<text x="1117" y="197" font-style="italic" font-size="25.0" text-anchor="start" fill="black">a<tspan baseline-shift="sub" font-size="65%">c+1</tspan></text>
+<path d="M1148.0,211.8 L1148.0,242.2" fill="none" stroke="currentColor" stroke-opacity="0.7" stroke-width="1.8" marker-end="url(#m-flow-kwm)"/>
+<rect x="1226" y="94" width="72" height="72" rx="2.5" fill="#cee5f3" stroke="#5085a5" stroke-width="1.6" stroke-dasharray="2 4"/>
+<g transform="translate(1265.0,118) rotate(-42) scale(0.85)">
+<path d="M-14,-12 H14 V-6 H3 V15 H-3 V-6 H-14Z" fill="#5085a5"/>
+<circle cx="5" cy="21" r="3" fill="#b28a45"/></g>
+<text x="1231" y="156" font-style="italic" font-size="25.0" text-anchor="start" fill="black">z<tspan baseline-shift="sub" font-size="65%">c</tspan></text>
+<rect x="1226" y="180" width="72" height="24" rx="2.5" fill="#e5c58a" stroke="#b28a45" stroke-width="1.6"/>
+<text x="1231" y="197" font-style="italic" font-size="25.0" text-anchor="start" fill="black">a<tspan baseline-shift="sub" font-size="65%">c+2</tspan></text>
+<path d="M1262.0,211.8 L1262.0,242.2" fill="none" stroke="currentColor" stroke-opacity="0.7" stroke-width="1.8" marker-end="url(#m-flow-kwm)"/>
+<rect x="1340" y="94" width="72" height="72" rx="2.5" fill="#cee5f3" stroke="#5085a5" stroke-width="1.6" stroke-dasharray="2 4"/>
+<g transform="translate(1379.0,118) rotate(-42) scale(0.85)">
+<path d="M-14,-12 H14 V-6 H3 V15 H-3 V-6 H-14Z" fill="#5085a5"/>
+<circle cx="5" cy="21" r="3" fill="#b28a45"/></g>
+<text x="1345" y="156" font-style="italic" font-size="25.0" text-anchor="start" fill="black">z<tspan baseline-shift="sub" font-size="65%">c</tspan></text>
+<rect x="1340" y="180" width="72" height="24" rx="2.5" fill="#e5c58a" stroke="#b28a45" stroke-width="1.6"/>
+<text x="1345" y="197" font-style="italic" font-size="25.0" text-anchor="start" fill="black">a<tspan baseline-shift="sub" font-size="65%">c+3</tspan></text>
+<path d="M1376.0,211.8 L1376.0,242.2" fill="none" stroke="currentColor" stroke-opacity="0.7" stroke-width="1.8" marker-end="url(#m-flow-kwm)"/>
+<rect x="1568" y="94" width="72" height="72" rx="2.5" fill="#cee5f3" stroke="#5085a5" stroke-width="1.6" stroke-dasharray="2 4"/>
+<g transform="translate(1607.0,118) rotate(-42) scale(0.85)">
+<path d="M-14,-12 H14 V-6 H3 V15 H-3 V-6 H-14Z" fill="#5085a5"/>
+<circle cx="5" cy="21" r="3" fill="#b28a45"/></g>
+<text x="1573" y="156" font-style="italic" font-size="25.0" text-anchor="start" fill="black">z<tspan baseline-shift="sub" font-size="65%">c</tspan></text>
+<rect x="1568" y="180" width="72" height="24" rx="2.5" fill="#e5c58a" stroke="#b28a45" stroke-width="1.6"/>
+<text x="1573" y="197" font-style="italic" font-size="25.0" text-anchor="start" fill="black">a<tspan baseline-shift="sub" font-size="55%">c+k−1</tspan></text>
+<path d="M1604.0,211.8 L1604.0,242.2" fill="none" stroke="currentColor" stroke-opacity="0.7" stroke-width="1.8" marker-end="url(#m-flow-kwm)"/>
+<text x="1490" y="140" font-size="25.0" text-anchor="middle" fill="currentColor" font-weight="normal">⋯</text>
+<path d="M1112,79 V73 H1640 V79" fill="none" stroke="#b28a45" stroke-width="1.8"/>
+<text x="1376.0" y="61" font-size="25.0" text-anchor="middle" fill="#b28a45"><tspan font-style="italic">k</tspan><tspan>&#160;steps (repeat last latent)</tspan></text>
+<rect class="pred-block" x="984" y="252" width="792" height="68" rx="2.5" fill="#e2edf3" stroke="#849eaf" stroke-width="1.6"/>
+<text x="1181.62" y="293" font-size="25.0" text-anchor="start" fill="black" font-weight="normal">Causal transformer predictor</text>
+<text x="1511.5" y="293" font-style="italic" font-size="25.0">T<tspan x="1529.17" y="300" font-size="65%">θ</tspan><tspan x="1532.17" y="280" font-size="65%" font-style="italic">k<tspan font-style="normal">-step</tspan></tspan></text>
+<path d="M1065.6,331.84 L1126.4,356.16" fill="none" stroke="#82639e" stroke-width="1.8" marker-end="url(#m-pred-kwm)"/>
+<rect x="1112" y="370" width="72" height="72" rx="2.5" fill="#e1d3ee" stroke="#8967a6" stroke-width="1.6"/>
+<g transform="translate(1151.0,394) rotate(-24) scale(0.85)">
+<path d="M-14,-12 H14 V-6 H3 V15 H-3 V-6 H-14Z" fill="#8967a6"/>
+<circle cx="5" cy="21" r="3" fill="#b28a45"/></g>
+<text x="1117" y="432" font-style="italic" font-size="25.0" text-anchor="start" fill="black">ẑ<tspan baseline-shift="sub" font-size="65%">c+1</tspan></text>
+<path d="M1179.6,331.84 L1240.4,356.16" fill="none" stroke="#82639e" stroke-width="1.8" marker-end="url(#m-pred-kwm)"/>
+<rect x="1226" y="370" width="72" height="72" rx="2.5" fill="#e1d3ee" stroke="#8967a6" stroke-width="1.6"/>
+<g transform="translate(1265.0,394) rotate(-8) scale(0.85)">
+<path d="M-14,-12 H14 V-6 H3 V15 H-3 V-6 H-14Z" fill="#8967a6"/>
+<circle cx="5" cy="21" r="3" fill="#b28a45"/></g>
+<text x="1231" y="432" font-style="italic" font-size="25.0" text-anchor="start" fill="black">ẑ<tspan baseline-shift="sub" font-size="65%">c+2</tspan></text>
+<path d="M1293.6,331.84 L1354.4,356.16" fill="none" stroke="#82639e" stroke-width="1.8" marker-end="url(#m-pred-kwm)"/>
+<rect x="1340" y="370" width="72" height="72" rx="2.5" fill="#e1d3ee" stroke="#8967a6" stroke-width="1.6"/>
+<g transform="translate(1379.0,394) rotate(7) scale(0.85)">
+<path d="M-14,-12 H14 V-6 H3 V15 H-3 V-6 H-14Z" fill="#8967a6"/>
+<circle cx="5" cy="21" r="3" fill="#b28a45"/></g>
+<text x="1345" y="432" font-style="italic" font-size="25.0" text-anchor="start" fill="black">ẑ<tspan baseline-shift="sub" font-size="65%">c+3</tspan></text>
+<path d="M1521.6,331.84 L1582.4,356.16" fill="none" stroke="#82639e" stroke-width="1.8" marker-end="url(#m-pred-kwm)"/>
+<rect x="1568" y="370" width="72" height="72" rx="2.5" fill="#e1d3ee" stroke="#8967a6" stroke-width="1.6"/>
+<g transform="translate(1607.0,394) rotate(48) scale(0.85)">
+<path d="M-14,-12 H14 V-6 H3 V15 H-3 V-6 H-14Z" fill="#8967a6"/>
+<circle cx="5" cy="21" r="3" fill="#b28a45"/></g>
+<text x="1573" y="432" font-style="italic" font-size="25.0" text-anchor="start" fill="black">ẑ<tspan baseline-shift="sub" font-size="55%">c+k−1</tspan></text>
+<path d="M1635.6,331.84 L1696.4,356.16" fill="none" stroke="#82639e" stroke-width="1.8" marker-end="url(#m-pred-kwm)"/>
+<rect x="1682" y="370" width="72" height="72" rx="2.5" fill="#e1d3ee" stroke="#8967a6" stroke-width="1.6"/>
+<g transform="translate(1721.0,394) rotate(62) scale(0.85)">
+<path d="M-14,-12 H14 V-6 H3 V15 H-3 V-6 H-14Z" fill="#8967a6"/>
+<circle cx="5" cy="21" r="3" fill="#b28a45"/></g>
+<text x="1687" y="432" font-style="italic" font-size="25.0" text-anchor="start" fill="black">ẑ<tspan baseline-shift="sub" font-size="65%">c+k</tspan></text>
+<text x="1490" y="416" font-size="25.0" text-anchor="middle" fill="currentColor" font-weight="normal">⋯</text>
+<rect x="892" y="364" width="72" height="72" rx="2.5" fill="#cee5f3" stroke="#5085a5" stroke-width="1.6"/>
+<rect x="888" y="368" width="72" height="72" rx="2.5" fill="#cee5f3" stroke="#5085a5" stroke-width="1.6"/>
+<rect x="884" y="372" width="72" height="72" rx="2.5" fill="#cee5f3" stroke="#5085a5" stroke-width="1.6"/>
+<rect x="880" y="376" width="72" height="72" rx="2.5" fill="#cee5f3" stroke="#5085a5" stroke-width="1.6"/>
+<g transform="translate(919.0,400) rotate(-24) scale(0.85)">
+<path d="M-14,-12 H14 V-6 H3 V15 H-3 V-6 H-14Z" fill="#5085a5"/>
+<circle cx="5" cy="21" r="3" fill="#b28a45"/></g>
+<text x="885" y="438" font-style="italic" font-size="25.0" text-anchor="start" fill="black">z<tspan baseline-shift="sub" font-size="45%">c+1:c+k</tspan></text>
+<path d="M977.52,406.0 L1012.48,406.0" fill="none" stroke="currentColor" stroke-opacity="0.7" stroke-width="1.8" marker-end="url(#m-flow-kwm)"/>
+<path d="M1094.48,406.0 L1059.52,406.0" fill="none" stroke="currentColor" stroke-opacity="0.7" stroke-width="1.8" marker-end="url(#m-flow-kwm)"/>
+<text x="1036.0" y="415.0" font-style="italic" font-size="25.0" text-anchor="middle" fill="currentColor">ℒ</text>
+<path d="M1112,450 V456 H1754 V450" fill="none" stroke="#8967a6" stroke-width="1.8"/>
+<text x="1433.0" y="481" font-size="25.0" text-anchor="middle" fill="currentColor"><tspan font-style="italic">k</tspan><tspan>&#160;targets</tspan></text>
+</g>
+</g>
+<g class="panel" data-panel="d" transform="translate(0,532)">
+<g class="ms" data-ms="d0">
+<text x="774" y="29" font-size="34.09"><tspan font-style="italic">k</tspan>-WM inference</text>
+<rect x="782" y="86" width="72" height="72" rx="2.5" fill="white" stroke="#b6c5cf" stroke-width="1.6"/>
+<rect x="778" y="90" width="72" height="72" rx="2.5" fill="white" stroke="#b6c5cf" stroke-width="1.6"/>
+<rect x="774" y="94" width="72" height="72" rx="2.5" fill="white" stroke="#b6c5cf" stroke-width="1.6"/>
+<g transform="translate(813.0,118) rotate(-42) scale(0.85)">
+<path d="M-17,-12 H11 V-6 H0 V15 H-6 V-6 H-17Z" fill="#88bd91" transform="translate(-4,4)"/>
+<path d="M-14,-12 H14 V-6 H3 V15 H-3 V-6 H-14Z" fill="#70849c"/>
+<circle cx="5" cy="21" r="3" fill="#b28a45"/></g>
+<text x="779" y="156" font-style="italic" font-size="25.0" text-anchor="start" fill="black">o<tspan baseline-shift="sub" font-size="65%">1:c</tspan></text>
+<text x="810.0" y="200" font-size="25.0" text-anchor="middle" fill="currentColor" font-weight="normal">Obs.</text>
+<path d="M858.64,130.0 L875.36,130.0" fill="none" stroke="currentColor" stroke-opacity="0.7" stroke-width="1.8" marker-end="url(#m-flow-kwm)"/>
+<rect x="886" y="94" width="72" height="72" rx="2.5" fill="#e2edf3" stroke="#849eaf" stroke-width="1.6"/>
+<text x="922.0" y="72" font-size="25.0" text-anchor="middle" fill="currentColor" font-weight="normal">Encoder</text>
+<text x="922.0" y="138.0" font-style="italic" font-size="25.0" text-anchor="middle" fill="black">E<tspan baseline-shift="sub" font-size="65%">θ</tspan></text>
+<path d="M970.16,130.0 L983.84,130.0" fill="none" stroke="currentColor" stroke-opacity="0.7" stroke-width="1.8" marker-end="url(#m-flow-kwm)"/>
+<rect x="1006" y="86" width="72" height="72" rx="2.5" fill="#cee5f3" stroke="#5085a5" stroke-width="1.6"/>
+<rect x="1002" y="90" width="72" height="72" rx="2.5" fill="#cee5f3" stroke="#5085a5" stroke-width="1.6"/>
+<rect x="998" y="94" width="72" height="72" rx="2.5" fill="#cee5f3" stroke="#5085a5" stroke-width="1.6"/>
+<g transform="translate(1037.0,118) rotate(-42) scale(0.85)">
+<path d="M-14,-12 H14 V-6 H3 V15 H-3 V-6 H-14Z" fill="#5085a5"/>
+<circle cx="5" cy="21" r="3" fill="#b28a45"/></g>
+<text x="1003" y="156" font-style="italic" font-size="25.0" text-anchor="start" fill="black">z<tspan baseline-shift="sub" font-size="65%">1:c</tspan></text>
+<rect x="1006" y="176" width="72" height="24" rx="2.5" fill="#e5c58a" stroke="#b28a45" stroke-width="1.6"/>
+<rect x="1002" y="180" width="72" height="24" rx="2.5" fill="#e5c58a" stroke="#b28a45" stroke-width="1.6"/>
+<rect x="998" y="184" width="72" height="24" rx="2.5" fill="#e5c58a" stroke="#b28a45" stroke-width="1.6"/>
+<text x="1003" y="201" font-style="italic" font-size="25.0" text-anchor="start" fill="black">a<tspan baseline-shift="sub" font-size="65%">1:c</tspan></text>
+<path d="M1038.0,215.32 L1038.0,242.68" fill="none" stroke="currentColor" stroke-opacity="0.7" stroke-width="1.8" marker-end="url(#m-flow-kwm)"/>
+<path d="M998,79 V73 H1078 V79" fill="none" stroke="#5085a5" stroke-width="1.8"/>
+<text x="1038.0" y="62" font-style="italic" font-size="25.0" text-anchor="middle" fill="currentColor">c = 3</text>
+<rect x="1112" y="94" width="72" height="72" rx="2.5" fill="#cee5f3" stroke="#5085a5" stroke-width="1.6" stroke-dasharray="2 4"/>
+<g transform="translate(1151.0,118) rotate(-42) scale(0.85)">
+<path d="M-14,-12 H14 V-6 H3 V15 H-3 V-6 H-14Z" fill="#5085a5"/>
+<circle cx="5" cy="21" r="3" fill="#b28a45"/></g>
+<text x="1117" y="156" font-style="italic" font-size="25.0" text-anchor="start" fill="black">z<tspan baseline-shift="sub" font-size="65%">c</tspan></text>
+<rect x="1112" y="180" width="72" height="24" rx="2.5" fill="#e5c58a" stroke="#b28a45" stroke-width="1.6"/>
+<text x="1117" y="197" font-style="italic" font-size="25.0" text-anchor="start" fill="black">a<tspan baseline-shift="sub" font-size="65%">c+1</tspan></text>
+<path d="M1148.0,211.8 L1148.0,242.2" fill="none" stroke="currentColor" stroke-opacity="0.7" stroke-width="1.8" marker-end="url(#m-flow-kwm)"/>
+<rect x="1226" y="94" width="72" height="72" rx="2.5" fill="#cee5f3" stroke="#5085a5" stroke-width="1.6" stroke-dasharray="2 4"/>
+<g transform="translate(1265.0,118) rotate(-42) scale(0.85)">
+<path d="M-14,-12 H14 V-6 H3 V15 H-3 V-6 H-14Z" fill="#5085a5"/>
+<circle cx="5" cy="21" r="3" fill="#b28a45"/></g>
+<text x="1231" y="156" font-style="italic" font-size="25.0" text-anchor="start" fill="black">z<tspan baseline-shift="sub" font-size="65%">c</tspan></text>
+<rect x="1226" y="180" width="72" height="24" rx="2.5" fill="#e5c58a" stroke="#b28a45" stroke-width="1.6"/>
+<text x="1231" y="197" font-style="italic" font-size="25.0" text-anchor="start" fill="black">a<tspan baseline-shift="sub" font-size="65%">c+2</tspan></text>
+<path d="M1262.0,211.8 L1262.0,242.2" fill="none" stroke="currentColor" stroke-opacity="0.7" stroke-width="1.8" marker-end="url(#m-flow-kwm)"/>
+<rect x="1340" y="94" width="72" height="72" rx="2.5" fill="#cee5f3" stroke="#5085a5" stroke-width="1.6" stroke-dasharray="2 4"/>
+<g transform="translate(1379.0,118) rotate(-42) scale(0.85)">
+<path d="M-14,-12 H14 V-6 H3 V15 H-3 V-6 H-14Z" fill="#5085a5"/>
+<circle cx="5" cy="21" r="3" fill="#b28a45"/></g>
+<text x="1345" y="156" font-style="italic" font-size="25.0" text-anchor="start" fill="black">z<tspan baseline-shift="sub" font-size="65%">c</tspan></text>
+<rect x="1340" y="180" width="72" height="24" rx="2.5" fill="#e5c58a" stroke="#b28a45" stroke-width="1.6"/>
+<text x="1345" y="197" font-style="italic" font-size="25.0" text-anchor="start" fill="black">a<tspan baseline-shift="sub" font-size="65%">c+3</tspan></text>
+<path d="M1376.0,211.8 L1376.0,242.2" fill="none" stroke="currentColor" stroke-opacity="0.7" stroke-width="1.8" marker-end="url(#m-flow-kwm)"/>
+<rect x="1568" y="94" width="72" height="72" rx="2.5" fill="#cee5f3" stroke="#5085a5" stroke-width="1.6" stroke-dasharray="2 4"/>
+<g transform="translate(1607.0,118) rotate(-42) scale(0.85)">
+<path d="M-14,-12 H14 V-6 H3 V15 H-3 V-6 H-14Z" fill="#5085a5"/>
+<circle cx="5" cy="21" r="3" fill="#b28a45"/></g>
+<text x="1573" y="156" font-style="italic" font-size="25.0" text-anchor="start" fill="black">z<tspan baseline-shift="sub" font-size="65%">c</tspan></text>
+<rect x="1568" y="180" width="72" height="24" rx="2.5" fill="#e5c58a" stroke="#b28a45" stroke-width="1.6"/>
+<text x="1573" y="197" font-style="italic" font-size="25.0" text-anchor="start" fill="black">a<tspan baseline-shift="sub" font-size="55%">c+k−1</tspan></text>
+<path d="M1604.0,211.8 L1604.0,242.2" fill="none" stroke="currentColor" stroke-opacity="0.7" stroke-width="1.8" marker-end="url(#m-flow-kwm)"/>
+<text x="1490" y="140" font-size="25.0" text-anchor="middle" fill="currentColor" font-weight="normal">⋯</text>
+<path d="M1112,79 V73 H1640 V79" fill="none" stroke="#b28a45" stroke-width="1.8"/>
+<text x="1376.0" y="61" font-size="25.0" text-anchor="middle" fill="#b28a45"><tspan font-style="italic">k</tspan><tspan>&#160;steps (repeat last latent)</tspan></text>
+<rect class="pred-block pulse-d" x="984" y="252" width="792" height="68" rx="2.5" fill="#e2edf3" stroke="#849eaf" stroke-width="1.6"/>
+<text x="1181.62" y="293" font-size="25.0" text-anchor="start" fill="black" font-weight="normal">Causal transformer predictor</text>
+<text x="1511.5" y="293" font-style="italic" font-size="25.0">T<tspan x="1529.17" y="300" font-size="65%">θ</tspan><tspan x="1532.17" y="280" font-size="65%" font-style="italic">k<tspan font-style="normal">-step</tspan></tspan></text>
+</g>
+<g class="ms" data-ms="d1">
+<path d="M1065.6,331.84 L1126.4,356.16" fill="none" stroke="#82639e" stroke-width="1.8" marker-end="url(#m-pred-kwm)"/>
+<rect x="1112" y="370" width="72" height="72" rx="2.5" fill="#e1d3ee" stroke="#8967a6" stroke-width="1.6"/>
+<g transform="translate(1151.0,394) rotate(-24) scale(0.85)">
+<path d="M-14,-12 H14 V-6 H3 V15 H-3 V-6 H-14Z" fill="#8967a6"/>
+<circle cx="5" cy="21" r="3" fill="#b28a45"/></g>
+<text x="1117" y="432" font-style="italic" font-size="25.0" text-anchor="start" fill="black">ẑ<tspan baseline-shift="sub" font-size="65%">c+1</tspan></text>
+<path d="M1179.6,331.84 L1240.4,356.16" fill="none" stroke="#82639e" stroke-width="1.8" marker-end="url(#m-pred-kwm)"/>
+<rect x="1226" y="370" width="72" height="72" rx="2.5" fill="#e1d3ee" stroke="#8967a6" stroke-width="1.6"/>
+<g transform="translate(1265.0,394) rotate(-8) scale(0.85)">
+<path d="M-14,-12 H14 V-6 H3 V15 H-3 V-6 H-14Z" fill="#8967a6"/>
+<circle cx="5" cy="21" r="3" fill="#b28a45"/></g>
+<text x="1231" y="432" font-style="italic" font-size="25.0" text-anchor="start" fill="black">ẑ<tspan baseline-shift="sub" font-size="65%">c+2</tspan></text>
+<path d="M1293.6,331.84 L1354.4,356.16" fill="none" stroke="#82639e" stroke-width="1.8" marker-end="url(#m-pred-kwm)"/>
+<rect x="1340" y="370" width="72" height="72" rx="2.5" fill="#e1d3ee" stroke="#8967a6" stroke-width="1.6"/>
+<g transform="translate(1379.0,394) rotate(7) scale(0.85)">
+<path d="M-14,-12 H14 V-6 H3 V15 H-3 V-6 H-14Z" fill="#8967a6"/>
+<circle cx="5" cy="21" r="3" fill="#b28a45"/></g>
+<text x="1345" y="432" font-style="italic" font-size="25.0" text-anchor="start" fill="black">ẑ<tspan baseline-shift="sub" font-size="65%">c+3</tspan></text>
+<path d="M1521.6,331.84 L1582.4,356.16" fill="none" stroke="#82639e" stroke-width="1.8" marker-end="url(#m-pred-kwm)"/>
+<rect x="1568" y="370" width="72" height="72" rx="2.5" fill="#e1d3ee" stroke="#8967a6" stroke-width="1.6"/>
+<g transform="translate(1607.0,394) rotate(48) scale(0.85)">
+<path d="M-14,-12 H14 V-6 H3 V15 H-3 V-6 H-14Z" fill="#8967a6"/>
+<circle cx="5" cy="21" r="3" fill="#b28a45"/></g>
+<text x="1573" y="432" font-style="italic" font-size="25.0" text-anchor="start" fill="black">ẑ<tspan baseline-shift="sub" font-size="55%">c+k−1</tspan></text>
+<path d="M1635.6,331.84 L1696.4,356.16" fill="none" stroke="#82639e" stroke-width="1.8" marker-end="url(#m-pred-kwm)"/>
+<rect x="1682" y="370" width="72" height="72" rx="2.5" fill="#e1d3ee" stroke="#8967a6" stroke-width="1.6"/>
+<g transform="translate(1721.0,394) rotate(62) scale(0.85)">
+<path d="M-14,-12 H14 V-6 H3 V15 H-3 V-6 H-14Z" fill="#8967a6"/>
+<circle cx="5" cy="21" r="3" fill="#b28a45"/></g>
+<text x="1687" y="432" font-style="italic" font-size="25.0" text-anchor="start" fill="black">ẑ<tspan baseline-shift="sub" font-size="65%">c+k</tspan></text>
+<text x="1490" y="416" font-size="25.0" text-anchor="middle" fill="currentColor" font-weight="normal">⋯</text>
+<path d="M1112,450 V456 H1754 V450" fill="none" stroke="#8967a6" stroke-width="1.8"/>
+<text x="1433.0" y="481" font-size="25.0" text-anchor="middle" fill="currentColor" font-weight="normal">1 call</text>
+<g class="counter"><rect x="788" y="388" width="184" height="38" rx="19" fill="#8967a6"/>
+<text x="880" y="414" font-size="23" text-anchor="middle" fill="white" font-weight="bold">calls: 1</text></g>
+</g>
+</g>
+</svg>
