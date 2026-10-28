@@ -157,7 +157,14 @@
   if (writeup(start)) {
     open(start);
     setHash("");
-    const toEntry = () => entry(start).scrollIntoView();
+    // Docked, an entry already on screen stays put: the other two columns
+    // are sticky, so the small scroll the page allows would only shift the
+    // list past them.
+    const toEntry = () => {
+      const b = entry(start).getBoundingClientRect();
+      if (docked.matches && b.top >= 0 && b.bottom <= innerHeight) return;
+      entry(start).scrollIntoView();
+    };
     toEntry();
     window.addEventListener("load", () => {
       setHash(start);
