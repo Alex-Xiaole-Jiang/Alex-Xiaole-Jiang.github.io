@@ -350,6 +350,9 @@ img { max-width: 100%; height: auto; }
 .writeup .katex { font-size: 1em; }
 .writeup .katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.15em 0; }
 .writeup img, .writeup video { display: block; max-width: 100%; margin: 1rem 0; }
+.writeup figure { margin: 1rem 0; }
+.writeup figure svg { display: block; max-width: 100%; height: auto; }
+.writeup figcaption { color: var(--gray); font-size: var(--type-small); margin-top: 0.35rem; }
 
 /* notes to self in drafts; the write-ups include them only on `jekyll serve` */
 .todo { color: var(--faint); font-style: italic; }
