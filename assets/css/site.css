@@ -380,8 +380,8 @@ img { max-width: 100%; height: auto; }
 .reader.is-open .scroll { overscroll-behavior: contain; }
 /* With JS, the column has one [close], beside the title's first line. It sits
    outside the scrolling box, and once that scrolls, the box's text fades out
-   along the top edge and is cut away around the [close] (a notch in the mask),
-   so nothing half-cut shows. The scrollbar stays unfaded. */
+   along the top edge and around the [close] (a notch in the mask), so
+   nothing half-cut shows. The scrollbar stays unfaded. */
 .reader-close { display: none; }
 @media (min-width: 109em) {
   .reader { --close-w: calc(3.4rem + var(--bar-gap)); --close-h: 1.9rem; }   /* the notch, just around [close] */
@@ -392,13 +392,13 @@ img { max-width: 100%; height: auto; }
   }
   .js .reader .writeup .x { display: none; }
   .js .reader .writeup h2 { padding-right: 3.4rem; }
-  /* scrollbar ∪ (top fade ∩ (beside the notch ∪ below it)) */
+  /* scrollbar ∪ (top fade ∩ (beside the notch ∪ below it)), the notch's edges feathered */
   .reader .scroll.scrolled {
     --mask:
       linear-gradient(#000, #000) right top / var(--scrollbar, 0px) 100% no-repeat,
       linear-gradient(transparent, #000 1rem),
-      linear-gradient(#000, #000) right var(--scrollbar, 0px) top var(--close-h) / var(--close-w) 100% no-repeat,
-      linear-gradient(#000, #000) left top / calc(100% - var(--scrollbar, 0px) - var(--close-w)) 100% no-repeat;
+      linear-gradient(transparent, #000 0.6rem) right var(--scrollbar, 0px) top var(--close-h) / calc(var(--close-w) + 0.6rem) 100% no-repeat,
+      linear-gradient(to left, transparent, #000 0.6rem) left top / calc(100% - var(--scrollbar, 0px) - var(--close-w)) 100% no-repeat;
     -webkit-mask: var(--mask); -webkit-mask-composite: source-over, source-in, source-over;
     mask: var(--mask); mask-composite: add, intersect, add;
   }
@@ -453,7 +453,7 @@ img { max-width: 100%; height: auto; }
   .paper > .writeup .x {
     position: -webkit-sticky; position: sticky; top: 0.75rem; z-index: 1;
     margin-bottom: 0; padding: 0.1rem 0.25rem; margin-right: -0.25rem; line-height: 1.25;
-    background: var(--box-open);
+    background: var(--box-open); box-shadow: 0 0 0.3rem 0.2rem var(--box-open);   /* feathered edges */
   }
   .paper > .writeup .rail {
     display: block; position: absolute; top: 0; bottom: 0; left: calc(-0.6rem - 1px); width: 1.2rem;
