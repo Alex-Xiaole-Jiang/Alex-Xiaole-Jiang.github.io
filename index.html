@@ -33,6 +33,7 @@ layout: default
 
   {%- comment -%} Every write-up is rendered here; the JS shows one at a time (and moves it into its entry below 107em). {%- endcomment %}
   <aside class="reader" id="reader" aria-label="Write-up">
+    <p class="x reader-close">[<a class="close" href="#" aria-label="Close write-up">close</a>]</p>
     <div class="scroll">
     {% for s in site.data.papers %}{% for p in s.papers %}
     {%- assign writeup = site.writeups | where: "slug", p.id | first -%}

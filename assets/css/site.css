@@ -194,8 +194,8 @@ body {
 a { color: var(--link); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.16em; }
 a:visited { color: var(--link); }
 /* Underlined text goes somewhere; gray [bracketed] text acts on this page. */
-.bibbtn, .switch, .tab, .writeup .x .close { color: var(--gray); text-decoration: none; text-decoration-thickness: 1px; text-underline-offset: 0.16em; }
-.bibbtn:hover, .switch:hover, .tab:hover, .writeup .x .close:hover { color: var(--text); text-decoration-line: underline; }
+.bibbtn, .switch, .tab, .x .close { color: var(--gray); text-decoration: none; text-decoration-thickness: 1px; text-underline-offset: 0.16em; }
+.bibbtn:hover, .switch:hover, .tab:hover, .x .close:hover { color: var(--text); text-decoration-line: underline; }
 a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
 
 h1, h2 { font-weight: 700; line-height: 1.25; }
@@ -378,11 +378,30 @@ img { max-width: 100%; height: auto; }
 /* Scrolling past the write-up's ends stays in it; closed, the empty box
    would swallow the wheel instead of passing it on to the page. */
 .reader.is-open .scroll { overscroll-behavior: contain; }
-/* The [close] stays in view while the write-up scrolls; a soft patch of page
-   colour keeps text from showing through it. */
-.reader .writeup .x {
-  position: -webkit-sticky; position: sticky; top: 0; z-index: 1;
-  background: var(--bg); box-shadow: 0 0 0.4rem 0.3rem var(--bg);
+/* With JS, the column has one [close], beside the title's first line. It sits
+   outside the scrolling box, and once that scrolls, the box's text fades out
+   along the top edge and is cut away around the [close] (a notch in the mask),
+   so nothing half-cut shows. The scrollbar stays unfaded. */
+.reader-close { display: none; }
+@media (min-width: 109em) {
+  .reader { --close-w: calc(3.4rem + var(--bar-gap)); --close-h: 1.9rem; }   /* the notch, just around [close] */
+  .js .reader.is-open .reader-close {
+    display: block; position: absolute; z-index: 1;
+    top: calc(var(--gap) + 0.2rem); right: calc(var(--bar-gap) + var(--scrollbar, 0px));
+    margin: 0; font-size: var(--type-small);
+  }
+  .js .reader .writeup .x { display: none; }
+  .js .reader .writeup h2 { padding-right: 3.4rem; }
+  /* scrollbar ∪ (top fade ∩ (beside the notch ∪ below it)) */
+  .reader .scroll.scrolled {
+    --mask:
+      linear-gradient(#000, #000) right top / var(--scrollbar, 0px) 100% no-repeat,
+      linear-gradient(transparent, #000 1rem),
+      linear-gradient(#000, #000) right var(--scrollbar, 0px) top var(--close-h) / var(--close-w) 100% no-repeat,
+      linear-gradient(#000, #000) left top / calc(100% - var(--scrollbar, 0px) - var(--close-w)) 100% no-repeat;
+    -webkit-mask: var(--mask); -webkit-mask-composite: source-over, source-in, source-over;
+    mask: var(--mask); mask-composite: add, intersect, add;
+  }
 }
 
 /* JS adds .open; without JS, :target does the same job */
@@ -390,7 +409,7 @@ img { max-width: 100%; height: auto; }
 .writeup:target, .js .writeup.open { display: block; }
 .js .writeup:target:not(.open) { display: none; }
 .writeup:focus { outline: none; }
-.writeup h2 { font-size: var(--type-heading); margin: 0 0 0.25rem; }
+.writeup h2 { font-size: var(--type-heading); margin: 0 0 1.25rem; }
 .writeup .meta { color: var(--gray); font-size: var(--type-small); margin: 0 0 1.25rem; }
 .writeup .x { float: right; margin: 0 0 0.5rem 1rem; font-size: var(--type-small); }
 .writeup p { margin: 0 0 1em; }
@@ -433,7 +452,7 @@ img { max-width: 100%; height: auto; }
   .paper > .writeup { position: relative; }
   .paper > .writeup .x {
     position: -webkit-sticky; position: sticky; top: 0.75rem; z-index: 1;
-    margin-bottom: 0; padding: 0 0.3rem; margin-right: -0.3rem;
+    margin-bottom: 0; padding: 0.1rem 0.25rem; margin-right: -0.25rem; line-height: 1.25;
     background: var(--box-open);
   }
   .paper > .writeup .rail {

@@ -22,6 +22,7 @@
     // The pane stops at the scrollbar, whose width site.css can't know.
     reader.style.setProperty("--scrollbar", `${scroll.offsetWidth - scroll.clientWidth}px`);
   }
+  scroll.addEventListener("scroll", () => scroll.classList.toggle("scrolled", scroll.scrollTop > 0), { passive: true });
   if (window.ResizeObserver) new ResizeObserver(sizeReader).observe(list);
   window.addEventListener("resize", sizeReader);
   sizeReader();
@@ -91,7 +92,7 @@
   function closeAndReturn() {
     const id = current;
     if (!id) return;
-    const wasInside = writeup(id).contains(document.activeElement);
+    const wasInside = writeup(id).contains(document.activeElement) || reader.contains(document.activeElement);
     close();
     if (wasInside) handle(id).focus({ preventScroll: true });
     if (!docked.matches && entry(id).getBoundingClientRect().top < 0) entry(id).scrollIntoView();
@@ -131,7 +132,7 @@
       return;
     }
 
-    if (t.closest(".writeup .close")) {
+    if (t.closest(".writeup .close, .reader-close .close")) {
       e.preventDefault();
       closeAndReturn();
       return;
