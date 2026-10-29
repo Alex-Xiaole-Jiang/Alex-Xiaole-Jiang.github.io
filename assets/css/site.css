@@ -260,6 +260,8 @@ img { max-width: 100%; height: auto; }
    it sits at the row's start, so it never stretches to the screen bottom. */
 .list { margin: var(--top) 0 0; min-width: 0; align-self: start; }
 .about { margin: 0 0 2rem; }
+.about p { margin: 0 0 1em; }
+.about p:last-child { margin-bottom: 0; }
 
 /* Section titles read like a table of contents: ▾ Title . . . . . . up to the box edge */
 .sec { margin: 0 0 1.75rem; }
