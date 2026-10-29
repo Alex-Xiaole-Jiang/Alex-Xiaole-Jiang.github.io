@@ -197,8 +197,8 @@
   }
 })();
 
-// [night]/[day], [hide text] and [animate]/[stop]. The theme follows the
-// system until it is switched; [animate] overrides a system request for
+// [night]/[day], [hide text] and [play]/[stop]. The theme follows the
+// system until it is switched; [play] overrides a system request for
 // reduced motion (qft.js). Both choices are kept in localStorage, and the
 // inline script in default.html applies them before the page is drawn.
 (() => {
@@ -236,7 +236,7 @@
       b.textContent = isDark() ? "day" : "night";
     });
     buttons("motion").forEach((b) => {
-      b.textContent = root.dataset.motion ? "stop" : "animate";
+      b.textContent = root.dataset.motion ? "stop" : "play";
     });
   }
 

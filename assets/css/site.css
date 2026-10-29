@@ -229,12 +229,12 @@ img { max-width: 100%; height: auto; }
 .contact a { display: block; width: max-content; }
 .contact-inline { display: none; }   /* phone-only copy of the contact links */
 
-/* [night] [hide text] [animate]: they need JS, so they show only with it.
+/* [night] [hide text] [play]: they need JS, so they show only with it.
    Below 36em the background isn't drawn, so there is nothing to show without
-   the text and nothing to animate. [animate] is for those whose system asks
+   the text and nothing to animate. [play] is for those whose system asks
    for reduced motion, which holds the background still. */
 .switches, .unbare, .motion-switch { display: none; }
-.js .me .switches { display: block; margin: 0.9rem 0 0; color: var(--gray); font-size: var(--type-small); }
+.js .me .switches { display: block; margin: 0.9rem 0 0; color: var(--gray); font-size: var(--type-small); white-space: nowrap; }
 .switch-item { white-space: nowrap; }
 @media (prefers-reduced-motion: reduce) and (min-width: 36em) { .motion-switch { display: inline; } }
 @media not all and (min-width: 36em) { .bare-switch { display: none; } }
