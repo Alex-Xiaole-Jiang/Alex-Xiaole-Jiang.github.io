@@ -378,6 +378,12 @@ img { max-width: 100%; height: auto; }
 /* Scrolling past the write-up's ends stays in it; closed, the empty box
    would swallow the wheel instead of passing it on to the page. */
 .reader.is-open .scroll { overscroll-behavior: contain; }
+/* The [close] stays in view while the write-up scrolls; a soft patch of page
+   colour keeps text from showing through it. */
+.reader .writeup .x {
+  position: -webkit-sticky; position: sticky; top: 0; z-index: 1;
+  background: var(--bg); box-shadow: 0 0 0.4rem 0.3rem var(--bg);
+}
 
 /* JS adds .open; without JS, :target does the same job */
 .writeup { display: none; line-height: 1.6; }
