@@ -17,6 +17,7 @@
   --faint: #8a8a8a;
   --dots: #777;
   --link: #2b4f81;       /* links stay this color once visited too */
+  --title: #1d5663;      /* paper titles: teal */
   --red: #a83a2e;        /* brick, not signal red: quieter beside the walnut */
   --box: #eae7e1;        /* entry with a write-up */
   --box-hover: #e3e1db;
@@ -69,6 +70,7 @@
     --faint: #7d7a73;
     --dots: #6c6a65;
     --link: #9fc6ee;
+    --title: #8fc9d8;
     --red: #dc9a8e;
     --box: #171c25;
     --box-hover: #1d232d;
@@ -90,6 +92,7 @@
     --faint: #7d7a73;
     --dots: #6c6a65;
     --link: #9fc6ee;
+    --title: #8fc9d8;
     --red: #dc9a8e;
     --box: #171c25;
     --box-hover: #1d232d;
@@ -188,8 +191,11 @@ body {
   }
 }
 
-a, .bibbtn, .switch { color: var(--link); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.16em; }
+a { color: var(--link); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.16em; }
 a:visited { color: var(--link); }
+/* Underlined text goes somewhere; gray [bracketed] text acts on this page. */
+.bibbtn, .switch, .tab, .writeup .x .close { color: var(--gray); text-decoration: none; text-decoration-thickness: 1px; text-underline-offset: 0.16em; }
+.bibbtn:hover, .switch:hover, .tab:hover, .writeup .x .close:hover { color: var(--text); text-decoration-line: underline; }
 a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
 
 h1, h2 { font-weight: 700; line-height: 1.25; }
@@ -263,7 +269,7 @@ img { max-width: 100%; height: auto; }
   margin: 0 calc(-1 * var(--bleed)) 0.75rem 0;
 }
 .sec > summary::-webkit-details-marker { display: none; }
-.sec > summary::before { content: "\25B8"; font-size: var(--type-small); }
+.sec > summary::before { content: "\25B8"; font-size: var(--type-small); color: var(--title); }
 .sec[open] > summary::before { content: "\25BE"; }
 .sec > summary::after {
   content: ""; flex: 1; height: 0.25em;
@@ -323,6 +329,8 @@ img { max-width: 100%; height: auto; }
 }
 @media (hover: hover) { .paper[data-w]:hover { background: var(--box-hover); } }
 .paper[data-w].is-open { background: var(--box-open); }
+.paper > a:not(.intro), .paper > a:not(.intro):visited { color: var(--title); text-decoration-color: color-mix(in srgb, var(--title) 40%, transparent); }
+.paper > a:not(.intro):hover { text-decoration-color: currentColor; }
 .pm { display: none; }   /* +/− marker, where write-ups open inline */
 .rail { display: none; }   /* the clickable line beside an inline write-up */
 
@@ -396,7 +404,7 @@ img { max-width: 100%; height: auto; }
 
   /* [+] / [−], like [close] */
   .pm { display: inline-block; margin-right: 0.3em; }
-  .pm span { color: var(--link); }
+  .pm span { color: var(--gray); }
   .pm span::before { content: "+"; }
   .paper.is-open .pm span::before { content: "\2212"; }
 
@@ -427,7 +435,7 @@ img { max-width: 100%; height: auto; }
   }
   .rail:hover::before {
     content: ""; position: absolute; top: 0; bottom: 0; left: calc(0.6rem - 0.5px);
-    border-left: 2px solid var(--link);
+    border-left: 2px solid var(--text);
   }
 }
 @media (prefers-reduced-motion: reduce) { .page { transition: none !important; } }
@@ -514,7 +522,6 @@ img { max-width: 100%; height: auto; }
 .tabs { margin: 0 0 0.35rem; font-size: var(--type-small); color: var(--gray); }
 .tab {
   font: inherit; background: none; border: 0; padding: 0; cursor: pointer;
-  color: var(--link); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.16em;
 }
 .tab[aria-selected="true"] { color: var(--text); font-weight: 700; text-decoration: none; cursor: default; }
 .tabfig .pane { overflow-x: auto; }
