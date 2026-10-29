@@ -22,10 +22,8 @@
 // under the pointer and wanders off until it annihilates.
 //
 // The colours come from site.css (--field-plus and --field-minus), so they
-// follow the light and dark themes. Threads are drawn with plain alpha
-// blending: additive ("lighter") on dark and "multiply" on light would be the
-// physical choices, but at these opacities they look the same and cost 3 to 5
-// times as much to paint.
+// follow the light and dark themes. Threads use plain alpha blending, which at
+// these opacities looks the same as additive light and is cheaper to paint.
 (() => {
   const canvas = document.getElementById("qft");
   const ctx = canvas && canvas.getContext && canvas.getContext("2d");
@@ -543,8 +541,10 @@
     if (canCreate(e.target)) spawn(e.clientX / UNIT_PX, e.clientY / UNIT_PX);
   }
 
-  // After a deliberate pause, the browser itself draws a creation-operator
-  // cursor. There is no separate mark following the mouse across the page.
+  // After a pause over the bare background, hover loops start and the browser
+  // draws a creation-operator cursor; any movement ends both. WebKit draws a
+  // new cursor only on the next move, so it gets the loops alone.
+  const showCursor = !(window.CSS && CSS.supports("-webkit-backdrop-filter", "none"));   // not WebKit
   let pointer = null;
   let cueTarget = null;
   let cueTimer = 0;
@@ -578,7 +578,7 @@
     const target = document.elementFromPoint(pointer.x, pointer.y);
     if (canCreate(target)) {
       cueTarget = target;
-      cueTarget.classList.add("creation-ready");
+      if (showCursor) cueTarget.classList.add("creation-ready");
       showHint();
     }
   }

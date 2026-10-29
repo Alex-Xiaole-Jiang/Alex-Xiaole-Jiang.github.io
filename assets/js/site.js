@@ -38,7 +38,8 @@
   }
 
   function setHash(id) {
-    history.replaceState(null, "", location.pathname + location.search + (id ? "#" + id : ""));
+    // Safari throws past about a hundred of these in half a minute
+    try { history.replaceState(null, "", location.pathname + location.search + (id ? "#" + id : "")); } catch (e) {}
   }
 
   function mark(id, isOpen) {
@@ -48,10 +49,15 @@
   }
 
   // A write-up shown without being asked for (see the end of this block) stays
-  // out of the URL and the count. The tab remembers whether it is still up, so
-  // a refresh gives back what was on screen: "" once it is closed or replaced.
+  // out of the URL and the count. The tab remembers it while it is up, and ""
+  // once it is closed or replaced, so a refresh gives back what was on screen.
   let unasked = null;
-  const remember = (v) => { try { sessionStorage.setItem("intro", v); } catch (e) {} };
+  function remember(id) {
+    if (id === unasked) return;
+    unasked = id;
+    try { sessionStorage.setItem("intro", id || ""); } catch (e) {}
+  }
+
   function open(id, asked = true) {
     const el = writeup(id);
     if (!el) return;
@@ -62,16 +68,12 @@
     mark(id, true);
     reader.classList.add("is-open");
     current = id;
-    if (docked.matches) scroll.scrollTop = 0;
-    if (!asked) {
-      unasked = id;
-      remember(id);
-      return;
+    if (docked.matches) {
+      scroll.scrollTop = 0;
+      sizeReader();   // the bar may have just appeared (Safari < 18.2 reserves no space for it)
     }
-    if (unasked) {
-      unasked = null;
-      remember("");
-    }
+    remember(asked ? null : id);
+    if (!asked) return;
     setHash(id);
     window.goatcounter?.count?.({ path: "write-up/" + id, title: id, event: true });
   }
@@ -81,10 +83,7 @@
     mark(current, false);
     reader.classList.remove("is-open");
     current = null;
-    if (unasked) {
-      unasked = null;
-      remember("");
-    }
+    remember(null);
     if (clearHash) setHash("");
   }
 
@@ -168,9 +167,9 @@
     }
   });
 
-  // A link to #id lands on the entry, not the write-up. The browser would
-  // keep scrolling to the write-up itself, the element with that id, until
-  // loading ends, so the hash stays off the URL until then.
+  // A link to #id lands on the entry, not the write-up. The browser scrolls to
+  // the element with that id, the write-up, until loading is done (in WebKit,
+  // until just after the load handler), so the hash stays off the URL till then.
   const start = location.hash.slice(1);
   if (writeup(start)) {
     open(start);
@@ -185,8 +184,8 @@
     };
     toEntry();
     window.addEventListener("load", () => {
-      setHash(start);
       toEntry();   // again, as the fonts may have reflowed the page
+      setTimeout(() => { if (current === start) setHash(start); }, 0);
     }, { once: true });
   } else if (!location.hash && docked.matches) {
     // With all three columns up and nothing asked for, the first write-up
