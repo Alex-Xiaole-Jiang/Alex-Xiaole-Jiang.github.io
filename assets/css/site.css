@@ -324,6 +324,7 @@ img { max-width: 100%; height: auto; }
 @media (hover: hover) { .paper[data-w]:hover { background: var(--box-hover); } }
 .paper[data-w].is-open { background: var(--box-open); }
 .pm { display: none; }   /* +/− marker, where write-ups open inline */
+.rail { display: none; }   /* the clickable line beside an inline write-up */
 
 /* keyboard/screen-reader handle for the write-up; visible only when focused */
 .intro { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
@@ -410,7 +411,22 @@ img { max-width: 100%; height: auto; }
     border-left: var(--rule);
   }
   .paper > .writeup h2 { display: none; }
-  .paper > .writeup .x { margin-bottom: 0; }
+  /* The [close] stays in view while the write-up is. The line down its left
+     side closes it too, and lights up under the pointer. */
+  .paper > .writeup { position: relative; }
+  .paper > .writeup .x {
+    position: -webkit-sticky; position: sticky; top: 0.75rem; z-index: 1;
+    margin-bottom: 0; padding: 0 0.3rem; margin-right: -0.3rem;
+    background: var(--box-open);
+  }
+  .paper > .writeup .rail {
+    display: block; position: absolute; top: 0; bottom: 0; left: calc(-0.6rem - 1px); width: 1.2rem;
+    padding: 0; border: 0; background: none; cursor: pointer;
+  }
+  .rail:hover::before {
+    content: ""; position: absolute; top: 0; bottom: 0; left: calc(0.6rem - 0.5px);
+    border-left: 2px solid var(--link);
+  }
 }
 @media (prefers-reduced-motion: reduce) { .page { transition: none !important; } }
 
@@ -470,6 +486,7 @@ img { max-width: 100%; height: auto; }
 
   /* Root scroll padding clears the navigation for every anchor destination. */
   .paper, .reader .writeup:target { scroll-margin-top: 0; }
+  .paper > .writeup .x { top: 3rem; }   /* below the navigation */
   .ln a, .bibbtn { padding: 0.2rem 0; }
 }
 
