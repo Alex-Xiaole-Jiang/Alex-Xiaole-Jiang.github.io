@@ -1,4 +1,4 @@
-# Alex Jiang's website
+# Xiaole (Alex) Jiang's website
 
 Source for my personal site, live at **<https://alex-xiaole-jiang.github.io>**: about, papers, and longer write-ups.
 
