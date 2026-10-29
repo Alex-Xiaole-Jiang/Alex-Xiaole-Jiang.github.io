@@ -1,9 +1,9 @@
 ---
 # meta: ICLR 2027, under review · co-first author
 ---
-The usual JEPA-style planning world model imagines one step at a time, so planning over a long horizon means a long autoregressive rollout. That brings the standard problems of an RNN-like loop: errors accumulate along the rollout, and in gradient-based planning the Jacobians of every step multiply together, so the optimization is badly conditioned. *k*-WM avoids the loop. Given a few context frames and $k$ actions, the world model predicts all $k$ future states at once; $k=1$ recovers the usual next-step world model. This change improves planning, and, more surprisingly, it also improves the latent geometry without any human prior. The last plot below is one example; the [project page](https://anon-k-wm.github.io/) has more analysis.
+The usual JEPA-style planning world model rolls out autoregressively, and that brings the standard problems of an RNN-like loop: errors accumulate along the rollout, and in gradient-based planning every step's Jacobian enters one long product, leaving a badly conditioned optimization problem. *k*-WM avoids the loop. Given a few context frames and $k$ actions, the world model predicts all $k$ future states at once; $k=1$ recovers the usual next-step world model. This change improves planning, and, more surprisingly, it also improves the latent geometry without any human prior. The last plot below is one example; the [project page](https://anon-k-wm.github.io/) has more analysis.
 
-*k*-WM works with any world model that has a transformer predictor. Only the loss target changes, from the next latent to the next $k$ latents, and at inference one call rolls out $k$ steps. The diagram shows training and inference for *k*-WM and, in the second tab, for the next-step model.
+*k*-WM fits any world model with a transformer predictor: the loss target becomes the next $k$ latents instead of one, and at inference one forward pass rolls out $k$ steps. The second tab shows the next-step model for comparison.
 
 <figure class="tabfig">
 <p class="tabs">[<button type="button" class="tab" data-pane="kwm" aria-selected="true"><i>k</i>-WM</button>] [<button type="button" class="tab" data-pane="next" aria-selected="false">next-step</button>] [<button type="button" class="tab replay">replay</button>]</p>
