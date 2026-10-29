@@ -332,7 +332,11 @@ img { max-width: 100%; height: auto; }
 .paper[data-w].is-open { background: var(--box-open); }
 .paper > a:not(.intro), .paper > a:not(.intro):visited { color: var(--title); text-decoration-color: color-mix(in srgb, var(--title) 40%, transparent); }
 .paper > a:not(.intro):hover { text-decoration-color: currentColor; }
-.pm { display: none; }   /* +/− marker, where write-ups open inline */
+/* [+] / [−] on an entry with a write-up, like [close] */
+.pm { display: inline-block; margin-right: 0.3em; }
+.pm span { color: var(--gray); }
+.pm span::before { content: "+"; }
+.paper.is-open .pm span::before { content: "\2212"; }
 .rail { display: none; }   /* the clickable line beside an inline write-up */
 
 /* keyboard/screen-reader handle for the write-up; visible only when focused */
@@ -427,12 +431,6 @@ img { max-width: 100%; height: auto; }
 
 @media not all and (min-width: 109em) {
   .page { grid-template-columns: var(--side) var(--list); }
-
-  /* [+] / [−], like [close] */
-  .pm { display: inline-block; margin-right: 0.3em; }
-  .pm span { color: var(--gray); }
-  .pm span::before { content: "+"; }
-  .paper.is-open .pm span::before { content: "\2212"; }
 
   /* Without JS the targeted write-up shows below the lists (the aside is empty,
      so zero height, otherwise). With JS the write-up moves into its entry. */
