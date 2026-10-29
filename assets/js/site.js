@@ -38,8 +38,7 @@
   }
 
   function setHash(id) {
-    // Safari throws past about a hundred of these in half a minute
-    try { history.replaceState(null, "", location.pathname + location.search + (id ? "#" + id : "")); } catch (e) {}
+    try { history.replaceState(null, "", location.pathname + location.search + (id ? "#" + id : "")); } catch (e) {}   // Safari rate-limits it
   }
 
   function mark(id, isOpen) {
@@ -49,8 +48,8 @@
   }
 
   // A write-up shown without being asked for (see the end of this block) stays
-  // out of the URL and the count. The tab remembers it while it is up, and ""
-  // once it is closed or replaced, so a refresh gives back what was on screen.
+  // out of the URL and the count. The tab keeps it while it is up, so a refresh
+  // gives back what was on screen.
   let unasked = null;
   function remember(id) {
     if (id === unasked) return;
@@ -70,7 +69,7 @@
     current = id;
     if (docked.matches) {
       scroll.scrollTop = 0;
-      sizeReader();   // the bar may have just appeared (Safari < 18.2 reserves no space for it)
+      sizeReader();   // the scrollbar may have just appeared
     }
     remember(asked ? null : id);
     if (!asked) return;
@@ -167,9 +166,8 @@
     }
   });
 
-  // A link to #id lands on the entry, not the write-up. The browser scrolls to
-  // the element with that id, the write-up, until loading is done (in WebKit,
-  // until just after the load handler), so the hash stays off the URL till then.
+  // A link to #id lands on the entry, not the write-up. Until loading is done
+  // the browser scrolls to the write-up itself, so the hash waits till then.
   const start = location.hash.slice(1);
   if (writeup(start)) {
     open(start);
@@ -185,7 +183,7 @@
     toEntry();
     window.addEventListener("load", () => {
       toEntry();   // again, as the fonts may have reflowed the page
-      setTimeout(() => { if (current === start) setHash(start); }, 0);
+      setTimeout(() => { if (current === start) setHash(start); }, 0);   // WebKit scrolls just after this handler
     }, { once: true });
   } else if (!location.hash && docked.matches) {
     // With all three columns up and nothing asked for, the first write-up

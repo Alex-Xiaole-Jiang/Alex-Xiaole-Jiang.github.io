@@ -21,8 +21,7 @@
   <link rel="preload" href="{{ '/assets/fonts/charter-italic.woff2' | relative_url }}" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="{{ '/assets/fonts/charter-bold.woff2' | relative_url }}" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="{{ '/assets/fonts/charter-bold-italic.woff2' | relative_url }}" as="font" type="font/woff2" crossorigin>
-  {%- comment %} The creation-operator cursor (qft.js), fetched early so it draws at once.
-      Keep the query in step with site.css. {% endcomment %}
+  {%- comment %} The creation-operator cursor, so it draws at once; ?v as in site.css. {% endcomment %}
   <link rel="preload" href="{{ '/assets/img/creation-cursor.svg' | relative_url }}?v=plain-math-1" as="image">
   <link rel="preload" href="{{ '/assets/img/creation-cursor-dark.svg' | relative_url }}?v=plain-math-1" as="image">
   <script>try { var r = document.documentElement, t = localStorage.getItem("theme"); if (t) r.setAttribute("data-theme", t); if (localStorage.getItem("motion")) r.setAttribute("data-motion", "on"); } catch (e) {}</script>

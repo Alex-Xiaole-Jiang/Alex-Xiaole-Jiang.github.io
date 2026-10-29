@@ -165,10 +165,8 @@ body {
     mask-image: var(--edge); mask-composite: intersect;
   }
 }
-/* Safari before 18 (the only browser with the prefixed property but not the
-   plain one) blurs nothing behind a masked element. There the pane keeps its
-   feathered tint and the blur moves to a second, unmasked layer that stops
-   where the feather starts. */
+/* Safari < 18 (prefixed property only) doesn't blur behind a masked element,
+   so the blur moves to an unmasked layer that ends where the feather starts. */
 @supports (-webkit-backdrop-filter: none) and (not (backdrop-filter: none)) {
   .me::before, .list::before, .reader.is-open::before { -webkit-backdrop-filter: none; backdrop-filter: none; }
   @media (min-width: 36em) {
@@ -365,7 +363,7 @@ img { max-width: 100%; height: auto; }
   max-height: min(calc(100vh - 2 * var(--top) + var(--gap) - var(--feather)), var(--reader-column-limit, 100vh));
   max-height: min(calc(100dvh - 2 * var(--top) + var(--gap) - var(--feather)), var(--reader-column-limit, 100dvh));
   overflow-y: auto;
-  scrollbar-gutter: stable;   /* the bar's space is there even when nothing scrolls, so --scrollbar can be measured */
+  scrollbar-gutter: stable;   /* so --scrollbar can be measured before anything scrolls */
 }
 /* Scrolling past the write-up's ends stays in it; closed, the empty box
    would swallow the wheel instead of passing it on to the page. */

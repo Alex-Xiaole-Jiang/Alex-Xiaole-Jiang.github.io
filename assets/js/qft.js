@@ -35,7 +35,7 @@
   const MAX_DURATION = 600;    // longest
   const STEP = 0.3;            // proper time per walk step
   const MAX_STEPS = 1500;      // per loop; longer loops take coarser steps
-  const SMOOTH_PASSES = 0;     // passes of a (1,2,1)/4 filter round each loop, softening the walk; 0 keeps it raw
+  const SMOOTH_PASSES = 0;     // (1,2,1)/4 smoothing passes per loop; 0 keeps the walk raw
 
   // look
   const LOOP_DENSITY = 0.8;    // fraction of the background soup to generate
@@ -456,7 +456,7 @@
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.setTransform(density, 0, 0, density, 0, 0);   // draw in CSS px
     ctx.lineJoin = "round";
-    ctx.lineCap = "butt";        // neighbouring bands meet end to end; round caps would overlap there
+    ctx.lineCap = "butt";        // bands meet end to end
     bands.forEach((path, i) => {
       const age = ((i % AGE_BANDS) + 0.5) / AGE_BANDS;
       const hair = 1 / density;
@@ -541,10 +541,10 @@
     if (canCreate(e.target)) spawn(e.clientX / UNIT_PX, e.clientY / UNIT_PX);
   }
 
-  // After a pause over the bare background, hover loops start and the browser
-  // draws a creation-operator cursor; any movement ends both. WebKit draws a
-  // new cursor only on the next move, so it gets the loops alone.
-  const showCursor = !(window.CSS && CSS.supports("-webkit-backdrop-filter", "none"));   // not WebKit
+  // A pause over the bare background starts hover loops and a creation-operator
+  // cursor; any movement ends both. WebKit would draw the cursor only on the
+  // next move, so it gets the loops alone.
+  const isWebKit = window.CSS && CSS.supports("-webkit-backdrop-filter", "none");
   let pointer = null;
   let cueTarget = null;
   let cueTimer = 0;
@@ -578,7 +578,7 @@
     const target = document.elementFromPoint(pointer.x, pointer.y);
     if (canCreate(target)) {
       cueTarget = target;
-      if (showCursor) cueTarget.classList.add("creation-ready");
+      if (!isWebKit) cueTarget.classList.add("creation-ready");
       showHint();
     }
   }
