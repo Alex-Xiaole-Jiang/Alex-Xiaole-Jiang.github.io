@@ -394,10 +394,9 @@ img { max-width: 100%; height: auto; }
 @media not all and (min-width: 109em) {
   .page { grid-template-columns: var(--side) var(--list); }
 
-  /* [+] / [−], like [close]; the sign keeps one width so the brackets stay
-     put, nudged left to sit midway between Charter's lopsided brackets */
+  /* [+] / [−], like [close] */
   .pm { display: inline-block; margin-right: 0.3em; }
-  .pm span { display: inline-block; width: 0.75em; text-align: center; color: var(--link); position: relative; left: -0.055em; }
+  .pm span { color: var(--link); }
   .pm span::before { content: "+"; }
   .paper.is-open .pm span::before { content: "\2212"; }
 
