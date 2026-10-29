@@ -394,9 +394,12 @@ img { max-width: 100%; height: auto; }
 @media not all and (min-width: 109em) {
   .page { grid-template-columns: var(--side) var(--list); }
 
-  .pm { display: inline-block; width: 1.1em; }
-  .pm::before { content: "+"; }
-  .paper.is-open .pm::before { content: "\2212"; }
+  /* [+] / [−], like [close]; the sign keeps one width so the brackets stay
+     put, nudged left to sit midway between Charter's lopsided brackets */
+  .pm { display: inline-block; margin-right: 0.3em; }
+  .pm span { display: inline-block; width: 0.75em; text-align: center; color: var(--link); position: relative; left: -0.055em; }
+  .pm span::before { content: "+"; }
+  .paper.is-open .pm span::before { content: "\2212"; }
 
   /* Without JS the targeted write-up shows below the lists (the aside is empty,
      so zero height, otherwise). With JS the write-up moves into its entry. */

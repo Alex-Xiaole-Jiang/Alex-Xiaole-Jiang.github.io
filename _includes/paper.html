@@ -14,7 +14,7 @@
 {%- assign authors = authors | replace: "</b>*", "*</b>" -%}
 <li class="paper" id="p-{{ p.id }}"{% if writeup %} data-w="{{ p.id }}"{% endif %}>
   {% if p.hint %}<span class="hint">{{ p.hint }}<svg class="tail" viewBox="0 0 100 100" aria-hidden="true"><path d="M0 0 100 50 50 100Z"/><path d="M100 50 0 0 50 100"/></svg></span>{% endif -%}
-  {% if writeup %}<span class="pm" aria-hidden="true"></span>{% endif -%}
+  {% if writeup %}<span class="pm" aria-hidden="true">[<span></span>]</span>{% endif -%}
   {% for link in p.links limit: 1 %}<a href="{{ link[1] }}">{{ p.title }}</a>{% endfor -%}
   {%- if p.under_review %} <em class="ur">under review</em>{% endif -%}
   {%- if writeup %} <a class="intro" href="#{{ p.id }}" aria-controls="{{ p.id }}" aria-expanded="false">Read the write-up</a>{% endif %}
