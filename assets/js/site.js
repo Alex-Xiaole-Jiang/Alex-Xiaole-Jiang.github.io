@@ -400,6 +400,20 @@
     diagrams.forEach((svg) => steps(svg).forEach((id) => show(svg, id, true)));
   }
 
+  // A click on "email" copies the address; mailto stays for modified clicks, no JS, or no clipboard.
+  document.querySelectorAll("a.email").forEach((a) => {
+    let timer;
+    a.addEventListener("click", (e) => {
+      if (e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || !navigator.clipboard) return;
+      e.preventDefault();
+      navigator.clipboard.writeText(a.href.replace(/^mailto:/, "")).then(() => {
+        a.textContent = "copied";
+        clearTimeout(timer);
+        timer = setTimeout(() => { a.textContent = "email"; }, 1600);
+      }, () => { location.href = a.href; });
+    });
+  });
+
   document.querySelectorAll(".tabfig").forEach((fig) => {
     const tabs = [...fig.querySelectorAll("button.tab[data-pane]")];
     const panes = [...fig.querySelectorAll(".pane")];
