@@ -25,14 +25,20 @@
   <link rel="preload" href="{{ '/assets/img/creation-cursor.svg' | relative_url }}?v=plain-math-1" as="image">
   <link rel="preload" href="{{ '/assets/img/creation-cursor-dark.svg' | relative_url }}?v=plain-math-1" as="image">
   <script>try { var r = document.documentElement, t = localStorage.getItem("theme"); if (t) r.setAttribute("data-theme", t); if (localStorage.getItem("motion")) r.setAttribute("data-motion", "on"); } catch (e) {}</script>
+  {%- comment %} KaTeX for the write-ups' math. With three columns up (109em, as in site.js) the
+      first write-up opens at once, so KaTeX loads as a blocking stylesheet and deferred scripts,
+      which run before site.js opens it: its math is drawn from the first frame. Only
+      document.write makes such parser-inserted tags conditional. On narrower screens the
+      write-ups start closed and math.js fetches KaTeX once the page has loaded. This sits above
+      site.css: an inline script after a stylesheet waits for it to load. {% endcomment %}
+  <link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.19.0/dist/fonts/KaTeX_Main-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous" media="(min-width: 109em)">
+  <link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.19.0/dist/fonts/KaTeX_Math-Italic.woff2" as="font" type="font/woff2" crossorigin="anonymous" media="(min-width: 109em)">
+  <link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.19.0/dist/fonts/KaTeX_Caligraphic-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous" media="(min-width: 109em)">
+  <script>if (matchMedia("(min-width: 109em)").matches) document.write(
+    '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.19.0/dist/katex.min.css" integrity="sha384-3rdsX6e5mueWyoweR9NIVmtEsUkokpBT/0ALqKKIBMr9j4qhHkaIkAcGgsE6uVlp" crossorigin="anonymous">' +
+    '<script defer src="https://cdn.jsdelivr.net/npm/katex@0.19.0/dist/katex.min.js" integrity="sha384-QFFtAGzvvj+bfgCGxXJlNZZR1nXEZgvG8tDLCCY1F19xl20WlfTYgguB4VcNdxYk" crossorigin="anonymous"><\/script>' +
+    '<script defer src="https://cdn.jsdelivr.net/npm/katex@0.19.0/dist/contrib/auto-render.min.js" integrity="sha384-bjyGPfbij8/NDKJhSGZNP/khQVgtHUE5exjm4Ydllo42FwIgYsdLO2lXGmRBf5Mz" crossorigin="anonymous"><\/script>');</script>
   <link rel="stylesheet" href="{{ '/assets/css/site.css' | relative_url }}?v={{ v }}">
-  {%- comment %} Fetch the write-ups' math fonts even while their boxes are closed. {% endcomment %}
-  <link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.19.0/dist/fonts/KaTeX_Main-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
-  <link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.19.0/dist/fonts/KaTeX_Math-Italic.woff2" as="font" type="font/woff2" crossorigin="anonymous">
-  <link rel="preload" href="https://cdn.jsdelivr.net/npm/katex@0.19.0/dist/fonts/KaTeX_Caligraphic-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.19.0/dist/katex.min.css" integrity="sha384-3rdsX6e5mueWyoweR9NIVmtEsUkokpBT/0ALqKKIBMr9j4qhHkaIkAcGgsE6uVlp" crossorigin="anonymous">
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.19.0/dist/katex.min.js" integrity="sha384-QFFtAGzvvj+bfgCGxXJlNZZR1nXEZgvG8tDLCCY1F19xl20WlfTYgguB4VcNdxYk" crossorigin="anonymous"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.19.0/dist/contrib/auto-render.min.js" integrity="sha384-bjyGPfbij8/NDKJhSGZNP/khQVgtHUE5exjm4Ydllo42FwIgYsdLO2lXGmRBf5Mz" crossorigin="anonymous"></script>
   <script src="{{ '/assets/js/math.js' | relative_url }}?v={{ v }}" defer></script>
   <script src="{{ '/assets/js/site.js' | relative_url }}?v={{ v }}" defer></script>
   <script src="{{ '/assets/js/qft.js' | relative_url }}?v={{ v }}" defer></script>

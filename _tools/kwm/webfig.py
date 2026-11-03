@@ -66,6 +66,33 @@ def compact(s):
     return "\n".join(l for l in s.splitlines() if l.strip())
 
 
+def shrink_images(s):
+    """Re-encode matplotlib's embedded PNGs as lossless WebP, under half the size, since they ride
+    in the page's HTML (WebP in SVG: every current browser, Safari 14 on). Pixels stay identical,
+    checked by decoding. Not downsampled to one pixel per heatmap cell: WebKit ignores
+    image-rendering: pixelated on SVG <image> and would blur the cells."""
+    import base64
+    import io
+    import numpy as np
+    from PIL import Image
+
+    def one(m):
+        tag = m.group(0)
+        data = re.search(r'href="data:image/png;base64,([^"]*)"', tag)
+        if not data:
+            return tag
+        a = np.asarray(Image.open(io.BytesIO(base64.b64decode(re.sub(r"\s", "", data.group(1))))).convert("RGBA"))
+        if (a[..., 3] == 255).all():
+            a = a[..., :3]
+        buf = io.BytesIO()
+        Image.fromarray(a).save(buf, "WEBP", lossless=True, quality=100, method=6)
+        back = np.asarray(Image.open(io.BytesIO(buf.getvalue())).convert("RGBA" if a.shape[2] == 4 else "RGB"))
+        assert (back == a).all(), "lossless WebP did not round-trip"
+        return tag.replace(data.group(0), f'href="data:image/webp;base64,{base64.b64encode(buf.getvalue()).decode()}"')
+
+    return re.sub(r"<image\b[^>]*>", one, s)
+
+
 def write(fig, name, label, width=736):
     """Save fig as _includes/<name>.svg, inlined and themed. width: CSS px at full column width."""
     import io
@@ -86,6 +113,7 @@ def write(fig, name, label, width=736):
     m = re.search(r'width="([\d.]+)pt" height="([\d.]+)pt"', s)
     w, h = float(m.group(1)), float(m.group(2))
     s = s.replace(m.group(0), f'width="{width}" height="{round(width * h / w)}" role="img" aria-label="{label}"')
+    s = shrink_images(s)
     s = compact(s)
     path = os.path.join(INCLUDES, f"{name}.svg")
     with open(path, "w") as f:
