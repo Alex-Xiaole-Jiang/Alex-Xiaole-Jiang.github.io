@@ -31,6 +31,7 @@
       hint: Make sure you scroll to the bottom of the website!
       links:
         website: https://panotac.github.io/
+        arXiv: https://arxiv.org/abs/2611.03520
 
     - id: yor
       title: "YOR: Your Own Mobile Manipulator for Generalizable Robotics"
