@@ -228,6 +228,10 @@ img { max-width: 100%; height: auto; }
 .me .tag { margin: 0 0 1.1rem; color: var(--gray); font-size: var(--type-small); line-height: 1.5; }
 .contact a { display: block; width: max-content; }
 .contact-inline { display: none; }   /* phone-only copy of the contact links */
+/* X goes by its logo. Text decoration skips an SVG, so the logo carries its own
+   underline: a border 0.14em below the baseline, where the text links' sits. */
+.xlink { text-decoration: none; }
+.xlink svg { box-sizing: content-box; width: 0.68em; height: 0.68em; fill: currentColor; padding-bottom: 0.14em; border-bottom: 1px solid; vertical-align: calc(-0.14em - 1px); }
 
 /* [night] [hide text] [play]: they need JS, so they show only with it.
    Below 36em the background isn't drawn, so there is nothing to show without
