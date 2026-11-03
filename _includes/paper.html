@@ -21,7 +21,8 @@
   <div class="by">{{ authors }}. {{ p.venue }}</div>
   <div class="ln">
     {%- for link in p.links %}[<a href="{{ link[1] }}">{{ link[0] }}</a>] {% endfor -%}
-    {%- if p.bibtex %}[<button type="button" class="bibbtn" aria-controls="bib-{{ p.id }}" aria-expanded="false">bibtex</button>]{% endif -%}
+    {%- if p.bibtex %}[<button type="button" class="bibbtn" aria-controls="bib-{{ p.id }}" aria-expanded="false">bibtex</button>]
+    <span class="copy" hidden>[<button type="button" class="copybtn" aria-controls="bib-{{ p.id }}" aria-live="polite">copy</button>]</span>{% endif -%}
   </div>
   {%- if p.bibtex %}
   <pre class="bib" id="bib-{{ p.id }}" hidden>{{ p.bibtex | strip | escape }}</pre>

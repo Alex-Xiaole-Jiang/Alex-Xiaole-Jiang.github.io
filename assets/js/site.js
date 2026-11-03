@@ -143,6 +143,35 @@
       const pre = document.getElementById(bib.getAttribute("aria-controls"));
       pre.hidden = !pre.hidden;
       bib.setAttribute("aria-expanded", String(!pre.hidden));
+      const copy = bib.parentElement.querySelector(".copy");
+      if (copy) copy.hidden = pre.hidden;
+      return;
+    }
+
+    // Copies the BibTeX as plain text (textContent undoes the HTML escaping),
+    // falling back to a selection copy where the Clipboard API is unavailable.
+    const cp = t.closest(".copybtn");
+    if (cp) {
+      const pre = document.getElementById(cp.getAttribute("aria-controls"));
+      const text = pre.textContent + "\n";
+      const done = (ok) => {
+        cp.textContent = ok ? "copied" : "press Ctrl+C";
+        clearTimeout(cp.timer);
+        cp.timer = setTimeout(() => { cp.textContent = "copy"; }, 1600);
+      };
+      const fallback = () => {
+        const range = document.createRange();
+        range.selectNodeContents(pre);
+        const sel = getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        let ok = false;
+        try { ok = document.execCommand("copy"); } catch (_) {}
+        if (ok) sel.removeAllRanges();
+        done(ok);
+      };
+      if (navigator.clipboard?.writeText) navigator.clipboard.writeText(text).then(() => done(true), fallback);
+      else fallback();
     }
   });
 
