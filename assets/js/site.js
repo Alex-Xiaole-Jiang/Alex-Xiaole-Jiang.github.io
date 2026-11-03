@@ -239,13 +239,33 @@
   // Photos (_config.yml). The first is in the HTML; each switch of theme moves
   // on to the next. Hovering shows another at random, and a click (a tap, on a
   // phone, where there is no hover) keeps the one shown, or picks one to keep.
+  // Each photo is its own <img>, made once the page is up and then only hidden
+  // or shown: a switch never waits on the network, whatever the cache headers
+  // say, each file is fetched once, and saving one gives its own name.
   const photo = document.querySelector(".me .photo");
   const photos = photo && photo.dataset.photos ? photo.dataset.photos.split(",") : [];
   const manyPhotos = photos.length > 1;
+  const imgs = [photo];
+  function makePhotos() {
+    if (imgs.length > 1) return;
+    photos.slice(1).forEach((u) => {
+      // not cloneNode: a copy would start fetching the first photo again
+      const im = new Image(photo.width, photo.height);
+      im.className = photo.className;
+      im.alt = photo.alt;
+      im.hidden = true;
+      im.src = u;
+      imgs[imgs.length - 1].after(im);
+      imgs.push(im);
+      if (im.decode) im.decode().catch(() => {});
+    });
+  }
   let resting = 0, shown = 0;
   function showPhoto(i) {
+    makePhotos();
+    imgs[shown].hidden = true;
+    imgs[i].hidden = false;
     shown = i;
-    if (photo.getAttribute("src") !== photos[i]) photo.setAttribute("src", photos[i]);
   }
   function restPhoto(i) {
     resting = i;
@@ -254,11 +274,21 @@
   const another = () => (resting + 1 + Math.floor(Math.random() * (photos.length - 1))) % photos.length;
   const nextPhoto = () => restPhoto((resting + 1) % photos.length);
   if (manyPhotos) {
-    photo.addEventListener("mouseenter", () => showPhoto(another()));
-    photo.addEventListener("mouseleave", () => showPhoto(resting));
-    photo.addEventListener("click", () => restPhoto(shown !== resting ? shown : another()));
-    // fetch the others once the page is up, so the first hover is instant
-    window.addEventListener("load", () => photos.slice(1).forEach((u) => { new Image().src = u; }), { once: true });
+    // Listened for on the header: when one photo takes another's place under
+    // the pointer, the move from one to the other is not a hover or a leave.
+    const isPhoto = (el) => !!(el && el.classList && el.classList.contains("photo"));
+    const me = photo.parentElement;
+    me.addEventListener("mouseover", (e) => {
+      if (isPhoto(e.target) && !isPhoto(e.relatedTarget)) showPhoto(another());
+    });
+    me.addEventListener("mouseout", (e) => {
+      if (isPhoto(e.target) && !isPhoto(e.relatedTarget)) showPhoto(resting);
+    });
+    me.addEventListener("click", (e) => {
+      if (isPhoto(e.target)) restPhoto(shown !== resting ? shown : another());
+    });
+    if (document.readyState === "complete") makePhotos();
+    else window.addEventListener("load", makePhotos, { once: true });
   }
 
   function label() {
