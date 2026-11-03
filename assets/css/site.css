@@ -381,6 +381,11 @@ img { max-width: 100%; height: auto; }
   overflow-y: auto;
   scrollbar-gutter: stable;   /* so --scrollbar can be measured before anything scrolls */
 }
+/* Chrome (seen in 131 and 144) leaves unpainted a text run that lies wholly within
+   the first few pixels of this box when it has scrollbar-gutter: stable, such as
+   the [ of a tab row or an <em>k</em> starting a paragraph. A layer of its own
+   for the write-up paints them; the layout is unchanged. */
+.reader .scroll > .writeup { will-change: transform; }
 /* Scrolling past the write-up's ends stays in it; closed, the empty box
    would swallow the wheel instead of passing it on to the page. */
 .reader.is-open .scroll { overscroll-behavior: contain; }
