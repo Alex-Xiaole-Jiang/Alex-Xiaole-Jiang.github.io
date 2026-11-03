@@ -14,8 +14,8 @@ tagline:
 # the next. Hovering shows another one at random, and a click (a tap, on a
 # phone) keeps it.
 photos:
-  - /assets/img/photo-1.jpg
   - /assets/img/photo-2.jpg
+  - /assets/img/photo-1.jpg
   - /assets/img/photo-3.jpg
 email: xiaole.jiang.alex@gmail.com
 cv: /assets/xiaole-alex-jiang-cv.pdf
