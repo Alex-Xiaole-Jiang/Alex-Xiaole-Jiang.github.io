@@ -236,28 +236,29 @@
   const isDark = () => (root.dataset.theme ? root.dataset.theme === "dark" : systemDark.matches);
   const buttons = (name) => document.querySelectorAll(`[data-switch="${name}"]`);
 
-  // Two photos (_config.yml). The night one is in the HTML, so it shows first
-  // whatever the theme. Once the theme changes, night rests on the night photo
-  // and day on the day one. Hovering shows the other; a click (a tap, on a
-  // phone) makes the other one the resting photo.
+  // Photos (_config.yml). The first is in the HTML; each switch of theme moves
+  // on to the next. Hovering shows another at random, and a click (a tap, on a
+  // phone, where there is no hover) keeps the one shown, or picks one to keep.
   const photo = document.querySelector(".me .photo");
-  const twoPhotos = !!(photo && photo.dataset.night && photo.dataset.day);
-  let resting = "night";
-  const other = () => (resting === "night" ? "day" : "night");
-  function showPhoto(which) {
-    if (photo.getAttribute("src") !== photo.dataset[which]) photo.setAttribute("src", photo.dataset[which]);
+  const photos = photo && photo.dataset.photos ? photo.dataset.photos.split(",") : [];
+  const manyPhotos = photos.length > 1;
+  let resting = 0, shown = 0;
+  function showPhoto(i) {
+    shown = i;
+    if (photo.getAttribute("src") !== photos[i]) photo.setAttribute("src", photos[i]);
   }
-  function restPhoto(which) {
-    resting = which;
-    showPhoto(which);
+  function restPhoto(i) {
+    resting = i;
+    showPhoto(i);
   }
-  const photoForTheme = () => restPhoto(isDark() ? "night" : "day");
-  if (twoPhotos) {
-    photo.addEventListener("mouseenter", () => showPhoto(other()));
+  const another = () => (resting + 1 + Math.floor(Math.random() * (photos.length - 1))) % photos.length;
+  const nextPhoto = () => restPhoto((resting + 1) % photos.length);
+  if (manyPhotos) {
+    photo.addEventListener("mouseenter", () => showPhoto(another()));
     photo.addEventListener("mouseleave", () => showPhoto(resting));
-    photo.addEventListener("click", () => restPhoto(other()));
-    // fetch the day photo once the page is up, so the first hover is instant
-    window.addEventListener("load", () => { new Image().src = photo.dataset.day; }, { once: true });
+    photo.addEventListener("click", () => restPhoto(shown !== resting ? shown : another()));
+    // fetch the others once the page is up, so the first hover is instant
+    window.addEventListener("load", () => photos.slice(1).forEach((u) => { new Image().src = u; }), { once: true });
   }
 
   function label() {
@@ -280,7 +281,7 @@
       else localStorage.removeItem("theme");
     } catch (e) {}
     label();
-    if (twoPhotos) photoForTheme();
+    if (manyPhotos) nextPhoto();
   }
 
   function toggleMotion() {
@@ -331,7 +332,7 @@
 
   const onSystemChange = () => {
     label();
-    if (twoPhotos && !root.dataset.theme) photoForTheme();   // following the system
+    if (manyPhotos && !root.dataset.theme) nextPhoto();   // following the system
   };
   if (systemDark.addEventListener) systemDark.addEventListener("change", onSystemChange);
   else systemDark.addListener(onSystemChange);   // Safari < 14

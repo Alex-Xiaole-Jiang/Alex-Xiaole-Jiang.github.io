@@ -10,11 +10,13 @@ nickname: Alex   # goes on the line under the name, beside name_zh
 name_zh: 姜晓乐
 tagline:
   - Physicist by training, philosopher by habit, making beautiful ideas work.
-# Two photos. The night one shows first, whatever the theme. Once the theme is
-# switched, night shows photo_night and day shows photo_day; hovering over the
-# photo (tapping, on a phone) shows the other one.
-photo_night: /assets/img/photo-night.jpg
-photo_day: /assets/img/photo-day.jpg
+# Photos. The first shows on load; each switch between day and night moves to
+# the next. Hovering shows another one at random, and a click (a tap, on a
+# phone) keeps it.
+photos:
+  - /assets/img/photo-1.jpg
+  - /assets/img/photo-2.jpg
+  - /assets/img/photo-3.jpg
 email: xiaole.jiang.alex@gmail.com
 cv: /assets/xiaole-alex-jiang-cv.pdf
 github: https://github.com/Alex-Xiaole-Jiang

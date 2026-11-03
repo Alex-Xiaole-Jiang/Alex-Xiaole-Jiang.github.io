@@ -8,7 +8,7 @@ layout: default
 <div class="page">
 
   <header class="me" id="start">
-    <img class="photo" src="{{ site.photo_night | relative_url }}" data-night="{{ site.photo_night | relative_url }}" data-day="{{ site.photo_day | relative_url }}" width="176" height="176" alt="Photo of {{ site.name }}">
+    <img class="photo" src="{{ site.photos[0] | relative_url }}" data-photos="{% for u in site.photos %}{{ u | relative_url }}{% unless forloop.last %},{% endunless %}{% endfor %}" width="176" height="176" alt="Photo of {{ site.name }}">
     <h1>{{ site.name }} <span class="aka">{{ site.nickname }}{% if site.nickname and site.name_zh %} · {% endif %}{% if site.name_zh %}<span class="zh" lang="zh-Hans">{{ site.name_zh }}</span>{% endif %}</span></h1>
     <p class="tag">{% for line in site.tagline %}<span>{{ line }}</span>{% unless forloop.last %}<br>{% endunless %}{% endfor %}</p>
     <p class="contact">{% include contact.html %}</p>
