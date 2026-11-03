@@ -33,11 +33,14 @@
         website: https://panotac.github.io/
         arXiv: https://arxiv.org/abs/2611.03520
       bibtex: |
-        @article{wang2026panotac,
-          title   = {PanoTac: A Dense Three-Axis Tactile Sensor for Robust Touch-Centric Manipulation},
-          author  = {Wang, B. and Jiang, X. and Teng, Z. and Liu, X. and Li, Y. and Pinto, L. and Cui, Z. J. and Huang, B.},
-          journal = {arXiv preprint arXiv:2611.03520},
-          year    = {2026}
+        @misc{wang2026panotac,
+          title         = {{PanoTac}: A Dense Three-Axis Tactile Sensor for Robust Touch-Centric Manipulation},
+          author        = {Wang, Binglin and Jiang, Xiaole and Teng, Zicheng and Liu, Xinqi and Li, Yunzhu and Pinto, Lerrel and Cui, Zichen Jeff and Huang, Binghao},
+          year          = {2026},
+          eprint        = {2611.03520},
+          archivePrefix = {arXiv},
+          primaryClass  = {cs.RO},
+          url           = {https://panotac.github.io/}
         }
 
     - id: yor
